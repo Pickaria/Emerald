@@ -1,0 +1,7 @@
+api-version: "1.20"
+author: Quozul
+description: Economy plugin
+main: fr.pickaria.emerald.Main
+name: Emerald
+version: "1.0"
+website: https://www.pickaria.fr
