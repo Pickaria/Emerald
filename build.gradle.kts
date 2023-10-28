@@ -3,6 +3,7 @@ plugins {
     id("maven-publish")
     id("xyz.jpenilla.run-paper") version "2.2.0"
     kotlin("jvm") version "1.9.0"
+    kotlin("plugin.serialization") version "1.9.10"
 }
 
 group = "fr.pickaria"
@@ -24,6 +25,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("com.h2database:h2:2.1.214")
+    implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
 
     testImplementation(kotlin("test"))
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.42.0")

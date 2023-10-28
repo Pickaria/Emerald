@@ -4,10 +4,22 @@ import fr.pickaria.emerald.data.EconomyRepository
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 class PaperEconomyService(private val economyRepository: EconomyRepository): EconomyService<Currencies> {
     override fun format(price: Price<Currencies>): String {
-        TODO("Not yet implemented")
+        val format = economyRepository.getFormat(price.currency.name)
+        val decimalFormat = DecimalFormat(format).also {
+            it.roundingMode = RoundingMode.FLOOR
+        }
+        val formattedPrice = decimalFormat.format(price.amount)
+
+        return if (price.amount <= 1.0) {
+            "$formattedPrice ${economyRepository.currencyNameSingular(price.currency.name)}"
+        } else {
+            "$formattedPrice ${economyRepository.currencyNamePlural(price.currency.name)}"
+        }
     }
 
     override fun getValueOfItem(item: ItemStack): Price<Currencies> {

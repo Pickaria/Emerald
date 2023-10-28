@@ -38,6 +38,21 @@ class PaperEconomyServiceTest {
         assertEquals(expectedPrice, balance)
     }
 
+    @Test
+    fun `should return formatted price according to currency's format`() {
+        // Given
+        coEvery { repository.getFormat("Credits") } returns "###,##0.00"
+        coEvery { repository.currencyNamePlural("Credits") } returns "Crédits"
+        val price = Price(5.6, Currencies.Credits)
+        val expectedFormattedPrice = "5.60 Crédits"
+
+        // When
+        val formattedPrice = economyService!!.format(price)
+
+        // Then
+        assertEquals(expectedFormattedPrice, formattedPrice)
+    }
+
     @Nested
     inner class Withdraw {
         @Test

@@ -4,7 +4,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class H2EconomyRepository : EconomyRepository {
+
+class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository {
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
         transaction {
             try {
@@ -43,19 +44,37 @@ class H2EconomyRepository : EconomyRepository {
         }
     }
 
-    override fun createPlayerAccount(accountId: UUID, currency: String) {
-        // TODO("Not yet implemented")
+    override fun getFormat(currency: String): String {
+        if (!config.currencies.containsKey(currency)) {
+            throw UnknownCurrencyException()
+        }
+
+        return config.currencies[currency]!!.format // At this point, we know the currency exists
     }
 
-    override fun getFormat(): String {
-        return ""
+    override fun currencyNamePlural(currency: String): String {
+        if (!config.currencies.containsKey(currency)) {
+            throw UnknownCurrencyException()
+        }
+
+        return config.currencies[currency]!!.namePlural
     }
 
-    override fun currencyNamePlural(): String {
-        return ""
+    override fun currencyNameSingular(currency: String): String {
+        if (!config.currencies.containsKey(currency)) {
+            throw UnknownCurrencyException()
+        }
+
+        return config.currencies[currency]!!.nameSingular
     }
 
-    override fun currencyNameSingular(): String {
-        return ""
+    override fun getPhysicalCurrencies(currency: String): List<PhysicalCurrency> {
+        if (!config.currencies.containsKey(currency)) {
+            throw UnknownCurrencyException()
+        }
+
+        return config.currencies[currency]!!.physicalCurrencies.sortedByDescending { it.value }
     }
 }
+
+class UnknownCurrencyException: Throwable()

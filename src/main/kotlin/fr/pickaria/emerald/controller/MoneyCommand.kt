@@ -34,9 +34,9 @@ class MoneyCommand(manager: BukkitCommandManager, private val economyService: Ec
     @Default
     @CommandCompletion("@currencies")
     fun onDefault(player: Player, @Default("Credits") currency: Currencies) {
-
         getServer().logger.info("$currency")
         val balance = economyService.getBalance(player, currency)
-        player.sendMessage("Balance: $balance")
+        val formattedBalance = economyService.format(balance)
+        player.sendMessage("Balance: $formattedBalance")
     }
 }
