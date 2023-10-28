@@ -1,16 +1,15 @@
-name: Java CI with Gradle
+name: Publish package to GitHub Packages
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  release:
+    types: [ created ]
 
 permissions:
   contents: read
+  packages: write
 
 jobs:
-  test:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +22,9 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
-      - name: Tests
+      - name: Publish package
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: test
+          arguments: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

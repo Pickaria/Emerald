@@ -5,3 +5,5 @@ main: fr.pickaria.emerald.Main
 name: Emerald
 version: "1.0"
 website: https://www.pickaria.fr
+
+loader: fr.pickaria.Loader
