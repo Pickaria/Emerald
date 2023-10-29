@@ -1,7 +1,6 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.data.EconomyRepository
-import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.math.RoundingMode
@@ -9,16 +8,17 @@ import java.text.DecimalFormat
 
 class PaperEconomyService(private val economyRepository: EconomyRepository): EconomyService<Currencies> {
     override fun format(price: Price<Currencies>): String {
-        val format = economyRepository.getFormat(price.currency.name)
-        val decimalFormat = DecimalFormat(format).also {
+        val currencyConfig = economyRepository.getConfig(price.currency.serialName)
+
+        val decimalFormat = DecimalFormat(currencyConfig.format).also {
             it.roundingMode = RoundingMode.FLOOR
         }
         val formattedPrice = decimalFormat.format(price.amount)
 
         return if (price.amount <= 1.0) {
-            "$formattedPrice ${economyRepository.currencyNameSingular(price.currency.name)}"
+            "$formattedPrice ${currencyConfig.nameSingular}"
         } else {
-            "$formattedPrice ${economyRepository.currencyNamePlural(price.currency.name)}"
+            "$formattedPrice ${currencyConfig.namePlural}"
         }
     }
 
@@ -35,33 +35,29 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
     }
 
     override fun getBalance(player: Player, currency: Currencies): Price<Currencies> {
-        val balance = economyRepository.getBalance(player.uniqueId, currency.name)
+        val balance = economyRepository.getBalance(player.uniqueId, currency.serialName)
         return Price(balance, currency)
     }
 
-    override fun withdrawAndAnnounce(player: Player, price: Price<Currencies>) {
+    override fun withdraw(player: Player, price: Price<Currencies>) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
 
-        val balance = economyRepository.getBalance(player.uniqueId, price.currency.name)
+        val balance = economyRepository.getBalance(player.uniqueId, price.currency.serialName)
         if (balance < price.amount) {
             throw BalanceInsufficientException()
         }
 
-        economyRepository.withdrawPlayer(player.uniqueId, price.amount, price.currency.name)
-
-        player.sendActionBar { Component.text("") }
+        economyRepository.withdrawPlayer(player.uniqueId, price.amount, price.currency.serialName)
     }
 
-    override fun depositAndAnnounce(player: Player, price: Price<Currencies>) {
+    override fun deposit(player: Player, price: Price<Currencies>) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
 
-        economyRepository.depositPlayer(player.uniqueId, price.amount, price.currency.name)
-
-        player.sendActionBar { Component.text("") }
+        economyRepository.depositPlayer(player.uniqueId, price.amount, price.currency.serialName)
     }
 }
 

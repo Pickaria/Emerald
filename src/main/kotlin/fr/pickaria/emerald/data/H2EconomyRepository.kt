@@ -44,37 +44,8 @@ class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository
         }
     }
 
-    override fun getFormat(currency: String): String {
-        if (!config.currencies.containsKey(currency)) {
-            throw UnknownCurrencyException()
-        }
-
-        return config.currencies[currency]!!.format // At this point, we know the currency exists
-    }
-
-    override fun currencyNamePlural(currency: String): String {
-        if (!config.currencies.containsKey(currency)) {
-            throw UnknownCurrencyException()
-        }
-
-        return config.currencies[currency]!!.namePlural
-    }
-
-    override fun currencyNameSingular(currency: String): String {
-        if (!config.currencies.containsKey(currency)) {
-            throw UnknownCurrencyException()
-        }
-
-        return config.currencies[currency]!!.nameSingular
-    }
-
-    override fun getPhysicalCurrencies(currency: String): List<PhysicalCurrency> {
-        if (!config.currencies.containsKey(currency)) {
-            throw UnknownCurrencyException()
-        }
-
-        return config.currencies[currency]!!.physicalCurrencies.sortedByDescending { it.value }
-    }
+    override fun getConfig(currency: String): CurrencyConfig =
+        config.currencies[currency] ?: throw UnknownCurrencyException()
 }
 
-class UnknownCurrencyException: Throwable()
+class UnknownCurrencyException : Throwable()

@@ -1,4 +1,4 @@
-[currencies.Credits]
+[currencies.credits]
 name_singular = "Crédit"
 name_plural = "Crédits"
 format = "###,##0.00"

@@ -5,6 +5,7 @@ import co.aikar.commands.BukkitCommandManager
 import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.EconomyService
@@ -12,7 +13,7 @@ import org.bukkit.Bukkit.getServer
 import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
-//@CommandPermission("pickaria.command.balance")
+@CommandPermission("pickaria.command.balance")
 class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService<Currencies>) : BaseCommand() {
     init {
         manager.commandContexts.registerContext(Currencies::class.java) {
@@ -34,7 +35,6 @@ class MoneyCommand(manager: BukkitCommandManager, private val economyService: Ec
     @Default
     @CommandCompletion("@currencies")
     fun onDefault(player: Player, @Default("Credits") currency: Currencies) {
-        getServer().logger.info("$currency")
         val balance = economyService.getBalance(player, currency)
         val formattedBalance = economyService.format(balance)
         player.sendMessage("Balance: $formattedBalance")
