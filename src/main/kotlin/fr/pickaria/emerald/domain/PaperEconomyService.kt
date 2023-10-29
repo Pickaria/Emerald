@@ -1,7 +1,7 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.data.EconomyRepository
-import org.bukkit.entity.Player
+import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -34,12 +34,12 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
         TODO("Not yet implemented")
     }
 
-    override fun getBalance(player: Player, currency: Currencies): Price<Currencies> {
+    override fun getBalance(player: OfflinePlayer, currency: Currencies): Price<Currencies> {
         val balance = economyRepository.getBalance(player.uniqueId, currency.serialName)
         return Price(balance, currency)
     }
 
-    override fun withdraw(player: Player, price: Price<Currencies>) {
+    override fun withdraw(player: OfflinePlayer, price: Price<Currencies>) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
@@ -52,7 +52,7 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
         economyRepository.withdrawPlayer(player.uniqueId, price.amount, price.currency.serialName)
     }
 
-    override fun deposit(player: Player, price: Price<Currencies>) {
+    override fun deposit(player: OfflinePlayer, price: Price<Currencies>) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }

@@ -45,7 +45,7 @@ class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository
     }
 
     override fun getConfig(currency: String): CurrencyConfig =
-        config.currencies[currency] ?: throw UnknownCurrencyException()
+        config.currencies[currency] ?: throw UnknownCurrencyException(currency)
 }
 
-class UnknownCurrencyException : Throwable()
+class UnknownCurrencyException(val currency: String) : Throwable()

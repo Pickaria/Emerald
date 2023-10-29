@@ -13,11 +13,21 @@ repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
+
+    maven {
+        url = uri("https://maven.pkg.github.com/Pickaria/Bedrock")
+
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+        }
+    }
 }
 
 val exposedVersion: String by project
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
+    implementation("fr.pickaria:bedrock:1.0.21")
     compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -39,6 +49,9 @@ java {
 
 kotlin {
     jvmToolchain(17)
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xno-call-assertions", "-Xno-receiver-assertions", "-Xno-param-assertions")
+    }
 }
 
 tasks {

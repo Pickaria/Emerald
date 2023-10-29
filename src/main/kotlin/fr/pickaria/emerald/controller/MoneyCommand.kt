@@ -7,36 +7,39 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.EconomyService
-import org.bukkit.Bukkit.getServer
 import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
 @CommandPermission("pickaria.command.balance")
-class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService<Currencies>) : BaseCommand() {
+class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService<Currencies>) :
+    BaseCommand() {
     init {
         manager.commandContexts.registerContext(Currencies::class.java) {
             val arg = it.popFirstArg()
             try {
-                Currencies.valueOf(arg)
+                Currencies.valueOf(arg.uppercase())
             } catch (e: IllegalArgumentException) {
                 throw InvalidCommandArgument("Le compte '$arg' n'existe pas.")
             }
         }
 
         manager.commandCompletions.registerCompletion("currencies") {
-            Currencies.entries.map { it.name }
+            Currencies.entries.map { it.name.lowercase() }
         }
-
-        getServer().logger.info("Registered!")
     }
 
     @Default
     @CommandCompletion("@currencies")
-    fun onDefault(player: Player, @Default("Credits") currency: Currencies) {
-        val balance = economyService.getBalance(player, currency)
-        val formattedBalance = economyService.format(balance)
-        player.sendMessage("Balance: $formattedBalance")
+    fun onDefault(player: Player, @Default("credits") currency: Currencies) {
+        try {
+            val balance = economyService.getBalance(player, currency)
+            val formattedBalance = economyService.format(balance)
+            player.sendMessage("Balance: $formattedBalance")
+        } catch (e: UnknownCurrencyException) {
+            throw InvalidCommandArgument("Le compte '${e.currency}' n'existe pas.")
+        }
     }
 }
