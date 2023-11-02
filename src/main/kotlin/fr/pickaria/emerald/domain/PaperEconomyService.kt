@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
-class PaperEconomyService(private val economyRepository: EconomyRepository): EconomyService<Currencies> {
-    override fun format(price: Price<Currencies>): String {
+class PaperEconomyService(private val economyRepository: EconomyRepository): EconomyService {
+    override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency.serialName)
 
         val decimalFormat = DecimalFormat(currencyConfig.format).also {
@@ -22,11 +22,11 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
         }
     }
 
-    override fun getValueOfItem(item: ItemStack): Price<Currencies> {
+    override fun getValueOfItem(item: ItemStack): Price {
         TODO("Not yet implemented")
     }
 
-    override fun getPhysicalCurrency(price: Price<Currencies>): ItemStack {
+    override fun getPhysicalCurrency(price: Price): ItemStack {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
@@ -34,12 +34,12 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
         TODO("Not yet implemented")
     }
 
-    override fun getBalance(player: OfflinePlayer, currency: Currencies): Price<Currencies> {
+    override fun getBalance(player: OfflinePlayer, currency: Currencies): Price {
         val balance = economyRepository.getBalance(player.uniqueId, currency.serialName)
         return Price(balance, currency)
     }
 
-    override fun withdraw(player: OfflinePlayer, price: Price<Currencies>) {
+    override fun withdraw(player: OfflinePlayer, price: Price) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
@@ -52,7 +52,7 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
         economyRepository.withdrawPlayer(player.uniqueId, price.amount, price.currency.serialName)
     }
 
-    override fun deposit(player: OfflinePlayer, price: Price<Currencies>) {
+    override fun deposit(player: OfflinePlayer, price: Price) {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }

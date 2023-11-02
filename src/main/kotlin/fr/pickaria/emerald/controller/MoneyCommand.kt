@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
 @CommandPermission("pickaria.command.balance")
-class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService<Currencies>) :
+class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService) :
     BaseCommand() {
     init {
         manager.commandContexts.registerContext(Currencies::class.java) {

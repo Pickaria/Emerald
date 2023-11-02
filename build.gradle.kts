@@ -2,8 +2,8 @@ plugins {
     id("java")
     id("maven-publish")
     id("xyz.jpenilla.run-paper") version "2.2.0"
-    kotlin("jvm") version "1.9.0"
-    kotlin("plugin.serialization") version "1.9.10"
+    kotlin("jvm") version "1.9.20"
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 group = "fr.pickaria"

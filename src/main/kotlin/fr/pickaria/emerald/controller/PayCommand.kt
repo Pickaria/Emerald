@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 
 @CommandAlias("pay")
 @CommandPermission("pickaria.command.pay")
-class PayCommand(private val economyService: EconomyService<Currencies>) : BaseCommand() {
+class PayCommand(private val economyService: EconomyService) : BaseCommand() {
     @Default
     @CommandCompletion("@players")
     fun onDefault(player: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
