@@ -20,6 +20,9 @@ import java.security.InvalidParameterException
 import java.util.*
 import kotlin.math.min
 
+val currencyNamespace = NamespacedKey("pickaria", "currency")
+val valueNamespace = NamespacedKey("pickaria", "value")
+
 // TODO: Rewrite this class to make it simpler
 class PhysicalCurrencyService(private val economyService: EconomyService, private val economyRepository: EconomyRepository, private val price: Price) {
     private val config: CurrencyConfig by lazy {
@@ -40,9 +43,6 @@ class PhysicalCurrencyService(private val economyService: EconomyService, privat
     private val physicalCurrencies by lazy {
         config.physicalCurrencies.sortedByDescending { it.value }
     }
-
-    private val currencyNamespace = NamespacedKey("pickaria", "currency")
-    private val valueNamespace = NamespacedKey("pickaria", "value")
 
     private fun overflowStacks(material: Material, amountToGive: Int, meta: ((ItemMeta) -> Unit)? = null): List<ItemStack> {
         val stacks = mutableListOf<ItemStack>()

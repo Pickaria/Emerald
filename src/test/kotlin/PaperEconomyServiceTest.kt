@@ -1,6 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.*
 import io.mockk.*
 import mocks.creditConfigMock
@@ -173,6 +174,8 @@ class PaperEconomyServiceTest {
 
     @Nested
     inner class PhysicalCurrency {
+        // getPhysicalCurrency
+
         @Test
         fun `should throw exception when amount of 0 is specified`() {
             // Given
@@ -338,29 +341,82 @@ class PaperEconomyServiceTest {
             // Then
             assertEquals(1, result.enchantments.size)
         }
+    }
+
+    @Nested
+    inner class ValueOfPhysicalCurrency {
+        private fun createTestItem(material: Material = Material.IRON_NUGGET, value: Double = 1.0, count: Int = 1, currency: String = "credits") = ItemStack(material).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:value")!!,
+                    PersistentDataType.DOUBLE,
+                    value
+                )
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:currency")!!,
+                    PersistentDataType.STRING,
+                    currency
+                )
+            }
+
+            amount = count
+        }
 
         @Test
-        fun `should get the correct expected price`() {
+        fun `should throw exception when currency has an invalid amount`() {
             // Given
-            val expectedPrice = Price(3.0, Currencies.CREDITS)
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val item = createTestItem(value = -5.0)
 
-            // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
-            val item = ItemStack(Material.IRON_NUGGET).apply {
-                editMeta {
-                    it.persistentDataContainer.set(
-                        NamespacedKey.fromString("pickaria:value")!!,
-                        PersistentDataType.DOUBLE,
-                        1.0
-                    )
-                    it.persistentDataContainer.set(
-                        NamespacedKey.fromString("pickaria:currency")!!,
-                        PersistentDataType.STRING,
-                        "credits"
-                    )
-                }
-
-                amount = 3
+            // When / Then
+            assertThrows<InvalidAmountException> {
+                economyService.getValueOfItem(item)
             }
+        }
+
+        @Test
+        fun `should throw exception when item is not a currency`() {
+            // Given
+            val item = ItemStack(Material.IRON_NUGGET)
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should throw exception when item has an invalid currency`() {
+            // Given
+            coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+            val item = createTestItem(currency = "unknown")
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should get the correct expected price from a single item`() {
+            // Given
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val expectedPrice = Price(3.0, Currencies.CREDITS)
+            val item = createTestItem(count = 3, material = Material.IRON_NUGGET)
+
+            // When
+            val result = economyService.getValueOfItem(item)
+
+            // Then
+            assertEquals(expectedPrice, result)
+        }
+
+        @Test
+        fun `should get the correct expected price from a bundle`() {
+            // Given
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val expectedPrice = Price(9999.0, Currencies.CREDITS)
+            val item = createTestItem(count = 1, material = Material.BUNDLE, value = 9999.0)
 
             // When
             val result = economyService.getValueOfItem(item)

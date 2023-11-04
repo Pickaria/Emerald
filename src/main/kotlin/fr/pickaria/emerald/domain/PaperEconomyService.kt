@@ -1,12 +1,14 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.data.UnknownCurrencyException
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
-class PaperEconomyService(private val economyRepository: EconomyRepository): EconomyService {
+class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency.serialName)
 
@@ -23,7 +25,26 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
     }
 
     override fun getValueOfItem(item: ItemStack): Price {
-        TODO("Not yet implemented")
+        val currency = item.itemMeta.persistentDataContainer.get(currencyNamespace, PersistentDataType.STRING)
+        val value = item.itemMeta.persistentDataContainer.get(valueNamespace, PersistentDataType.DOUBLE)
+
+        if (value == null || currency == null) {
+            throw ItemIsNotACurrencyException()
+        }
+
+        try {
+            economyRepository.getConfig(currency)
+        } catch (e: UnknownCurrencyException) {
+            throw ItemIsNotACurrencyException()
+        }
+
+        val totalValue = item.amount * value
+
+        if (totalValue <= 0.0) {
+            throw InvalidAmountException()
+        }
+
+        return Price(totalValue, Currencies.valueOf(currency.uppercase()))
     }
 
     override fun getPhysicalCurrency(price: Price): ItemStack {
@@ -62,5 +83,6 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
     }
 }
 
-class BalanceInsufficientException: Throwable()
-class InvalidAmountException: Throwable()
+class BalanceInsufficientException : Throwable()
+class InvalidAmountException : Throwable()
+class ItemIsNotACurrencyException : Throwable()
