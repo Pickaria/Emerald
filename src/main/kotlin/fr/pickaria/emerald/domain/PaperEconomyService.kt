@@ -31,7 +31,8 @@ class PaperEconomyService(private val economyRepository: EconomyRepository): Eco
             throw InvalidAmountException()
         }
 
-        TODO("Not yet implemented")
+        val currencyService = PhysicalCurrencyService(this, economyRepository, price)
+        return currencyService.item(price.amount)
     }
 
     override fun getBalance(player: OfflinePlayer, currency: Currencies): Price {

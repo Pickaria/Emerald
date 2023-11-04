@@ -3,6 +3,7 @@ import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.data.H2EconomyRepository
 import fr.pickaria.emerald.data.UnknownCurrencyException
 import mocks.economyConfigMock
+import mocks.openTestDatabase
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 

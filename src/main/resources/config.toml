@@ -2,6 +2,7 @@
 name_singular = "Crédit"
 name_plural = "Crédits"
 format = "###,##0.00"
+description = ["<gray>Pièce d'une valeur de <gold><value><gray>."]
 physical_currencies = [
     { value = 0.01, material = "GLOWSTONE_DUST" },
     { value = 0.1, material = "GUNPOWDER" },

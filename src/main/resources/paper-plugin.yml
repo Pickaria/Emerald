@@ -7,3 +7,16 @@ version: "1.0"
 website: https://www.pickaria.fr
 
 loader: fr.pickaria.Loader
+
+dependencies:
+  bootstrap:
+    Vault:
+      required: true
+      join-classpath: true
+      load: BEFORE
+
+  server:
+    Vault:
+      required: true
+      join-classpath: true
+      load: BEFORE

@@ -1,3 +1,5 @@
+package mocks
+
 import fr.pickaria.emerald.data.Accounts
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils

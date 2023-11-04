@@ -19,6 +19,7 @@ data class CurrencyConfig(
     @SerialName("name_plural")
     val namePlural: String,
     val format: String,
+    val description: List<String>,
 
     @SerialName("physical_currencies")
     val physicalCurrencies: List<PhysicalCurrency>,
