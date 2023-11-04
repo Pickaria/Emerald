@@ -7,6 +7,7 @@ import mocks.creditConfigMock
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BundleMeta
 import org.bukkit.persistence.PersistentDataType
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
@@ -173,6 +174,18 @@ class PaperEconomyServiceTest {
     @Nested
     inner class PhysicalCurrency {
         @Test
+        fun `should throw exception when amount of 0 is specified`() {
+            // Given
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val price = Price(0.0, Currencies.CREDITS)
+
+            // When / Then
+            assertThrows<InvalidAmountException> {
+                economyService.getPhysicalCurrency(price)
+            }
+        }
+
+        @Test
         fun `physical currency should have the correct value`() {
             // Given
             coEvery { repository.getConfig("credits") } returns creditConfigMock
@@ -181,8 +194,16 @@ class PaperEconomyServiceTest {
             // minecraft:iron_nugget{PublicBukkitValues:{"pickaria:value":1.0d,"pickaria:currency":"credits"}}
             val expected = ItemStack(Material.IRON_NUGGET).apply {
                 editMeta {
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:value")!!, PersistentDataType.DOUBLE,1.0)
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:currency")!!, PersistentDataType.STRING,"credits")
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:value")!!,
+                        PersistentDataType.DOUBLE,
+                        1.0
+                    )
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:currency")!!,
+                        PersistentDataType.STRING,
+                        "credits"
+                    )
                 }
             }
 
@@ -190,7 +211,10 @@ class PaperEconomyServiceTest {
             val result = economyService.getPhysicalCurrency(price)
 
             // Then
-            assertEquals(result.itemMeta.persistentDataContainer.toString(), expected.itemMeta.persistentDataContainer.toString())
+            assertEquals(
+                result.itemMeta.persistentDataContainer.toString(),
+                expected.itemMeta.persistentDataContainer.toString()
+            )
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
         }
@@ -204,8 +228,16 @@ class PaperEconomyServiceTest {
             // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
             val expected = ItemStack(Material.GOLD_NUGGET).apply {
                 editMeta {
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:value")!!, PersistentDataType.DOUBLE,64.0)
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:currency")!!, PersistentDataType.STRING,"credits")
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:value")!!,
+                        PersistentDataType.DOUBLE,
+                        64.0
+                    )
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:currency")!!,
+                        PersistentDataType.STRING,
+                        "credits"
+                    )
                 }
                 amount = 2
             }
@@ -214,7 +246,10 @@ class PaperEconomyServiceTest {
             val result = economyService.getPhysicalCurrency(price)
 
             // Then
-            assertEquals(result.itemMeta.persistentDataContainer.toString(), expected.itemMeta.persistentDataContainer.toString())
+            assertEquals(
+                result.itemMeta.persistentDataContainer.toString(),
+                expected.itemMeta.persistentDataContainer.toString()
+            )
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
         }
@@ -228,18 +263,31 @@ class PaperEconomyServiceTest {
             // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
             val expected = ItemStack(Material.BUNDLE).apply {
                 editMeta {
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:value")!!, PersistentDataType.DOUBLE,96.0)
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:currency")!!, PersistentDataType.STRING,"credits")
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:value")!!,
+                        PersistentDataType.DOUBLE,
+                        96.0
+                    )
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:currency")!!,
+                        PersistentDataType.STRING,
+                        "credits"
+                    )
                 }
             }
 
             // When
             val result = economyService.getPhysicalCurrency(price)
+            val bundleMeta = result.itemMeta as BundleMeta
 
             // Then
-            assertEquals(result.itemMeta.persistentDataContainer.toString(), expected.itemMeta.persistentDataContainer.toString())
+            assertEquals(
+                result.itemMeta.persistentDataContainer.toString(),
+                expected.itemMeta.persistentDataContainer.toString()
+            )
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
+            assertEquals(2 /* stacks */, bundleMeta.items.size)
         }
 
         @Test
@@ -251,18 +299,74 @@ class PaperEconomyServiceTest {
             // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
             val expected = ItemStack(Material.BUNDLE).apply {
                 editMeta {
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:value")!!, PersistentDataType.DOUBLE,9999.0)
-                    it.persistentDataContainer.set(NamespacedKey.fromString("pickaria:currency")!!, PersistentDataType.STRING,"credits")
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:value")!!,
+                        PersistentDataType.DOUBLE,
+                        9999.0
+                    )
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:currency")!!,
+                        PersistentDataType.STRING,
+                        "credits"
+                    )
                 }
             }
 
             // When
             val result = economyService.getPhysicalCurrency(price)
+            val bundleMeta = result.itemMeta as BundleMeta
 
             // Then
-            assertEquals(result.itemMeta.persistentDataContainer.toString(), expected.itemMeta.persistentDataContainer.toString())
+            assertEquals(
+                result.itemMeta.persistentDataContainer.toString(),
+                expected.itemMeta.persistentDataContainer.toString()
+            )
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
+            assertEquals(4 /* stacks */, bundleMeta.items.size)
+        }
+
+        @Test
+        fun `physical currency should be enchanted`() {
+            // Given
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val price = Price(1.0, Currencies.CREDITS)
+
+            // When
+            val result = economyService.getPhysicalCurrency(price)
+
+            // Then
+            assertEquals(1, result.enchantments.size)
+        }
+
+        @Test
+        fun `should get the correct expected price`() {
+            // Given
+            val expectedPrice = Price(3.0, Currencies.CREDITS)
+
+            // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
+            val item = ItemStack(Material.IRON_NUGGET).apply {
+                editMeta {
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:value")!!,
+                        PersistentDataType.DOUBLE,
+                        1.0
+                    )
+                    it.persistentDataContainer.set(
+                        NamespacedKey.fromString("pickaria:currency")!!,
+                        PersistentDataType.STRING,
+                        "credits"
+                    )
+                }
+
+                amount = 3
+            }
+
+            // When
+            val result = economyService.getValueOfItem(item)
+
+            // Then
+            assertEquals(expectedPrice, result)
         }
     }
 }
