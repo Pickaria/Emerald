@@ -174,8 +174,6 @@ class PaperEconomyServiceTest {
 
     @Nested
     inner class PhysicalCurrency {
-        // getPhysicalCurrency
-
         @Test
         fun `should throw exception when amount of 0 is specified`() {
             // Given
@@ -291,6 +289,11 @@ class PaperEconomyServiceTest {
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
             assertEquals(2 /* stacks */, bundleMeta.items.size)
+
+            assertEquals(Material.GOLD_NUGGET, bundleMeta.items[0].type)
+            assertEquals(1, bundleMeta.items[0].amount)
+            assertEquals(Material.IRON_NUGGET, bundleMeta.items[1].type)
+            assertEquals(32, bundleMeta.items[1].amount)
         }
 
         @Test
@@ -327,6 +330,15 @@ class PaperEconomyServiceTest {
             assertEquals(result.amount, expected.amount)
             assertEquals(result.type, expected.type)
             assertEquals(4 /* stacks */, bundleMeta.items.size)
+
+            assertEquals(Material.GOLD_NUGGET, bundleMeta.items[0].type)
+            assertEquals(64, bundleMeta.items[0].amount)
+            assertEquals(Material.GOLD_NUGGET, bundleMeta.items[1].type)
+            assertEquals(64, bundleMeta.items[1].amount)
+            assertEquals(Material.GOLD_NUGGET, bundleMeta.items[2].type)
+            assertEquals(28, bundleMeta.items[2].amount)
+            assertEquals(Material.IRON_NUGGET, bundleMeta.items[3].type)
+            assertEquals(15, bundleMeta.items[3].amount)
         }
 
         @Test
