@@ -1,13 +1,14 @@
 package fr.pickaria.emerald.data
 
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 
-class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository {
+class H2EconomyRepository(private val database: Database, private val config: EconomyConfig) : EconomyRepository {
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
-        transaction {
+        transaction(database) {
             try {
                 val account = Account.find {
                     (Accounts.playerUuid eq accountId) and (Accounts.accountName eq currency)
@@ -30,7 +31,7 @@ class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository
 
     override fun getBalance(accountId: UUID, currency: String): Double {
         return try {
-            val account = transaction {
+            val account = transaction(database) {
                 Account.find {
                     (Accounts.playerUuid eq accountId) and (Accounts.accountName eq currency)
                 }.single()

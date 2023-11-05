@@ -2,8 +2,8 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.data.H2EconomyRepository
 import fr.pickaria.emerald.data.UnknownCurrencyException
+import mocks.databaseMock
 import mocks.economyConfigMock
-import mocks.openTestDatabase
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 
@@ -12,18 +12,11 @@ class H2EconomyRepositoryTest {
     private lateinit var server: ServerMock
     private lateinit var economyRepository: H2EconomyRepository
 
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun setUpAll() {
-            openTestDatabase()
-        }
-    }
-
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
-        economyRepository = H2EconomyRepository(economyConfigMock)
+        val database = databaseMock()
+        economyRepository = H2EconomyRepository(database, economyConfigMock)
     }
 
     @AfterEach

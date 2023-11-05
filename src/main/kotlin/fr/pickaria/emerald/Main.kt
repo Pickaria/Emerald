@@ -18,9 +18,9 @@ internal open class Main : JavaPlugin() {
     override fun onEnable() {
         val config = Toml.decodeFromNativeReader<EconomyConfig>(getResourceReader(this, "config.toml"))
 
-        val economyRepository = H2EconomyRepository(config)
+        val database = openDatabase()
+        val economyRepository = H2EconomyRepository(database, config)
         val economyService = PaperEconomyService(economyRepository)
-        openTestDatabase()
 
         server.servicesManager.register(EconomyService::class.java, economyService, this, ServicePriority.Normal)
 
