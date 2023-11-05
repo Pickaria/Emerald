@@ -24,7 +24,7 @@ physical_currencies = [
 ]
 
 [currencies.keys]
-description = ["<gray>Objet permettant l'achat de récompenses"]
+description = ["<gray>Objet permettant l'achat de récompenses."]
 name_singular = "Clé"
 name_plural = "Clés"
 format = "###,##0.#"

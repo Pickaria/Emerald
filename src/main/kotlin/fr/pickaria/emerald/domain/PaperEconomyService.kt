@@ -9,7 +9,7 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 
 class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
-    private val currencyService = PhysicalCurrencyService(this, economyRepository)
+    private val physicalCurrencyService = PhysicalCurrencyService(this, economyRepository)
 
     override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency.serialName)
@@ -54,7 +54,7 @@ class PaperEconomyService(private val economyRepository: EconomyRepository) : Ec
             throw InvalidAmountException()
         }
 
-        return currencyService.item(price)
+        return physicalCurrencyService.item(price)
     }
 
     override fun getBalance(player: OfflinePlayer, currency: Currencies): Price {

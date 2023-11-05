@@ -49,9 +49,6 @@ java {
 
 kotlin {
     jvmToolchain(17)
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xno-call-assertions", "-Xno-receiver-assertions", "-Xno-param-assertions")
-    }
 }
 
 tasks {
