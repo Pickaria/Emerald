@@ -6,7 +6,7 @@ import org.bukkit.Material
 
 
 @Serializable
-data class PhysicalCurrency(
+data class PhysicalCurrencyConfig(
     val value: Double,
     val material: Material,
 )
@@ -22,7 +22,7 @@ data class CurrencyConfig(
     val description: List<String>,
 
     @SerialName("physical_currencies")
-    val physicalCurrencies: List<PhysicalCurrency>,
+    val physicalCurrencies: List<PhysicalCurrencyConfig>,
 )
 
 @Serializable

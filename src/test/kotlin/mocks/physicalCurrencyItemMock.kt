@@ -16,21 +16,25 @@ import org.bukkit.persistence.PersistentDataType
  */
 fun physicalCurrencyItemMock(
     material: Material = Material.IRON_NUGGET,
-    value: Double = 1.0,
+    value: Double? = 1.0,
     count: Int = 1,
-    currency: String = "credits"
+    currency: String? = "credits"
 ) = ItemStack(material).apply {
-    editMeta {
-        it.persistentDataContainer.set(
-            NamespacedKey.fromString("pickaria:value")!!,
-            PersistentDataType.DOUBLE,
-            value
-        )
-        it.persistentDataContainer.set(
-            NamespacedKey.fromString("pickaria:currency")!!,
-            PersistentDataType.STRING,
-            currency
-        )
+    editMeta { itemStack ->
+        value?.let {
+            itemStack.persistentDataContainer.set(
+                NamespacedKey.fromString("pickaria:value")!!,
+                PersistentDataType.DOUBLE,
+                it
+            )
+        }
+        currency?.let {
+            itemStack.persistentDataContainer.set(
+                NamespacedKey.fromString("pickaria:currency")!!,
+                PersistentDataType.STRING,
+                it
+            )
+        }
     }
 
     amount = count

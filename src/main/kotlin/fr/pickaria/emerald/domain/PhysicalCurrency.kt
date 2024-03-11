@@ -1,9 +1,8 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.data.CurrencyConfig
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import fr.pickaria.emerald.data.PhysicalCurrency
+import fr.pickaria.emerald.data.PhysicalCurrencyConfig
 import fr.pickaria.shared.MiniMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -14,7 +13,6 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import kotlin.math.min
@@ -22,78 +20,68 @@ import kotlin.math.min
 val currencyNamespace = NamespacedKey("pickaria", "currency")
 val valueNamespace = NamespacedKey("pickaria", "value")
 
-internal class PhysicalCurrencyService(
+internal class PhysicalCurrency(
+    economyRepository: EconomyRepository,
     private val economyService: EconomyService,
-    private val economyRepository: EconomyRepository
+    private val price: Price,
 ) {
+    private val config = economyRepository.getConfig(price.currency.serialName)
+
     private fun overflowStacks(
-        material: Material,
+        item: ItemStack,
         amountToGive: Int,
-        meta: ((ItemMeta) -> Unit)? = null
     ): List<ItemStack> {
-        require(material.maxStackSize > 0) {
-            "Material has a maxStackSize of 0."
-        }
-
         val stacks = mutableListOf<ItemStack>()
-        var restToGive = amountToGive
-        val item = ItemStack(material).apply {
-            editMeta {
-                meta?.invoke(it)
-            }
-        }
 
-        while (restToGive > 0) {
-            val amount = min(restToGive, material.maxStackSize)
-            stacks += item.asQuantity(amount)
-            restToGive -= material.maxStackSize
+        var remainingAmount = amountToGive
+        while (remainingAmount > 0) {
+            val stackSize = min(remainingAmount, item.type.maxStackSize)
+            stacks.add(item.asQuantity(stackSize))
+            remainingAmount -= stackSize
         }
 
         return stacks
     }
 
-    /**
-     * Get the items required to match a specified total value.
-     */
-    private fun items(price: Price, config: CurrencyConfig, currencyDisplayName: Component): List<ItemStack> {
+    private fun items(currencyDisplayName: Component): List<ItemStack> {
         var remaining = price.amount
-        val coins = mutableMapOf<PhysicalCurrency, Int>()
+        val coins = mutableMapOf<PhysicalCurrencyConfig, Int>()
 
-        val physicalCurrencies = config.physicalCurrencies.sortedByDescending { it.value }
-
-        physicalCurrencies.forEach {
+        val physicalCurrenciesValues = config.physicalCurrencies.sortedByDescending { it.value }
+        physicalCurrenciesValues.forEach {
             val amount = (remaining / it.value).toInt()
             coins[it] = amount
             remaining -= amount * it.value
         }
 
         return coins.flatMap { (physicalCurrency, amount) ->
-            overflowStacks(physicalCurrency.material, amount) { meta ->
-                meta.addEnchant(Enchantment.DURABILITY, 1, true)
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-                meta.displayName(currencyDisplayName)
+            val itemStack = ItemStack(physicalCurrency.material).apply {
+                editMeta { meta ->
+                    meta.addEnchant(Enchantment.DURABILITY, 1, true)
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
+                    meta.displayName(currencyDisplayName)
 
-                val line = config.description.map {
-                    MiniMessage(it) {
-                        "value" to economyService.format(Price(physicalCurrency.value, price.currency))
-                    }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                    val line = config.description.map {
+                        MiniMessage(it) {
+                            "value" to economyService.format(Price(physicalCurrency.value, price.currency))
+                        }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+                    }
+
+                    meta.lore(line)
+
+                    meta.persistentDataContainer.set(
+                        currencyNamespace,
+                        PersistentDataType.STRING,
+                        price.currency.serialName
+                    )
+                    meta.persistentDataContainer.set(valueNamespace, PersistentDataType.DOUBLE, physicalCurrency.value)
                 }
-
-                meta.lore(line)
-
-                meta.persistentDataContainer.set(
-                    currencyNamespace,
-                    PersistentDataType.STRING,
-                    price.currency.serialName
-                )
-                meta.persistentDataContainer.set(valueNamespace, PersistentDataType.DOUBLE, physicalCurrency.value)
             }
+
+            overflowStacks(itemStack, amount)
         }
     }
 
-    /**
-     * Put all items for a specified total value in a bundle.
-     */
     private fun bundle(
         price: Price,
         items: List<ItemStack>,
@@ -133,11 +121,7 @@ internal class PhysicalCurrencyService(
         }
     }
 
-    fun item(price: Price): ItemStack {
-        val config: CurrencyConfig by lazy {
-            economyRepository.getConfig(price.currency.serialName)
-        }
-
+    fun getItem(): ItemStack {
         val currencyDisplayName: Component by lazy {
             Component.text(config.nameSingular.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(
@@ -146,7 +130,7 @@ internal class PhysicalCurrencyService(
             }, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
         }
 
-        val items = items(price, config, currencyDisplayName)
+        val items = items(currencyDisplayName)
 
         return if (items.size > 1) {
             bundle(price, items, currencyDisplayName)
