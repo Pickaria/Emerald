@@ -1,6 +1,6 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.*
 import io.mockk.*

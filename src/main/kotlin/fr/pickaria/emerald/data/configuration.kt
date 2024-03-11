@@ -26,6 +26,16 @@ data class CurrencyConfig(
 )
 
 @Serializable
+data class DatabaseConfig(
+    @SerialName("url")
+    val url: String,
+
+    @SerialName("driver")
+    val driver: String,
+)
+
+@Serializable
 data class EconomyConfig(
+    val database: DatabaseConfig,
     val currencies: Map<String, CurrencyConfig>
 )

@@ -5,9 +5,8 @@ import fr.pickaria.emerald.controller.EconomyCommand
 import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.controller.PayCommand
 import fr.pickaria.emerald.data.EconomyConfig
-import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.H2EconomyRepository
-import fr.pickaria.emerald.domain.EconomyService
 import fr.pickaria.emerald.domain.PaperEconomyService
 import net.peanuuutz.tomlkt.Toml
 import net.peanuuutz.tomlkt.decodeFromNativeReader
@@ -19,8 +18,7 @@ internal open class Main : JavaPlugin() {
     override fun onEnable() {
         val config = Toml.decodeFromNativeReader<EconomyConfig>(getResourceReader(this, "config.toml"))
 
-        val database = openDatabase()
-        val economyRepository: EconomyRepository = H2EconomyRepository(database, config)
+        val economyRepository: EconomyRepository = H2EconomyRepository(config)
         val economyService: EconomyService = PaperEconomyService(economyRepository)
 
         server.servicesManager.register(EconomyService::class.java, economyService, this, ServicePriority.Normal)

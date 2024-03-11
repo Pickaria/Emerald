@@ -5,7 +5,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.nio.charset.Charset
 
-fun getResourceReader(plugin: JavaPlugin, filename: String, replace: Boolean = false): InputStreamReader {
+internal fun getResourceReader(plugin: JavaPlugin, filename: String, replace: Boolean = false): InputStreamReader {
     val customConfigFile = File(plugin.dataFolder, filename)
     if (!customConfigFile.exists()) {
         customConfigFile.parentFile.mkdirs()

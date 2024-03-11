@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Currencies
-import fr.pickaria.emerald.domain.EconomyService
+import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.shared.MiniMessage
 import org.bukkit.command.CommandSender
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 
 @CommandAlias("pay")
 @CommandPermission("pickaria.command.pay")
-class PayCommand(private val economyService: EconomyService) : BaseCommand() {
+internal class PayCommand(private val economyService: EconomyService) : BaseCommand() {
     @Default
     @CommandCompletion("@players")
     fun onDefault(player: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {

@@ -1,12 +1,15 @@
 package fr.pickaria.emerald.data
 
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 
-internal class H2EconomyRepository(private val database: Database, private val config: EconomyConfig) : EconomyRepository {
+internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository {
+    private val database: Database = openDatabase(config.database.url, config.database.driver)
+
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
         transaction(database) {
             try {
@@ -40,8 +43,6 @@ internal class H2EconomyRepository(private val database: Database, private val c
             account.balance
         } catch (_: NoSuchElementException) {
             0.0 // Empty
-        } catch (_: IllegalArgumentException) {
-            0.0 // More than one
         }
     }
 

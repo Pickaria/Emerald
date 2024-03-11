@@ -1,5 +1,6 @@
-package fr.pickaria.emerald.data
+package fr.pickaria.emerald.domain.repositories
 
+import fr.pickaria.emerald.data.CurrencyConfig
 import java.util.*
 
 internal interface EconomyRepository {

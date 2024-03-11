@@ -1,6 +1,7 @@
 package fr.pickaria.emerald.domain
 
-import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.UnknownCurrencyException
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
@@ -58,7 +59,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     }
 
     override fun getAccount(player: OfflinePlayer): Account {
-        return Account(economyRepository = economyRepository, player = player)
+        return Account(economyRepository = economyRepository, accountId = player.uniqueId)
     }
 }
 

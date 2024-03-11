@@ -1,7 +1,8 @@
 package fr.pickaria.emerald.domain
 
+import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.data.CurrencyConfig
-import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.PhysicalCurrency
 import fr.pickaria.shared.MiniMessage
 import net.kyori.adventure.text.Component

@@ -8,14 +8,14 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
 import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.Currencies
-import fr.pickaria.emerald.domain.EconomyService
+import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.shared.give
 import org.bukkit.entity.Player
 
 @CommandAlias("eco|economy")
 @CommandPermission("pickaria.admin.eco")
-class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
+internal class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
     @Subcommand("physical give")
     fun onPhysicalGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
         try {

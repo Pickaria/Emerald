@@ -9,12 +9,12 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.Currencies
-import fr.pickaria.emerald.domain.EconomyService
+import fr.pickaria.emerald.EconomyService
 import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
 @CommandPermission("pickaria.command.balance")
-class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService) :
+internal class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService) :
     BaseCommand() {
     init {
         manager.commandContexts.registerContext(Currencies::class.java) {
