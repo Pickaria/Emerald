@@ -35,7 +35,7 @@ class MoneyCommand(manager: BukkitCommandManager, private val economyService: Ec
     @CommandCompletion("@currencies")
     fun onDefault(player: Player, @Default("credits") currency: Currencies) {
         try {
-            val balance = economyService.getBalance(player, currency)
+            val balance = economyService.getAccount(player).getBalance(currency)
             val formattedBalance = economyService.format(balance)
             player.sendMessage("Balance: $formattedBalance")
         } catch (e: UnknownCurrencyException) {

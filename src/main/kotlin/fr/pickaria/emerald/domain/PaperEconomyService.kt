@@ -8,7 +8,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
-class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
+internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     private val physicalCurrencyService = PhysicalCurrencyService(this, economyRepository)
 
     override fun format(price: Price): String {
@@ -57,30 +57,8 @@ class PaperEconomyService(private val economyRepository: EconomyRepository) : Ec
         return physicalCurrencyService.item(price)
     }
 
-    override fun getBalance(player: OfflinePlayer, currency: Currencies): Price {
-        val balance = economyRepository.getBalance(player.uniqueId, currency.serialName)
-        return Price(balance, currency)
-    }
-
-    override fun withdraw(player: OfflinePlayer, price: Price) {
-        if (price.amount <= 0.0) {
-            throw InvalidAmountException()
-        }
-
-        val balance = economyRepository.getBalance(player.uniqueId, price.currency.serialName)
-        if (balance < price.amount) {
-            throw BalanceInsufficientException()
-        }
-
-        economyRepository.withdrawPlayer(player.uniqueId, price.amount, price.currency.serialName)
-    }
-
-    override fun deposit(player: OfflinePlayer, price: Price) {
-        if (price.amount <= 0.0) {
-            throw InvalidAmountException()
-        }
-
-        economyRepository.depositPlayer(player.uniqueId, price.amount, price.currency.serialName)
+    override fun getAccount(player: OfflinePlayer): Account {
+        return Account(economyRepository = economyRepository, player = player)
     }
 }
 

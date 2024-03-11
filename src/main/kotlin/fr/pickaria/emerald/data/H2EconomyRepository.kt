@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 
-class H2EconomyRepository(private val database: Database, private val config: EconomyConfig) : EconomyRepository {
+internal class H2EconomyRepository(private val database: Database, private val config: EconomyConfig) : EconomyRepository {
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
         transaction(database) {
             try {

@@ -34,8 +34,8 @@ class PayCommand(private val economyService: EconomyService) : BaseCommand() {
 
         try {
             val price = Price(amount, Currencies.CREDITS)
-            economyService.withdraw(sender, price)
-            economyService.deposit(recipient, price)
+            economyService.getAccount(sender).withdraw(price)
+            economyService.getAccount(recipient).deposit(price)
 
             val formattedPrice = economyService.format(price)
 

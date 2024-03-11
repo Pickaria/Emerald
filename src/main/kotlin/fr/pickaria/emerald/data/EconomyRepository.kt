@@ -2,7 +2,7 @@ package fr.pickaria.emerald.data
 
 import java.util.*
 
-interface EconomyRepository {
+internal interface EconomyRepository {
     fun depositPlayer(accountId: UUID, amount: Double, currency: String)
     fun withdrawPlayer(accountId: UUID, amount: Double, currency: String)
     fun getBalance(accountId: UUID, currency: String): Double

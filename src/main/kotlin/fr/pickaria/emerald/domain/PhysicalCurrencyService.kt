@@ -21,7 +21,7 @@ import kotlin.math.min
 val currencyNamespace = NamespacedKey("pickaria", "currency")
 val valueNamespace = NamespacedKey("pickaria", "value")
 
-class PhysicalCurrencyService(
+internal class PhysicalCurrencyService(
     private val economyService: EconomyService,
     private val economyRepository: EconomyRepository
 ) {
