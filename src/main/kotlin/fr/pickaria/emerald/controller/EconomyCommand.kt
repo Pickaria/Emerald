@@ -16,12 +16,20 @@ import org.bukkit.entity.Player
 @CommandAlias("eco|economy")
 @CommandPermission("pickaria.admin.eco")
 class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
-    @Default
     @Subcommand("physical give")
-    fun onDefault(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
+    fun onPhysicalGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
         try {
             val itemStack = economyService.getPhysicalCurrency(Price(amount, currency))
             player.give(itemStack)
+        } catch (e: UnknownCurrencyException) {
+            throw InvalidCommandArgument(e.message)
+        }
+    }
+
+    @Subcommand("virtual give")
+    fun onVirtualGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
+        try {
+            economyService.getAccount(player).deposit(Price(amount, currency))
         } catch (e: UnknownCurrencyException) {
             throw InvalidCommandArgument(e.message)
         }
