@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("maven-publish")
     id("xyz.jpenilla.run-paper") version "2.2.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
     kotlin("jvm") version "1.9.20"
     kotlin("plugin.serialization") version "1.9.20"
 }
@@ -28,7 +29,7 @@ val exposedVersion: String by project
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("fr.pickaria:bedrock:1.0.21")
-    compileOnly("io.papermc.paper:paper-api:1.20.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")
@@ -38,7 +39,7 @@ dependencies {
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.42.0")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.78.0")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("co.aikar:acf-core:0.5.1-SNAPSHOT")
 }
@@ -57,7 +58,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.20.2")
+        minecraftVersion("1.20.4")
     }
 
     jar {
