@@ -1,10 +1,10 @@
 plugins {
     id("java")
     id("maven-publish")
-    id("xyz.jpenilla.run-paper") version "2.2.0"
+    id("xyz.jpenilla.run-paper") version "2.2.3"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
-    kotlin("jvm") version "1.9.20"
-    kotlin("plugin.serialization") version "1.9.20"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 group = "fr.pickaria"
@@ -12,23 +12,15 @@ version = "0.1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven("https://maven.pickaria.fr/releases")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
-
-    maven {
-        url = uri("https://maven.pkg.github.com/Pickaria/Bedrock")
-
-        credentials {
-            username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-            password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-        }
-    }
 }
 
 val exposedVersion: String by project
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("fr.pickaria:bedrock:1.1.0")
+    implementation("fr.pickaria:bedrock:1.1.1")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -77,11 +69,14 @@ tasks {
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Pickaria/Emerald")
+            name = "pickariaRepositoryReleases"
+            url = uri("https://maven.pickaria.fr/releases")
             credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
