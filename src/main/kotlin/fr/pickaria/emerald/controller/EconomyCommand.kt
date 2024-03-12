@@ -1,0 +1,37 @@
+package fr.pickaria.emerald.controller
+
+import co.aikar.commands.BaseCommand
+import co.aikar.commands.InvalidCommandArgument
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
+import fr.pickaria.emerald.data.UnknownCurrencyException
+import fr.pickaria.emerald.domain.Currencies
+import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.Price
+import fr.pickaria.shared.give
+import org.bukkit.entity.Player
+
+@CommandAlias("eco|economy")
+@CommandPermission("pickaria.admin.eco")
+internal class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
+    @Subcommand("physical give")
+    fun onPhysicalGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
+        try {
+            val itemStack = economyService.getPhysicalCurrency(Price(amount, currency))
+            player.give(itemStack)
+        } catch (e: UnknownCurrencyException) {
+            throw InvalidCommandArgument(e.message)
+        }
+    }
+
+    @Subcommand("virtual give")
+    fun onVirtualGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
+        try {
+            economyService.getAccount(player).deposit(Price(amount, currency))
+        } catch (e: UnknownCurrencyException) {
+            throw InvalidCommandArgument(e.message)
+        }
+    }
+}

@@ -1,32 +1,31 @@
 package fr.pickaria.emerald
 
 import co.aikar.commands.BukkitCommandManager
+import fr.pickaria.emerald.controller.EconomyCommand
 import fr.pickaria.emerald.controller.MoneyCommand
+import fr.pickaria.emerald.controller.PayCommand
+import fr.pickaria.emerald.data.EconomyConfig
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.H2EconomyRepository
 import fr.pickaria.emerald.domain.PaperEconomyService
-import org.bukkit.plugin.PluginDescriptionFile
+import net.peanuuutz.tomlkt.Toml
+import net.peanuuutz.tomlkt.decodeFromNativeReader
+import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
-import org.bukkit.plugin.java.JavaPluginLoader
-import java.io.File
 
 
-internal open class Main : JavaPlugin {
-    constructor() : super()
-    protected constructor(
-        loader: JavaPluginLoader?,
-        description: PluginDescriptionFile?,
-        dataFolder: File?,
-        file: File?
-    ) : super(
-        loader!!, description!!, dataFolder!!, file!!
-    )
-
+internal open class Main : JavaPlugin() {
     override fun onEnable() {
-        logger.info("Hello, World!")
-        val economyRepository = H2EconomyRepository()
-        val economyService = PaperEconomyService(economyRepository)
+        val config = Toml.decodeFromNativeReader<EconomyConfig>(getResourceReader(this, "config.toml"))
+
+        val economyRepository: EconomyRepository = H2EconomyRepository(config)
+        val economyService: EconomyService = PaperEconomyService(economyRepository)
+
+        server.servicesManager.register(EconomyService::class.java, economyService, this, ServicePriority.Normal)
 
         val manager = BukkitCommandManager(this)
         manager.registerCommand(MoneyCommand(manager, economyService))
+        manager.registerCommand(PayCommand(economyService))
+        manager.registerCommand(EconomyCommand(economyService))
     }
 }

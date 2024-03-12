@@ -1,7 +1,7 @@
 package fr.pickaria.emerald.domain
 
-enum class Currencies {
-    Credits,
-    Shards,
-    Keys,
+enum class Currencies(val serialName: String) {
+    CREDITS("credits"),
+    SHARDS("shards"),
+    KEYS("keys"),
 }

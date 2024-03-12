@@ -1,12 +1,17 @@
 package fr.pickaria.emerald.data
 
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
-class H2EconomyRepository : EconomyRepository {
+
+internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository {
+    private val database: Database = openDatabase(config.database.url, config.database.driver)
+
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
-        transaction {
+        transaction(database) {
             try {
                 val account = Account.find {
                     (Accounts.playerUuid eq accountId) and (Accounts.accountName eq currency)
@@ -29,7 +34,7 @@ class H2EconomyRepository : EconomyRepository {
 
     override fun getBalance(accountId: UUID, currency: String): Double {
         return try {
-            val account = transaction {
+            val account = transaction(database) {
                 Account.find {
                     (Accounts.playerUuid eq accountId) and (Accounts.accountName eq currency)
                 }.single()
@@ -38,24 +43,11 @@ class H2EconomyRepository : EconomyRepository {
             account.balance
         } catch (_: NoSuchElementException) {
             0.0 // Empty
-        } catch (_: IllegalArgumentException) {
-            0.0 // More than one
         }
     }
 
-    override fun createPlayerAccount(accountId: UUID, currency: String) {
-        // TODO("Not yet implemented")
-    }
-
-    override fun getFormat(): String {
-        return ""
-    }
-
-    override fun currencyNamePlural(): String {
-        return ""
-    }
-
-    override fun currencyNameSingular(): String {
-        return ""
-    }
+    override fun getConfig(currency: String): CurrencyConfig =
+        config.currencies[currency] ?: throw UnknownCurrencyException(currency)
 }
+
+class UnknownCurrencyException(val currency: String) : Throwable()

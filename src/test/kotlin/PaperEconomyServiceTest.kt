@@ -1,17 +1,26 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.data.EconomyRepository
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.*
 import io.mockk.*
+import mocks.creditConfigMock
+import mocks.physicalCurrencyItemMock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import org.bukkit.Material
+import org.bukkit.NamespacedKey
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BundleMeta
+import org.bukkit.persistence.PersistentDataType
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 
 
 class PaperEconomyServiceTest {
     private val repository = mockk<EconomyRepository>()
-
-    private var server: ServerMock? = null
-    private var economyService: PaperEconomyService? = null
+    private lateinit var server: ServerMock
+    private lateinit var economyService: PaperEconomyService
 
     @BeforeEach
     fun setUp() {
@@ -25,131 +34,104 @@ class PaperEconomyServiceTest {
     }
 
     @Test
-    fun `should call economy repository with appropriate user's data to get balance`() {
+    fun `should return formatted price according to currency's format`() {
         // Given
-        val player = server!!.addPlayer()
-        coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-        val expectedPrice = Price(5.6, Currencies.Credits)
+        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        val price = Price(5.6, Currencies.CREDITS)
+        val expectedFormattedPrice = "5.60 Crédits"
 
         // When
-        val balance = economyService!!.getBalance(player, Currencies.Credits)
+        val formattedPrice = economyService.format(price)
 
         // Then
-        assertEquals(expectedPrice, balance)
+        assertEquals(expectedFormattedPrice, formattedPrice)
     }
 
     @Nested
-    inner class Withdraw {
+    inner class ValueOfPhysicalCurrencyConfig {
         @Test
-        fun `should call repository when amount is valid`() {
+        fun `should throw exception when currency has an invalid amount`() {
             // Given
-            val player = server!!.addPlayer()
-            val withdrawingPrice = Price(32.8, Currencies.Credits)
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 50.0
-            coEvery { repository.withdrawPlayer(player.uniqueId, 32.8, "Credits") } just Runs
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val item = physicalCurrencyItemMock(value = -5.0)
+
+            // When / Then
+            assertThrows<InvalidAmountException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should throw exception when item is not a currency`() {
+            // Given
+            val item = ItemStack(Material.IRON_NUGGET)
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should throw exception when item has value but no a currency`() {
+            // Given
+            val item = physicalCurrencyItemMock(value = null)
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should throw exception when item has a currency but no value`() {
+            // Given
+            val item = physicalCurrencyItemMock(currency = null)
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should throw exception when item has an invalid currency`() {
+            // Given
+            coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+            val item = physicalCurrencyItemMock(currency = "unknown")
+
+            // When / Then
+            assertThrows<ItemIsNotACurrencyException> {
+                economyService.getValueOfItem(item)
+            }
+        }
+
+        @Test
+        fun `should get the correct expected price from a single item`() {
+            // Given
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val expectedPrice = Price(3.0, Currencies.CREDITS)
+            val item = physicalCurrencyItemMock(count = 3, material = Material.IRON_NUGGET)
 
             // When
-            economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
+            val result = economyService.getValueOfItem(item)
 
             // Then
-            verify { repository.getBalance(eq(player.uniqueId), eq("Credits")) }
-            verify { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("Credits")) }
+            assertEquals(expectedPrice, result)
         }
 
         @Test
-        fun `should throw exception when withdrawing more than a player has`() {
+        fun `should get the correct expected price from a bundle`() {
             // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-            val withdrawingPrice = Price(32.8, Currencies.Credits)
-
-            // When / Then
-            assertThrows<BalanceInsufficientException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `should throw exception when player has negative amount of money`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns -5.6
-            val withdrawingPrice = Price(32.8, Currencies.Credits)
-
-            // When / Then
-            assertThrows<BalanceInsufficientException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `should throw exception when invalid amount is specified`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-            val withdrawingPrice = Price(-3.1, Currencies.Credits)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `should throw exception when amount of 0 is specified`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-            val withdrawingPrice = Price(0.0, Currencies.Credits)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
-        }
-    }
-
-    @Nested
-    inner class Deposit {
-        @Test
-        fun `should call repository when amount is valid`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("Credits")) } just Runs
-            val withdrawingPrice = Price(32.8, Currencies.Credits)
+            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            val expectedPrice = Price(9999.0, Currencies.CREDITS)
+            val item = physicalCurrencyItemMock(count = 1, material = Material.BUNDLE, value = 9999.0)
 
             // When
-            economyService!!.depositAndAnnounce(player, withdrawingPrice)
+            val result = economyService.getValueOfItem(item)
 
             // Then
-            verify { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("Credits")) }
-        }
-
-        @Test
-        fun `should throw exception when invalid amount is specified`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-            val withdrawingPrice = Price(-3.1, Currencies.Credits)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `should throw exception when amount of 0 is specified`() {
-            // Given
-            val player = server!!.addPlayer()
-            coEvery { repository.getBalance(player.uniqueId, "Credits") } returns 5.6
-            val withdrawingPrice = Price(0.0, Currencies.Credits)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                economyService!!.withdrawAndAnnounce(player, withdrawingPrice)
-            }
+            assertEquals(expectedPrice, result)
         }
     }
-
 }

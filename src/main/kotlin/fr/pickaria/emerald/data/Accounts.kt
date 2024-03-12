@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object Accounts : IntIdTable() {
+internal object Accounts : IntIdTable() {
     val playerUuid = uuid("player_uuid")
     val accountName = varchar("account_name", 16)
     val balance = double("balance").default(0.0)
@@ -15,7 +15,7 @@ object Accounts : IntIdTable() {
     }
 }
 
-class Account(id: EntityID<Int>) : IntEntity(id) {
+internal class Account(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Account>(Accounts)
 
     var playerUuid by Accounts.playerUuid
