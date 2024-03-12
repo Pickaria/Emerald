@@ -1,6 +1,7 @@
 package fr.pickaria.emerald
 
 import co.aikar.commands.BukkitCommandManager
+import fr.pickaria.emerald.controller.CollectValuableListener
 import fr.pickaria.emerald.controller.EconomyCommand
 import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.controller.PayCommand
@@ -22,6 +23,7 @@ internal open class Main : JavaPlugin() {
         val economyService: EconomyService = PaperEconomyService(economyRepository)
 
         server.servicesManager.register(EconomyService::class.java, economyService, this, ServicePriority.Normal)
+        server.pluginManager.registerEvents(CollectValuableListener(economyService), this)
 
         val manager = BukkitCommandManager(this)
         manager.registerCommand(MoneyCommand(manager, economyService))

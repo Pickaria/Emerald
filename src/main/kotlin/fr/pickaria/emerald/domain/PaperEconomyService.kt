@@ -26,6 +26,11 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     }
 
     override fun getValueOfItem(item: ItemStack): Price {
+        if (item.itemMeta == null) {
+            // Happens for AIR material
+            throw ItemIsNotACurrencyException()
+        }
+
         val currency = item.itemMeta.persistentDataContainer.get(currencyNamespace, PersistentDataType.STRING)
         val value = item.itemMeta.persistentDataContainer.get(valueNamespace, PersistentDataType.DOUBLE)
 
@@ -53,7 +58,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        val physicalCurrency = PhysicalCurrency(economyRepository, this, price)
+        val physicalCurrency = ValuableItem(economyRepository, this, price)
 
         return physicalCurrency.getItem()
     }

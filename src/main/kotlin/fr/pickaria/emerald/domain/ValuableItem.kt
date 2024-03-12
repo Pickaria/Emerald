@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import kotlin.math.min
@@ -20,10 +21,10 @@ import kotlin.math.min
 val currencyNamespace = NamespacedKey("pickaria", "currency")
 val valueNamespace = NamespacedKey("pickaria", "value")
 
-internal class PhysicalCurrency(
+internal class ValuableItem(
     economyRepository: EconomyRepository,
     private val economyService: EconomyService,
-    private val price: Price,
+    private val price: Price
 ) {
     private val config = economyRepository.getConfig(price.currency.serialName)
 
@@ -43,6 +44,28 @@ internal class PhysicalCurrency(
         return stacks
     }
 
+    private fun createItem(material: Material, value: Double, displayName: Component, lore: List<Component>): ItemStack {
+        return ItemStack(material).apply {
+            editMeta {
+                it.addEnchant(Enchantment.DURABILITY, 1, true)
+                it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
+                it.displayName(displayName)
+                it.lore(lore)
+
+                it.persistentDataContainer.set(
+                    currencyNamespace,
+                    PersistentDataType.STRING,
+                    price.currency.serialName
+                )
+                it.persistentDataContainer.set(
+                    valueNamespace,
+                    PersistentDataType.DOUBLE,
+                    value
+                )
+            }
+        }
+    }
+
     private fun items(currencyDisplayName: Component): List<ItemStack> {
         var remaining = price.amount
         val coins = mutableMapOf<PhysicalCurrencyConfig, Int>()
@@ -55,65 +78,28 @@ internal class PhysicalCurrency(
         }
 
         return coins.flatMap { (physicalCurrency, amount) ->
-            val itemStack = ItemStack(physicalCurrency.material).apply {
-                editMeta { meta ->
-                    meta.addEnchant(Enchantment.DURABILITY, 1, true)
-                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-                    meta.displayName(currencyDisplayName)
-
-                    val line = config.description.map {
-                        MiniMessage(it) {
-                            "value" to economyService.format(Price(physicalCurrency.value, price.currency))
-                        }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-                    }
-
-                    meta.lore(line)
-
-                    meta.persistentDataContainer.set(
-                        currencyNamespace,
-                        PersistentDataType.STRING,
-                        price.currency.serialName
-                    )
-                    meta.persistentDataContainer.set(valueNamespace, PersistentDataType.DOUBLE, physicalCurrency.value)
-                }
+            val lore = config.description.map {
+                MiniMessage(it) {
+                    "value" to economyService.format(Price(physicalCurrency.value, price.currency))
+                }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
             }
+
+            val itemStack = createItem(physicalCurrency.material, physicalCurrency.value, currencyDisplayName, lore)
 
             overflowStacks(itemStack, amount)
         }
     }
 
     private fun bundle(
-        price: Price,
         items: List<ItemStack>,
         currencyDisplayName: Component
     ): ItemStack {
-        return ItemStack(Material.BUNDLE).apply {
+        val lore = MiniMessage("<gray>Sacoche d''une valeur de <gold><value></gold>.") {
+            "value" to economyService.format(price)
+        }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
+
+        return createItem(Material.BUNDLE, price.amount, currencyDisplayName, listOf(lore)).apply {
             editMeta { meta ->
-                meta.addEnchant(Enchantment.DURABILITY, 1, true)
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS)
-
-                val name = Component.text("Sacoche de")
-                    .append(Component.space())
-                    .append(currencyDisplayName)
-                    .decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-
-                meta.displayName(name)
-
-                val line = MiniMessage("<gray>Sacoche d''une valeur de <gold><value></gold>.") {
-                    "value" to economyService.format(price)
-                }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
-
-                meta.lore(listOf(line))
-
-                meta.persistentDataContainer.set(
-                    currencyNamespace,
-                    PersistentDataType.STRING,
-                    price.currency.serialName
-                )
-                meta.persistentDataContainer.set(valueNamespace, PersistentDataType.DOUBLE, price.amount)
-
-                meta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS)
-
                 items.forEach {
                     (meta as BundleMeta).addItem(it)
                 }
@@ -133,7 +119,7 @@ internal class PhysicalCurrency(
         val items = items(currencyDisplayName)
 
         return if (items.size > 1) {
-            bundle(price, items, currencyDisplayName)
+            bundle(items, currencyDisplayName)
         } else {
             items.first()
         }

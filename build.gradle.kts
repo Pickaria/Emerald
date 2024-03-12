@@ -28,7 +28,7 @@ repositories {
 val exposedVersion: String by project
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("fr.pickaria:bedrock:1.0.21")
+    implementation("fr.pickaria:bedrock:1.1.0")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
