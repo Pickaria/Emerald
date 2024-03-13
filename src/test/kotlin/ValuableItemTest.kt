@@ -13,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 
-class PhysicalCurrencyTest {
+class ValuableItemTest {
     private val repository = mockk<EconomyRepository>()
     private lateinit var server: ServerMock
     private lateinit var economyService: PaperEconomyService

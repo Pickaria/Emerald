@@ -48,7 +48,7 @@ class PaperEconomyServiceTest {
     }
 
     @Nested
-    inner class ValueOfPhysicalCurrencyConfig {
+    inner class ValueOfValuableItemConfig {
         @Test
         fun `should throw exception when currency has an invalid amount`() {
             // Given

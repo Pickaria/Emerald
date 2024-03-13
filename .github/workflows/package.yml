@@ -1,12 +1,8 @@
-name: Publish package to GitHub Packages
+name: Publish package to repository
 
 on:
   release:
     types: [ created ]
-
-permissions:
-  contents: read
-  packages: write
 
 jobs:
   publish:
@@ -14,17 +10,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: temurin
+          distribution: adopt
 
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
 
-      - name: Publish package
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: publish
+      - name: Execute Gradle build
+        run: ./gradlew publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}

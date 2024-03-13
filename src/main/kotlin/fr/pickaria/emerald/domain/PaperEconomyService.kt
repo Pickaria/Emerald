@@ -1,8 +1,8 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.UnknownCurrencyException
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -26,6 +26,11 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     }
 
     override fun getValueOfItem(item: ItemStack): Price {
+        if (item.itemMeta == null) {
+            // Happens for AIR material
+            throw ItemIsNotACurrencyException()
+        }
+
         val currency = item.itemMeta.persistentDataContainer.get(currencyNamespace, PersistentDataType.STRING)
         val value = item.itemMeta.persistentDataContainer.get(valueNamespace, PersistentDataType.DOUBLE)
 
@@ -53,14 +58,15 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        val physicalCurrency = PhysicalCurrency(economyRepository, this, price)
-
-        return physicalCurrency.getItem()
+        return ValuableItem(economyRepository, this, price)
+            .getItem()
     }
 
-    override fun getAccount(player: OfflinePlayer): Account {
-        return Account(economyRepository = economyRepository, accountId = player.uniqueId)
-    }
+    override fun getAccount(player: OfflinePlayer): Account =
+        Account(
+            economyRepository = economyRepository,
+            owner = player,
+        )
 }
 
 class BalanceInsufficientException : Throwable()

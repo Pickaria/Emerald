@@ -1,7 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.domain.*
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
@@ -66,7 +66,7 @@ class AccountTest {
 
             // When / Then
             assertThrows<BalanceInsufficientException> {
-                account.withdraw( withdrawingPrice)
+                account.withdraw(withdrawingPrice)
             }
         }
 
@@ -111,6 +111,23 @@ class AccountTest {
                 account.withdraw(withdrawingPrice)
             }
         }
+
+        @Test
+        fun `account change event is called when a withdrawal is made`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
+            coEvery { repository.getBalance(player.uniqueId, "credits") } returns 32.8
+            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val account = economyService.getAccount(player)
+
+            // When
+            account.withdraw(withdrawingPrice)
+
+            // Then
+            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
+        }
+
     }
 
     @Nested
@@ -157,6 +174,20 @@ class AccountTest {
                 account.deposit(withdrawingPrice)
             }
         }
-    }
 
+        @Test
+        fun `account change event is called when a deposit is made`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
+            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val account = economyService.getAccount(player)
+
+            // When
+            account.deposit(withdrawingPrice)
+
+            // Then
+            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
+        }
+    }
 }
