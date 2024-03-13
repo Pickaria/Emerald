@@ -6,9 +6,10 @@ import fr.pickaria.emerald.controller.EconomyCommand
 import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.controller.PayCommand
 import fr.pickaria.emerald.data.EconomyConfig
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.H2EconomyRepository
 import fr.pickaria.emerald.domain.PaperEconomyService
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import fr.pickaria.shared.getResourceReader
 import net.peanuuutz.tomlkt.Toml
 import net.peanuuutz.tomlkt.decodeFromNativeReader
 import org.bukkit.plugin.ServicePriority

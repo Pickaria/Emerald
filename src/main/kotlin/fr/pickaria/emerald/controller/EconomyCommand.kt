@@ -6,10 +6,10 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
-import fr.pickaria.emerald.data.UnknownCurrencyException
-import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.Price
+import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.shared.give
 import org.bukkit.entity.Player
 

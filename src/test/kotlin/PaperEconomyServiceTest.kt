@@ -1,18 +1,13 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.*
-import io.mockk.*
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import io.mockk.coEvery
+import io.mockk.mockk
 import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BundleMeta
-import org.bukkit.persistence.PersistentDataType
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 

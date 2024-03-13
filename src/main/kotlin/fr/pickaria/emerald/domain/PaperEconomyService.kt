@@ -1,7 +1,6 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
@@ -72,3 +71,4 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
 class BalanceInsufficientException : Throwable()
 class InvalidAmountException : Throwable()
 class ItemIsNotACurrencyException : Throwable()
+class UnknownCurrencyException(val currency: String) : Throwable()

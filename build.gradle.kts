@@ -21,7 +21,7 @@ repositories {
 val exposedVersion: String by project
 dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("fr.pickaria:bedrock:1.1.1")
+    implementation("fr.pickaria:bedrock:1.1.2")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -72,7 +72,7 @@ publishing {
         maven {
             name = "pickariaRepository"
             url = uri(
-                "https://maven.pickaria.fr/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}"
+                    "https://maven.pickaria.fr/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}"
             )
             credentials {
                 username = System.getenv("MAVEN_USERNAME")

@@ -1,7 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.data.H2EconomyRepository
-import fr.pickaria.emerald.data.UnknownCurrencyException
+import fr.pickaria.emerald.domain.UnknownCurrencyException
 import mocks.economyConfigMock
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
