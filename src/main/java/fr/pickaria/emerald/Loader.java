@@ -1,4 +1,4 @@
-package fr.pickaria;
+package fr.pickaria.emerald;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;

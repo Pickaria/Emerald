@@ -3,6 +3,7 @@ plugins {
     id("maven-publish")
     id("xyz.jpenilla.run-paper") version "2.2.3"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("org.jetbrains.dokka") version "1.9.20"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
 }
@@ -72,7 +73,7 @@ publishing {
         maven {
             name = "pickariaRepository"
             url = uri(
-                    "https://maven.pickaria.fr/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}"
+                "https://maven.pickaria.fr/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}"
             )
             credentials {
                 username = System.getenv("MAVEN_USERNAME")

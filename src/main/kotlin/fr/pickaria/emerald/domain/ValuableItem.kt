@@ -1,8 +1,8 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.PhysicalCurrencyConfig
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.shared.MiniMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -13,13 +13,12 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import kotlin.math.min
 
-val currencyNamespace = NamespacedKey("pickaria", "currency")
-val valueNamespace = NamespacedKey("pickaria", "value")
+internal val currencyNamespace = NamespacedKey("pickaria", "currency")
+internal val valueNamespace = NamespacedKey("pickaria", "value")
 
 internal class ValuableItem(
     economyRepository: EconomyRepository,
@@ -44,7 +43,12 @@ internal class ValuableItem(
         return stacks
     }
 
-    private fun createItem(material: Material, value: Double, displayName: Component, lore: List<Component>): ItemStack {
+    private fun createItem(
+        material: Material,
+        value: Double,
+        displayName: Component,
+        lore: List<Component>
+    ): ItemStack {
         return ItemStack(material).apply {
             editMeta {
                 it.addEnchant(Enchantment.DURABILITY, 1, true)

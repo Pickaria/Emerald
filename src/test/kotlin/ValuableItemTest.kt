@@ -1,8 +1,12 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
+import fr.pickaria.emerald.domain.Currencies
+import fr.pickaria.emerald.domain.InvalidAmountException
+import fr.pickaria.emerald.domain.PaperEconomyService
+import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import fr.pickaria.emerald.domain.*
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.mockk
 import mocks.creditConfigMock
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Material
@@ -10,7 +14,10 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
 import org.bukkit.persistence.PersistentDataType
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class ValuableItemTest {
@@ -37,7 +44,7 @@ class ValuableItemTest {
 
         // When / Then
         assertThrows<InvalidAmountException> {
-            economyService.getPhysicalCurrency(price)
+            economyService.getValuableItemStack(price)
         }
     }
 
@@ -64,7 +71,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(
@@ -99,7 +106,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(
@@ -133,7 +140,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
         val bundleMeta = result.itemMeta as BundleMeta
 
         // Then
@@ -174,7 +181,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
         val bundleMeta = result.itemMeta as BundleMeta
 
         // Then
@@ -203,7 +210,7 @@ class ValuableItemTest {
         val price = Price(1.0, Currencies.CREDITS)
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(1, result.enchantments.size)
@@ -216,7 +223,7 @@ class ValuableItemTest {
         val price = Price(1.0, Currencies.CREDITS)
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals("Crédit", (result.itemMeta.displayName() as TextComponent).content())

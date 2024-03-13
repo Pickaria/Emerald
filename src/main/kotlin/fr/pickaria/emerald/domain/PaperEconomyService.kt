@@ -52,7 +52,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
         return Price(totalValue, Currencies.valueOf(currency.uppercase()))
     }
 
-    override fun getPhysicalCurrency(price: Price): ItemStack {
+    override fun getValuableItemStack(price: Price): ItemStack {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }

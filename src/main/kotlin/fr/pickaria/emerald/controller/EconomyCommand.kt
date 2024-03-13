@@ -19,7 +19,7 @@ internal class EconomyCommand(private val economyService: EconomyService) : Base
     @Subcommand("physical give")
     fun onPhysicalGive(player: Player, @Default("credits") currency: Currencies, @Default("1") amount: Double) {
         try {
-            val itemStack = economyService.getPhysicalCurrency(Price(amount, currency))
+            val itemStack = economyService.getValuableItemStack(Price(amount, currency))
             player.give(itemStack)
         } catch (e: UnknownCurrencyException) {
             throw InvalidCommandArgument(e.message)
