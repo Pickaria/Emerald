@@ -4,7 +4,9 @@ import fr.pickaria.emerald.controller.CollectValuableListener
 import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.PaperEconomyService
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import io.mockk.Runs
 import io.mockk.coEvery
+import io.mockk.just
 import io.mockk.mockk
 import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
@@ -43,7 +45,7 @@ class CollectValuableTest {
         val player = server.addPlayer()
         coEvery { repository.getConfig("credits") } returns creditConfigMock
         coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } returns Unit
+        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 
@@ -64,7 +66,7 @@ class CollectValuableTest {
         val player = server.addPlayer()
         coEvery { repository.getConfig("credits") } returns creditConfigMock
         coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } returns Unit
+        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 

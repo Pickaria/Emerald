@@ -1,11 +1,14 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import java.util.UUID
+import org.bukkit.OfflinePlayer
 
-class Account internal constructor(private val economyRepository: EconomyRepository, private val accountId: UUID) {
+class Account internal constructor(
+    private val economyRepository: EconomyRepository,
+    val owner: OfflinePlayer
+) {
     fun getBalance(currency: Currencies): Price {
-        val balance = economyRepository.getBalance(accountId, currency.serialName)
+        val balance = economyRepository.getBalance(owner.uniqueId, currency.serialName)
         return Price(balance, currency)
     }
 
@@ -14,12 +17,13 @@ class Account internal constructor(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        val balance = economyRepository.getBalance(accountId, price.currency.serialName)
+        val balance = economyRepository.getBalance(owner.uniqueId, price.currency.serialName)
         if (balance < price.amount) {
             throw BalanceInsufficientException()
         }
 
-        economyRepository.withdrawPlayer(accountId, price.amount, price.currency.serialName)
+        economyRepository.withdrawPlayer(owner.uniqueId, price.amount, price.currency.serialName)
+        AccountChangeEvent(this).callEvent()
     }
 
     fun deposit(price: Price) {
@@ -27,6 +31,7 @@ class Account internal constructor(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        economyRepository.depositPlayer(accountId, price.amount, price.currency.serialName)
+        economyRepository.depositPlayer(owner.uniqueId, price.amount, price.currency.serialName)
+        AccountChangeEvent(this).callEvent()
     }
 }
