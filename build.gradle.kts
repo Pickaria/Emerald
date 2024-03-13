@@ -8,11 +8,12 @@ plugins {
 }
 
 group = "fr.pickaria"
-version = "0.1.0-SNAPSHOT"
+version = "0.1.0-beta.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
     maven("https://maven.pickaria.fr/releases")
+    maven("https://maven.pickaria.fr/snapshot")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 }
@@ -69,8 +70,10 @@ tasks {
 publishing {
     repositories {
         maven {
-            name = "pickariaRepositoryReleases"
-            url = uri("https://maven.pickaria.fr/releases")
+            name = "pickariaRepository"
+            url = uri(
+                "https://maven.pickaria.fr/${if (version.toString().endsWith("-SNAPSHOT")) "snapshots" else "releases"}"
+            )
             credentials {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
