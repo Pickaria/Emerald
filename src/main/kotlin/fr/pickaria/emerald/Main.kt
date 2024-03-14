@@ -1,10 +1,7 @@
 package fr.pickaria.emerald
 
 import co.aikar.commands.BukkitCommandManager
-import fr.pickaria.emerald.controller.CollectValuableListener
-import fr.pickaria.emerald.controller.EconomyCommand
-import fr.pickaria.emerald.controller.MoneyCommand
-import fr.pickaria.emerald.controller.PayCommand
+import fr.pickaria.emerald.controller.*
 import fr.pickaria.emerald.data.EconomyConfig
 import fr.pickaria.emerald.data.H2EconomyRepository
 import fr.pickaria.emerald.domain.PaperEconomyService
@@ -22,6 +19,10 @@ internal open class Main : JavaPlugin() {
 
         val economyRepository: EconomyRepository = H2EconomyRepository(config)
         val economyService: EconomyService = PaperEconomyService(economyRepository)
+
+        if (server.pluginManager.getPlugin("Vault") != null) {
+            registerVaultCurrency(economyRepository, economyService)
+        }
 
         server.servicesManager.register(EconomyService::class.java, economyService, this, ServicePriority.Normal)
         server.pluginManager.registerEvents(CollectValuableListener(economyService), this)

@@ -8,6 +8,6 @@ internal interface EconomyRepository {
     fun withdrawPlayer(accountId: UUID, amount: Double, currency: String)
     fun getBalance(accountId: UUID, currency: String): Double
     fun getConfig(currency: String): CurrencyConfig
-    fun getDefaultCurrencyName(): String
+    fun getDefaultCurrencyKey(): String
     fun getAvailableCurrencyNames(): Set<String>
 }

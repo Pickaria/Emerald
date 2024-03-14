@@ -48,6 +48,15 @@ kotlin {
     jvmToolchain(17)
 }
 
+koverReport {
+    filters {
+        excludes {
+            // TODO: Test Vault integration
+            classes("fr.pickaria.emerald.controller.RegisterVaultCurrencyKt")
+        }
+    }
+}
+
 tasks {
     test {
         useJUnitPlatform()

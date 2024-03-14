@@ -57,7 +57,7 @@ internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyR
     override fun getConfig(currency: String): CurrencyConfig =
         config.currencies[currency] ?: throw UnknownCurrencyException(currency)
 
-    override fun getDefaultCurrencyName(): String = config.defaultCurrency
+    override fun getDefaultCurrencyKey(): String = config.defaultCurrency
 
     override fun getAvailableCurrencyNames(): Set<String> = config.currencies.keys
 
