@@ -28,10 +28,10 @@ class H2EconomyRepositoryTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 5.6, "Credits")
+        economyRepository.depositPlayer(player.uniqueId, 5.6, "credits")
 
         // Then
-        val balance = economyRepository.getBalance(player.uniqueId, "Credits")
+        val balance = economyRepository.getBalance(player.uniqueId, "credits")
         assertEquals(5.6, balance)
     }
 
@@ -41,11 +41,11 @@ class H2EconomyRepositoryTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 50.0, "Credits")
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "Credits")
+        economyRepository.depositPlayer(player.uniqueId, 50.0, "credits")
+        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "credits")
 
         // Then
-        val balance = economyRepository.getBalance(player.uniqueId, "Credits")
+        val balance = economyRepository.getBalance(player.uniqueId, "credits")
         assertEquals(45.0, balance)
     }
 
@@ -55,10 +55,10 @@ class H2EconomyRepositoryTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "Credits")
+        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "credits")
 
         // Then
-        val balance = economyRepository.getBalance(player.uniqueId, "Credits")
+        val balance = economyRepository.getBalance(player.uniqueId, "credits")
         assertEquals(-5.0, balance)
     }
 
@@ -68,15 +68,15 @@ class H2EconomyRepositoryTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 50.0, "Credits")
-        economyRepository.depositPlayer(player.uniqueId, 45.0, "Shards")
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "Shards")
+        economyRepository.depositPlayer(player.uniqueId, 50.0, "credits")
+        economyRepository.depositPlayer(player.uniqueId, 45.0, "shards")
+        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "shards")
 
         // Then
-        val creditsBalance = economyRepository.getBalance(player.uniqueId, "Credits")
+        val creditsBalance = economyRepository.getBalance(player.uniqueId, "credits")
         assertEquals(50.0, creditsBalance)
 
-        val shardsBalance = economyRepository.getBalance(player.uniqueId, "Shards")
+        val shardsBalance = economyRepository.getBalance(player.uniqueId, "shards")
         assertEquals(40.0, shardsBalance)
     }
 
@@ -86,7 +86,7 @@ class H2EconomyRepositoryTest {
         val player = server.addPlayer()
 
         // When
-        val balance = economyRepository.getBalance(player.uniqueId, "Credits")
+        val balance = economyRepository.getBalance(player.uniqueId, "credits")
 
         // Then
         assertEquals(0.0, balance)

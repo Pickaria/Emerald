@@ -10,7 +10,7 @@ import java.text.DecimalFormat
 
 internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     override fun format(price: Price): String {
-        val currencyConfig = economyRepository.getConfig(price.currency.serialName)
+        val currencyConfig = economyRepository.getConfig(price.currency)
 
         val decimalFormat = DecimalFormat(currencyConfig.format).also {
             it.roundingMode = RoundingMode.FLOOR
@@ -49,7 +49,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        return Price(totalValue, Currencies.valueOf(currency.uppercase()))
+        return Price(totalValue, currency)
     }
 
     override fun getValuableItemStack(price: Price): ItemStack {
@@ -66,6 +66,8 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             economyRepository = economyRepository,
             owner = player,
         )
+
+    override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()
 }
 
 class BalanceInsufficientException : Throwable()

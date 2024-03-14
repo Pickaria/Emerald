@@ -5,7 +5,6 @@ import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.PayCommand
 import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.BalanceInsufficientException
-import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.Price
 import io.mockk.*
 import org.bukkit.plugin.java.JavaPlugin
@@ -39,7 +38,7 @@ class PayCommandTest {
         sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
         sender.recalculatePermissions()
 
-        val priceToTransfer = Price(5.0, Currencies.CREDITS)
+        val priceToTransfer = Price(5.0, "credits")
 
         val senderAccount = mockk<Account>()
         coEvery { service.getAccount(sender) } returns senderAccount
@@ -67,7 +66,7 @@ class PayCommandTest {
         sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
         sender.recalculatePermissions()
 
-        val priceToTransfer = Price(5.0, Currencies.CREDITS)
+        val priceToTransfer = Price(5.0, "credits")
 
         val senderAccount = mockk<Account>()
         coEvery { service.getAccount(sender) } returns senderAccount

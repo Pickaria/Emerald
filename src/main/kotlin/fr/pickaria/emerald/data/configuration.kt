@@ -37,5 +37,6 @@ internal data class DatabaseConfig(
 @Serializable
 internal data class EconomyConfig(
     val database: DatabaseConfig,
-    val currencies: Map<String, CurrencyConfig>
+    val currencies: Map<String, CurrencyConfig>,
+    val defaultCurrency: String,
 )

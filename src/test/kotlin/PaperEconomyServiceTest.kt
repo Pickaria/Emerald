@@ -32,7 +32,7 @@ class PaperEconomyServiceTest {
     fun `should return formatted price according to currency's format`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(5.6, Currencies.CREDITS)
+        val price = Price(5.6, "credits")
         val expectedFormattedPrice = "5.60 Crédits"
 
         // When
@@ -105,7 +105,7 @@ class PaperEconomyServiceTest {
         fun `should get the correct expected price from a single item`() {
             // Given
             coEvery { repository.getConfig("credits") } returns creditConfigMock
-            val expectedPrice = Price(3.0, Currencies.CREDITS)
+            val expectedPrice = Price(3.0, "credits")
             val item = physicalCurrencyItemMock(count = 3, material = Material.IRON_NUGGET)
 
             // When
@@ -119,7 +119,7 @@ class PaperEconomyServiceTest {
         fun `should get the correct expected price from a bundle`() {
             // Given
             coEvery { repository.getConfig("credits") } returns creditConfigMock
-            val expectedPrice = Price(9999.0, Currencies.CREDITS)
+            val expectedPrice = Price(9999.0, "credits")
             val item = physicalCurrencyItemMock(count = 1, material = Material.BUNDLE, value = 9999.0)
 
             // When

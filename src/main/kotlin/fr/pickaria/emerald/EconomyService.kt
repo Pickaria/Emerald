@@ -1,7 +1,9 @@
 package fr.pickaria.emerald
 
 import fr.pickaria.emerald.domain.Account
+import fr.pickaria.emerald.domain.InvalidAmountException
 import fr.pickaria.emerald.domain.Price
+import fr.pickaria.emerald.domain.UnknownCurrencyException
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 
@@ -17,6 +19,7 @@ import org.bukkit.inventory.ItemStack
 interface EconomyService {
     /**
      * Formats the Price to a human-readable String.
+     * @throws UnknownCurrencyException
      */
     fun format(price: Price): String
 
@@ -27,11 +30,20 @@ interface EconomyService {
 
     /**
      * Gets the Price value of a valuable item.
+     * @throws InvalidAmountException
+     * @throws UnknownCurrencyException
      */
     fun getValueOfItem(item: ItemStack): Price
 
     /**
      * Gets the ItemStack for the given Price.
+     * @throws InvalidAmountException
+     * @throws UnknownCurrencyException
      */
     fun getValuableItemStack(price: Price): ItemStack
+
+    /**
+     * Gets a list of all valid configured currency names.
+     */
+    fun getAvailableCurrencyNames(): Set<String>
 }

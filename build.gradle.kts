@@ -17,6 +17,7 @@ repositories {
     maven("https://maven.pickaria.fr/snapshot")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
+    maven("https://jitpack.io") // Vault
 }
 
 val exposedVersion: String by project
@@ -24,6 +25,7 @@ dependencies {
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("fr.pickaria:bedrock:1.1.2")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")

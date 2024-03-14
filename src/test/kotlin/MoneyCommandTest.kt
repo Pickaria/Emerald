@@ -4,7 +4,6 @@ import co.aikar.commands.BukkitCommandManager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.domain.Account
-import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import io.mockk.coEvery
@@ -44,10 +43,10 @@ class MoneyCommandTest {
         player.recalculatePermissions()
 
         val account = mockk<Account>()
-        val price = Price(5.6, Currencies.CREDITS)
+        val price = Price(5.6, "credits")
         coEvery { service.getAccount(player) } returns account
         coEvery { service.format(price) } returns "5.6 crédits"
-        coEvery { account.getBalance(Currencies.CREDITS) } returns price
+        coEvery { account.getBalance("credits") } returns price
 
         // When
         player.performCommand("money")

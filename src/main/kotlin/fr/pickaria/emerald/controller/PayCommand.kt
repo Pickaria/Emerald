@@ -7,9 +7,8 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
-import fr.pickaria.emerald.domain.BalanceInsufficientException
-import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.shared.MiniMessage
 import org.bukkit.command.CommandSender
@@ -33,7 +32,7 @@ internal class PayCommand(private val economyService: EconomyService) : BaseComm
         }
 
         try {
-            val price = Price(amount, Currencies.CREDITS)
+            val price = Price(amount, "credits") // TODO: Use config.defaultCurrency
             economyService.getAccount(sender).withdraw(price)
             economyService.getAccount(recipient).deposit(price)
 

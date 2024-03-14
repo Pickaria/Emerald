@@ -1,7 +1,6 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.controller.CollectValuableListener
-import fr.pickaria.emerald.domain.Currencies
 import fr.pickaria.emerald.domain.PaperEconomyService
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.Runs
@@ -55,7 +54,7 @@ class CollectValuableTest {
         player.closeInventory()
 
         // Then
-        val balance = service.getAccount(player).getBalance(Currencies.CREDITS)
+        val balance = service.getAccount(player).getBalance("credits")
         assertEquals(5.0, balance.amount)
         assertTrue(player.inventory.isEmpty)
     }
@@ -76,7 +75,7 @@ class CollectValuableTest {
         player.closeInventory()
 
         // Then
-        val balance = service.getAccount(player).getBalance(Currencies.CREDITS)
+        val balance = service.getAccount(player).getBalance("credits")
         assertEquals(5.0, balance.amount)
         assertTrue(player.inventory.isEmpty)
     }

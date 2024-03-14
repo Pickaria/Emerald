@@ -25,7 +25,7 @@ internal class ValuableItem(
     private val economyService: EconomyService,
     private val price: Price
 ) {
-    private val config = economyRepository.getConfig(price.currency.serialName)
+    private val config = economyRepository.getConfig(price.currency)
 
     private fun overflowStacks(
         item: ItemStack,
@@ -59,7 +59,7 @@ internal class ValuableItem(
                 it.persistentDataContainer.set(
                     currencyNamespace,
                     PersistentDataType.STRING,
-                    price.currency.serialName
+                    price.currency
                 )
                 it.persistentDataContainer.set(
                     valueNamespace,
