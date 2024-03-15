@@ -100,22 +100,6 @@ class ValuableItemTest {
         coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
         val price = Price(1.0, "unknown")
 
-        // minecraft:iron_nugget{PublicBukkitValues:{"pickaria:value":1.0d,"pickaria:currency":"credits"}}
-        val expected = ItemStack(Material.IRON_NUGGET).apply {
-            editMeta {
-                it.persistentDataContainer.set(
-                    NamespacedKey.fromString("pickaria:value")!!,
-                    PersistentDataType.DOUBLE,
-                    1.0
-                )
-                it.persistentDataContainer.set(
-                    NamespacedKey.fromString("pickaria:currency")!!,
-                    PersistentDataType.STRING,
-                    "unknown"
-                )
-            }
-        }
-
         // When / Then
         assertThrows<UnknownCurrencyException> { economyService.getValuableItemStack(price) }
     }

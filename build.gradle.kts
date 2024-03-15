@@ -1,15 +1,15 @@
 plugins {
     id("java")
     id("maven-publish")
-    id("xyz.jpenilla.run-paper") version "2.2.3"
-    id("org.jetbrains.kotlinx.kover") version "0.7.6"
     id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.kotlinx.kover") version "0.7.6"
+    id("xyz.jpenilla.run-paper") version "2.2.3"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
 }
 
 group = "fr.pickaria"
-version = "0.1.0-beta.1-SNAPSHOT"
+version = "0.1.0-beta.2-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -22,16 +22,16 @@ repositories {
 
 val exposedVersion: String by project
 dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("fr.pickaria:bedrock:1.1.2")
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-    implementation("com.h2database:h2:2.1.214")
+    implementation("com.h2database:h2:2.2.224")
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
 
     testImplementation(kotlin("test"))
@@ -48,15 +48,6 @@ kotlin {
     jvmToolchain(17)
 }
 
-koverReport {
-    filters {
-        excludes {
-            // TODO: Test Vault integration
-            classes("fr.pickaria.emerald.controller.RegisterVaultCurrencyKt")
-        }
-    }
-}
-
 tasks {
     test {
         useJUnitPlatform()
@@ -67,8 +58,8 @@ tasks {
     }
 
     jar {
+        archiveFileName.set("${project.name}.jar")
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
         destinationDirectory.set(file("run/plugins"))
 
         manifest {
@@ -90,15 +81,12 @@ publishing {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")
             }
-            authentication {
-                create<BasicAuthentication>("basic")
-            }
         }
     }
 
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "emerald"
+            artifactId = project.name
             from(components["java"])
         }
     }

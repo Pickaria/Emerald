@@ -111,4 +111,19 @@ class PayCommandTest {
         // Then
         verify { service.getAccount(sender) wasNot Called }
     }
+
+    @Test
+    fun `should do nothing when player tries to send a negative amount`() {
+        // Given
+        val sender = server.addPlayer()
+        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.recalculatePermissions()
+        val recipient = server.addPlayer()
+
+        // When
+        sender.performCommand("pay ${recipient.name} -50.0")
+
+        // Then
+        verify { service.getAccount(sender) wasNot Called }
+    }
 }
