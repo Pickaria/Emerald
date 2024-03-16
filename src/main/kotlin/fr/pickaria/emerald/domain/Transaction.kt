@@ -17,3 +17,5 @@ class Transaction(private val from: Account, private val to: Account, private va
         to.deposit(amount)
     }
 }
+
+class SenderCannotBeRecipientException : Throwable()

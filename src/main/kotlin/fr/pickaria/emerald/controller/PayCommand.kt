@@ -32,22 +32,22 @@ internal class PayCommand(private val economyService: EconomyService, private va
 
         try {
             economyService.createTransaction(sender, recipient, price).perform()
-
-            val formattedPrice = economyService.format(price)
-
-            MiniMessage("<gold><recipient><gray> a bien reçu <gold><amount><gray>.") {
-                "recipient" to recipient.displayName()
-                "amount" to formattedPrice
-            }.send(sender)
-
-            MiniMessage("<gold><sender><gray> vous a envoyé <gold><amount><gray>.") {
-                "sender" to sender.displayName()
-                "amount" to formattedPrice
-            }.send(recipient)
         } catch (_: BalanceInsufficientException) {
             throw InvalidCommandArgument("Tu n'as pas assez d'argent.")
         } catch (_: SenderCannotBeRecipientException) {
             throw InvalidCommandArgument("Tu ne peux pas envoyer de l'argent à toi-même.")
         }
+
+        val formattedPrice = economyService.format(price)
+
+        MiniMessage("<gold><recipient><gray> a bien reçu <gold><amount><gray>.") {
+            "recipient" to recipient.displayName()
+            "amount" to formattedPrice
+        }.send(sender)
+
+        MiniMessage("<gold><sender><gray> vous a envoyé <gold><amount><gray>.") {
+            "sender" to sender.displayName()
+            "amount" to formattedPrice
+        }.send(recipient)
     }
 }

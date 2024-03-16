@@ -77,8 +77,6 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()
 }
 
-class BalanceInsufficientException : Throwable()
 class InvalidAmountException : Throwable()
 class ItemIsNotACurrencyException : Throwable()
-class SenderCannotBeRecipientException : Throwable()
 class UnknownCurrencyException(val currency: String) : Throwable()

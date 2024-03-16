@@ -8,13 +8,11 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import io.mockk.coEvery
 import io.mockk.mockk
-import net.kyori.adventure.text.TextComponent
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertContains
-import kotlin.test.assertNotNull
 
 class MoneyCommandTest {
     private val service = mockk<EconomyService>()
@@ -45,16 +43,15 @@ class MoneyCommandTest {
         val account = mockk<Account>()
         val price = Price(5.6, "credits")
         coEvery { service.getAccount(player) } returns account
-        coEvery { service.format(price) } returns "5.6 crédits"
         coEvery { account.getBalance("credits") } returns price
+        coEvery { service.format(price) } returns "5.6 crédits"
 
         // When
         player.performCommand("money")
 
         // Then
-        val message = player.nextComponentMessage()
-        assertNotNull(message)
-        assertContains((message as TextComponent).content(), "5.6 crédits")
+        val message = player.nextMessage()
+        assertContains(message!!, "5.6 crédits")
     }
 
     @Test
@@ -70,8 +67,7 @@ class MoneyCommandTest {
         player.performCommand("money unknown")
 
         // Then
-        val message = player.nextComponentMessage()
-        assertNotNull(message)
-        assertContains((message as TextComponent).content(), "Le compte 'unknown' n'existe pas.")
+        val message = player.nextMessage()
+        assertContains(message!!, "Le compte 'unknown' n'existe pas.")
     }
 }

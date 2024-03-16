@@ -1,9 +1,6 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.domain.InvalidAmountException
-import fr.pickaria.emerald.domain.PaperEconomyService
-import fr.pickaria.emerald.domain.Price
-import fr.pickaria.emerald.domain.UnknownCurrencyException
+import fr.pickaria.emerald.domain.*
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -98,10 +95,62 @@ class ValuableItemTest {
     fun `should throw exception when trying to initialize a unknown currency from an item stack`() {
         // Given
         coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
-        val price = Price(1.0, "unknown")
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:value")!!,
+                    PersistentDataType.DOUBLE,
+                    64.0
+                )
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:currency")!!,
+                    PersistentDataType.STRING,
+                    "unknown"
+                )
+            }
+            amount = 2
+        }
 
         // When / Then
-        assertThrows<UnknownCurrencyException> { economyService.getValuableItemStack(price) }
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
+    }
+
+    @Test
+    fun `should throw exception when trying to initialize a valuable item from an item stack with value missing`() {
+        // Given
+        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:currency")!!,
+                    PersistentDataType.STRING,
+                    "credits"
+                )
+            }
+            amount = 2
+        }
+
+        // When / Then
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
+    }
+
+    @Test
+    fun `should throw exception when trying to initialize a valuable item from an item stack with currency missing`() {
+        // Given
+        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:value")!!,
+                    PersistentDataType.DOUBLE,
+                    64.0
+                )
+            }
+            amount = 2
+        }
+
+        // When / Then
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
     }
 
     @Test

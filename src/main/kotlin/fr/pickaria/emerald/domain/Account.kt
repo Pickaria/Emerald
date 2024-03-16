@@ -55,3 +55,5 @@ class Account internal constructor(
         AccountChangeEvent(this, price, AccountChangeType.DEPOSIT).callEvent()
     }
 }
+
+class BalanceInsufficientException : Throwable()
