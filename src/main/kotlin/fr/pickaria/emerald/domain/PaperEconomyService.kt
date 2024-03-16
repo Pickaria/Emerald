@@ -67,13 +67,11 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             owner = player,
         )
 
-    override fun makeTransaction(transaction: Transaction) {
-        if (transaction.from == transaction.to) {
-            throw SenderCannotBeRecipientException()
-        }
+    override fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction {
+        val fromAccount = getAccount(from)
+        val toAccount = getAccount(to)
 
-        getAccount(transaction.from).withdraw(transaction.amount)
-        getAccount(transaction.to).deposit(transaction.amount)
+        return Transaction(fromAccount, toAccount, amount)
     }
 
     override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()

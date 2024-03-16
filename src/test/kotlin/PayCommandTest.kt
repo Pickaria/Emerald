@@ -42,16 +42,16 @@ class PayCommandTest {
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
-        val transaction = Transaction(sender, recipient, priceToTransfer)
-
-        coEvery { service.makeTransaction(transaction) } just Runs
+        val transaction = mockk<Transaction>()
+        coEvery { transaction.perform() } just Runs
+        coEvery { service.createTransaction(sender, recipient, priceToTransfer) } returns transaction
         coEvery { service.format(priceToTransfer) } returns "5.0 crédits"
 
         // When
         sender.performCommand("pay ${recipient.name} 5.0")
 
         // Then
-        coVerify { service.makeTransaction(transaction) }
+        coVerify { transaction.perform() }
         assertContains(sender.nextMessage()!!, "5.0 crédits")
         assertContains(recipient.nextMessage()!!, "5.0 crédits")
     }
@@ -65,9 +65,10 @@ class PayCommandTest {
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
-        val transaction = Transaction(sender, recipient, priceToTransfer)
+        val transaction = mockk<Transaction>()
+        coEvery { transaction.perform() } throws BalanceInsufficientException()
 
-        coEvery { service.makeTransaction(transaction) } throws BalanceInsufficientException()
+        coEvery { service.createTransaction(sender, recipient, priceToTransfer) } returns transaction
 
         // When
         sender.performCommand("pay ${recipient.name} 5.0")
@@ -84,9 +85,10 @@ class PayCommandTest {
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
-        val transaction = Transaction(sender, sender, priceToTransfer)
+        val transaction = mockk<Transaction>()
+        coEvery { transaction.perform() } throws SenderCannotBeRecipientException()
 
-        coEvery { service.makeTransaction(transaction) } throws SenderCannotBeRecipientException()
+        coEvery { service.createTransaction(sender, sender, priceToTransfer) } returns transaction
 
         // When
         sender.performCommand("pay ${sender.name} 5.0")

@@ -11,7 +11,6 @@ import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
-import fr.pickaria.emerald.domain.Transaction
 import fr.pickaria.shared.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -30,10 +29,9 @@ internal class PayCommand(private val economyService: EconomyService, private va
         val price = Price(amount, defaultCurrency)
         val sender = player as Player
         val recipient = onlinePlayer.player as Player
-        val transaction = Transaction(sender, recipient, price)
 
         try {
-            economyService.makeTransaction(transaction)
+            economyService.createTransaction(sender, recipient, price).perform()
 
             val formattedPrice = economyService.format(price)
 

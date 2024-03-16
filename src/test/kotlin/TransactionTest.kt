@@ -28,77 +28,80 @@ class TransactionTest {
     @Test
     fun `should make transaction`() {
         // Given
-        val sender = server.addPlayer()
-        val recipient = server.addPlayer()
+        val sender = mockk<Account>()
+        val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { repository.getBalance(sender.uniqueId, "credits") } returns 8.0
-        coEvery { repository.withdrawPlayer(sender.uniqueId, 5.6, "credits") } just Runs
-        coEvery { repository.depositPlayer(recipient.uniqueId, 5.6, "credits") } just Runs
+        coEvery { sender.owner } returns server.addPlayer()
+        coEvery { recipient.owner } returns server.addPlayer()
+        coEvery { sender.getBalance("credits") } returns Price(8.0, "credits")
+        coEvery { sender.withdraw(Price(5.6, "credits")) } just Runs
+        coEvery { recipient.deposit(Price(5.6, "credits")) } just Runs
 
         // When
-        service.makeTransaction(transaction)
+        transaction.perform()
 
         // Then
-        coVerify { repository.depositPlayer(recipient.uniqueId, 5.6, "credits") }
+        coVerify { recipient.deposit(Price(5.6, "credits")) }
     }
 
     @Test
     fun `should throw exception when amount is invalid`() {
         // Given
-        val sender = server.addPlayer()
-        val recipient = server.addPlayer()
+        val sender = mockk<Account>()
+        val recipient = mockk<Account>()
         val amount = Price(0.0, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { repository.getBalance(sender.uniqueId, "credits") } returns 8.0
-        coEvery { repository.withdrawPlayer(sender.uniqueId, 0.0, "credits") } throws InvalidAmountException()
+        coEvery { sender.owner } returns server.addPlayer()
+        coEvery { recipient.owner } returns server.addPlayer()
+        coEvery { sender.getBalance("credits") } returns Price(8.0, "credits")
+        coEvery { sender.withdraw(Price(0.0, "credits")) } throws InvalidAmountException()
 
         // When / Then
-        assertThrows<InvalidAmountException> { service.makeTransaction(transaction) }
+        assertThrows<InvalidAmountException> { transaction.perform() }
     }
 
     @Test
     fun `should throw exception when currency is unknown`() {
         // Given
-        val sender = server.addPlayer()
-        val recipient = server.addPlayer()
+        val sender = mockk<Account>()
+        val recipient = mockk<Account>()
         val amount = Price(5.6, "unknown")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { repository.getBalance(sender.uniqueId, "unknown") } returns 8.0
-        coEvery {
-            repository.withdrawPlayer(
-                sender.uniqueId,
-                5.6,
-                "unknown"
-            )
-        } throws UnknownCurrencyException("unknown")
+        coEvery { sender.owner } returns server.addPlayer()
+        coEvery { recipient.owner } returns server.addPlayer()
+        coEvery { sender.getBalance("unknown") } returns Price(8.0, "credits")
+        coEvery { sender.withdraw(Price(5.6, "unknown")) } throws UnknownCurrencyException("unknown")
 
         // When / Then
-        assertThrows<UnknownCurrencyException> { service.makeTransaction(transaction) }
+        assertThrows<UnknownCurrencyException> { transaction.perform() }
     }
 
     @Test
     fun `should throw exception when balance is insufficient`() {
         // Given
-        val sender = server.addPlayer()
-        val recipient = server.addPlayer()
+        val sender = mockk<Account>()
+        val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { repository.getBalance(sender.uniqueId, "credits") } returns 3.0
-        coEvery { repository.withdrawPlayer(sender.uniqueId, 5.6, "credits") } throws BalanceInsufficientException()
+        coEvery { sender.owner } returns server.addPlayer()
+        coEvery { recipient.owner } returns server.addPlayer()
+        coEvery { sender.getBalance("credits") } returns Price(3.0, "credits")
+        coEvery { sender.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
 
         // When / Then
-        assertThrows<BalanceInsufficientException> { service.makeTransaction(transaction) }
+        assertThrows<BalanceInsufficientException> { transaction.perform() }
     }
 
     @Test
     fun `should throw exception when sender is the recipient`() {
         // Given
-        val sender = server.addPlayer()
+        val sender = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, sender, amount)
+        coEvery { sender.owner } returns server.addPlayer()
 
         // When / Then
-        assertThrows<SenderCannotBeRecipientException> { service.makeTransaction(transaction) }
+        assertThrows<SenderCannotBeRecipientException> { transaction.perform() }
     }
 }

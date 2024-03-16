@@ -26,13 +26,9 @@ interface EconomyService {
     fun getAccount(player: OfflinePlayer): Account
 
     /**
-     * Carrying out a monetary transaction from one account to another.
-     * @throws BalanceInsufficientException
-     * @throws UnknownCurrencyException
-     * @throws InvalidAmountException
-     * @throws SenderCannotBeRecipientException
+     * Creates a new transaction from players.
      */
-    fun makeTransaction(transaction: Transaction)
+    fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction
 
     /**
      * Gets the Price value of a valuable item.
