@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer
 /**
  * Represents a player's bank account.
  *
- * Sample code to retrieve it:
+ * Example:
  * ```kt
  * val account: Account = economyService.getAccount(player)
  * ```

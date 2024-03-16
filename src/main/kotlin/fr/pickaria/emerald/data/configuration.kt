@@ -27,16 +27,15 @@ internal data class CurrencyConfig(
 
 @Serializable
 internal data class DatabaseConfig(
-    @SerialName("url")
     val url: String,
-
-    @SerialName("driver")
     val driver: String,
 )
 
 @Serializable
 internal data class EconomyConfig(
+    @SerialName("default_currency")
+    val defaultCurrency: String,
+
     val database: DatabaseConfig,
     val currencies: Map<String, CurrencyConfig>,
-    val defaultCurrency: String,
 )

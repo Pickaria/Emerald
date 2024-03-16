@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * The main service of the plugin.
  *
- * Sample code to retrieve it:
+ * Example:
  * ```kt
  * import fr.pickaria.emerald.EconomyService
  * val economyService: EconomyService? = server.servicesManager.getRegistration(EconomyService::class.java)?.provider
