@@ -1,9 +1,6 @@
 package fr.pickaria.emerald
 
-import fr.pickaria.emerald.domain.Account
-import fr.pickaria.emerald.domain.InvalidAmountException
-import fr.pickaria.emerald.domain.Price
-import fr.pickaria.emerald.domain.UnknownCurrencyException
+import fr.pickaria.emerald.domain.*
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 
@@ -12,7 +9,7 @@ import org.bukkit.inventory.ItemStack
  *
  * Sample code to retrieve it:
  * ```kt
- * import fr.pickaria.emerald.PaperEconomyService
+ * import fr.pickaria.emerald.EconomyService
  * val economyService: EconomyService? = server.servicesManager.getRegistration(EconomyService::class.java)?.provider
  * ```
  */
@@ -27,6 +24,15 @@ interface EconomyService {
      * Gets the player's bank account.
      */
     fun getAccount(player: OfflinePlayer): Account
+
+    /**
+     * Carrying out a monetary transaction from one account to another.
+     * @throws BalanceInsufficientException
+     * @throws UnknownCurrencyException
+     * @throws InvalidAmountException
+     * @throws SenderCannotBeRecipientException
+     */
+    fun makeTransaction(transaction: Transaction)
 
     /**
      * Gets the Price value of a valuable item.

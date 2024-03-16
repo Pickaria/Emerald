@@ -10,13 +10,16 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
+import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
+import fr.pickaria.emerald.domain.Transaction
 import fr.pickaria.shared.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("pay")
 @CommandPermission("pickaria.command.pay")
-internal class PayCommand(private val economyService: EconomyService) : BaseCommand() {
+internal class PayCommand(private val economyService: EconomyService, private val defaultCurrency: String) :
+    BaseCommand() {
     @Default
     @CommandCompletion("@players")
     fun onDefault(player: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
@@ -24,17 +27,13 @@ internal class PayCommand(private val economyService: EconomyService) : BaseComm
             throw InvalidCommandArgument("Le montant doit être supérieur à 0.01.")
         }
 
+        val price = Price(amount, defaultCurrency)
         val sender = player as Player
         val recipient = onlinePlayer.player as Player
-
-        if (sender === recipient) {
-            throw InvalidCommandArgument("Tu ne peux pas envoyer de l'argent à toi-même.")
-        }
+        val transaction = Transaction(sender, recipient, price)
 
         try {
-            val price = Price(amount, "credits") // TODO: Use config.defaultCurrency
-            economyService.getAccount(sender).withdraw(price)
-            economyService.getAccount(recipient).deposit(price)
+            economyService.makeTransaction(transaction)
 
             val formattedPrice = economyService.format(price)
 
@@ -47,8 +46,10 @@ internal class PayCommand(private val economyService: EconomyService) : BaseComm
                 "sender" to sender.displayName()
                 "amount" to formattedPrice
             }.send(recipient)
-        } catch (e: BalanceInsufficientException) {
+        } catch (_: BalanceInsufficientException) {
             throw InvalidCommandArgument("Tu n'as pas assez d'argent.")
+        } catch (_: SenderCannotBeRecipientException) {
+            throw InvalidCommandArgument("Tu ne peux pas envoyer de l'argent à toi-même.")
         }
     }
 }

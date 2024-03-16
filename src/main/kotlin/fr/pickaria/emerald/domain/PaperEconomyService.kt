@@ -67,10 +67,20 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             owner = player,
         )
 
+    override fun makeTransaction(transaction: Transaction) {
+        if (transaction.from == transaction.to) {
+            throw SenderCannotBeRecipientException()
+        }
+
+        getAccount(transaction.from).withdraw(transaction.amount)
+        getAccount(transaction.to).deposit(transaction.amount)
+    }
+
     override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()
 }
 
 class BalanceInsufficientException : Throwable()
 class InvalidAmountException : Throwable()
 class ItemIsNotACurrencyException : Throwable()
+class SenderCannotBeRecipientException : Throwable()
 class UnknownCurrencyException(val currency: String) : Throwable()

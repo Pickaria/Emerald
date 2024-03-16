@@ -38,6 +38,7 @@ dependencies {
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.78.0")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("co.aikar:acf-core:0.5.1-SNAPSHOT")
+    testImplementation("com.github.MilkBowl:VaultAPI:1.7")
 }
 
 java {

@@ -3,14 +3,16 @@ import be.seeseemelk.mockbukkit.ServerMock
 import co.aikar.commands.BukkitCommandManager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.PayCommand
-import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
+import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
+import fr.pickaria.emerald.domain.Transaction
 import io.mockk.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertContains
 
 class PayCommandTest {
     private val service = mockk<EconomyService>()
@@ -23,7 +25,7 @@ class PayCommandTest {
         plugin = MockBukkit.createMockPlugin()
 
         val manager = BukkitCommandManager(plugin)
-        manager.registerCommand(PayCommand(service))
+        manager.registerCommand(PayCommand(service, "credits"))
     }
 
     @AfterEach
@@ -32,55 +34,46 @@ class PayCommandTest {
     }
 
     @Test
-    fun `player should see their balance when performing money command`() {
+    fun `transaction should be carried when performing pay command`() {
         // Given
         val sender = server.addPlayer()
+        val recipient = server.addPlayer()
         sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
+        val transaction = Transaction(sender, recipient, priceToTransfer)
 
-        val senderAccount = mockk<Account>()
-        coEvery { service.getAccount(sender) } returns senderAccount
-        coEvery { senderAccount.withdraw(priceToTransfer) } just Runs
-
-        val recipient = server.addPlayer()
-        val recipientAccount = mockk<Account>()
-        coEvery { service.getAccount(recipient) } returns recipientAccount
-        coEvery { recipientAccount.deposit(priceToTransfer) } just Runs
-
+        coEvery { service.makeTransaction(transaction) } just Runs
         coEvery { service.format(priceToTransfer) } returns "5.0 crédits"
 
         // When
         sender.performCommand("pay ${recipient.name} 5.0")
 
         // Then
-        coVerify { senderAccount.withdraw(priceToTransfer) }
-        coVerify { recipientAccount.deposit(priceToTransfer) }
+        coVerify { service.makeTransaction(transaction) }
+        assertContains(sender.nextMessage()!!, "5.0 crédits")
+        assertContains(recipient.nextMessage()!!, "5.0 crédits")
     }
 
     @Test
     fun `transfer should not happen if sender does not have enough money`() {
         // Given
         val sender = server.addPlayer()
+        val recipient = server.addPlayer()
         sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
+        val transaction = Transaction(sender, recipient, priceToTransfer)
 
-        val senderAccount = mockk<Account>()
-        coEvery { service.getAccount(sender) } returns senderAccount
-        coEvery { senderAccount.withdraw(priceToTransfer) } throws BalanceInsufficientException()
-
-        val recipient = server.addPlayer()
-
-        coEvery { service.format(priceToTransfer) } returns "5.0 crédits"
+        coEvery { service.makeTransaction(transaction) } throws BalanceInsufficientException()
 
         // When
         sender.performCommand("pay ${recipient.name} 5.0")
 
         // Then
-        verify { service.getAccount(recipient) wasNot Called }
+        assertContains(sender.nextMessage()!!, "Tu n'as pas assez d'argent.")
     }
 
     @Test
@@ -90,11 +83,16 @@ class PayCommandTest {
         sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
         sender.recalculatePermissions()
 
+        val priceToTransfer = Price(5.0, "credits")
+        val transaction = Transaction(sender, sender, priceToTransfer)
+
+        coEvery { service.makeTransaction(transaction) } throws SenderCannotBeRecipientException()
+
         // When
         sender.performCommand("pay ${sender.name} 5.0")
 
         // Then
-        verify { service.getAccount(sender) wasNot Called }
+        assertContains(sender.nextMessage()!!, "Tu ne peux pas envoyer de l'argent à toi-même.")
     }
 
     @Test
@@ -109,7 +107,7 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} 0.0")
 
         // Then
-        verify { service.getAccount(sender) wasNot Called }
+        verify { service.getAccount(any()) wasNot Called }
     }
 
     @Test
@@ -124,6 +122,6 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} -50.0")
 
         // Then
-        verify { service.getAccount(sender) wasNot Called }
+        verify { service.getAccount(any()) wasNot Called }
     }
 }

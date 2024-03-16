@@ -3,6 +3,14 @@ package fr.pickaria.emerald.domain
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.OfflinePlayer
 
+/**
+ * Represents a player's bank account.
+ *
+ * Sample code to retrieve it:
+ * ```kt
+ * val account: Account = economyService.getAccount(player)
+ * ```
+ */
 class Account internal constructor(
     private val economyRepository: EconomyRepository,
     val owner: OfflinePlayer

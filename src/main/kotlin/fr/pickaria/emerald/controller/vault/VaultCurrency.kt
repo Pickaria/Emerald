@@ -1,21 +1,16 @@
-package fr.pickaria.emerald.controller
+package fr.pickaria.emerald.controller.vault
 
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
-import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import net.milkbowl.vault.economy.AbstractEconomy
-import net.milkbowl.vault.economy.Economy
 import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.Bukkit
-import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.OfflinePlayer
-import org.bukkit.plugin.ServicePriority
-import org.bukkit.plugin.java.JavaPlugin
 
-
-private class Currency(
-    private val economyRepository: EconomyRepository,
+internal class VaultCurrency(
+    economyRepository: EconomyRepository,
     private val economyService: EconomyService,
     private val currencyName: String
 ) : AbstractEconomy() {
@@ -47,51 +42,32 @@ private class Currency(
                 EconomyResponse.ResponseType.SUCCESS,
                 null
             )
-        } catch (_: UnknownCurrencyException) {
+        } catch (_: BalanceInsufficientException) {
+            val account = economyService.getAccount(player)
             EconomyResponse(
                 amount,
-                0.0,
+                account.getBalance(currencyName).amount,
                 EconomyResponse.ResponseType.FAILURE,
-                null
+                "BalanceInsufficientException"
             )
         }
     }
 
     override fun depositPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {
-        return try {
-            val account = economyService.getAccount(player)
-            account.deposit(Price(amount, currencyName))
-            EconomyResponse(
-                amount,
-                account.getBalance(currencyName).amount,
-                EconomyResponse.ResponseType.SUCCESS,
-                null
-            )
-        } catch (_: UnknownCurrencyException) {
-            EconomyResponse(
-                amount,
-                0.0,
-                EconomyResponse.ResponseType.FAILURE,
-                null
-            )
-        }
+        val account = economyService.getAccount(player)
+        account.deposit(Price(amount, currencyName))
+        return EconomyResponse(
+            amount,
+            account.getBalance(currencyName).amount,
+            EconomyResponse.ResponseType.SUCCESS,
+            null
+        )
     }
 
-    override fun getBalance(player: OfflinePlayer): Double {
-        return try {
-            economyService.getAccount(player).getBalance(currencyName).amount
-        } catch (_: UnknownCurrencyException) {
-            0.0
-        }
-    }
+    override fun getBalance(player: OfflinePlayer): Double =
+        economyService.getAccount(player).getBalance(currencyName).amount
 
-    override fun has(player: OfflinePlayer, amount: Double): Boolean {
-        return try {
-            getBalance(player) >= amount
-        } catch (_: UnknownCurrencyException) {
-            false
-        }
-    }
+    override fun has(player: OfflinePlayer, amount: Double): Boolean = getBalance(player) >= amount
 
     override fun hasAccount(player: OfflinePlayer): Boolean =
         economyService.getAvailableCurrencyNames().contains(currencyName)
@@ -133,7 +109,7 @@ private class Currency(
 
     // Deprecated methods
     @Deprecated("Deprecated in Java")
-    override fun hasAccount(playerName: String): Boolean = hasAccount(getOfflinePlayer(playerName))
+    override fun hasAccount(playerName: String): Boolean = hasAccount(Bukkit.getOfflinePlayer(playerName))
 
     @Deprecated("Deprecated in Java")
     override fun hasAccount(playerName: String?, worldName: String?): Boolean {
@@ -141,7 +117,7 @@ private class Currency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun getBalance(playerName: String): Double = getBalance(getOfflinePlayer(playerName))
+    override fun getBalance(playerName: String): Double = getBalance(Bukkit.getOfflinePlayer(playerName))
 
     @Deprecated("Deprecated in Java")
     override fun getBalance(playerName: String?, world: String?): Double {
@@ -149,7 +125,7 @@ private class Currency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun has(playerName: String, amount: Double): Boolean = has(getOfflinePlayer(playerName), amount)
+    override fun has(playerName: String, amount: Double): Boolean = has(Bukkit.getOfflinePlayer(playerName), amount)
 
     @Deprecated("Deprecated in Java")
     override fun has(playerName: String?, worldName: String?, amount: Double): Boolean {
@@ -158,7 +134,7 @@ private class Currency(
 
     @Deprecated("Deprecated in Java")
     override fun withdrawPlayer(playerName: String, amount: Double): EconomyResponse =
-        withdrawPlayer(getOfflinePlayer(playerName), amount)
+        withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)
 
     @Deprecated("Deprecated in Java")
     override fun withdrawPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
@@ -167,7 +143,7 @@ private class Currency(
 
     @Deprecated("Deprecated in Java")
     override fun depositPlayer(playerName: String, amount: Double): EconomyResponse =
-        depositPlayer(getOfflinePlayer(playerName), amount)
+        depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)
 
     @Deprecated("Deprecated in Java")
     override fun depositPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
@@ -176,29 +152,10 @@ private class Currency(
 
     @Deprecated("Deprecated in Java")
     override fun createPlayerAccount(playerName: String): Boolean =
-        createPlayerAccount(getOfflinePlayer(playerName))
+        createPlayerAccount(Bukkit.getOfflinePlayer(playerName))
 
     @Deprecated("Deprecated in Java")
     override fun createPlayerAccount(playerName: String?, worldName: String?): Boolean {
         TODO("Not yet implemented")
-    }
-}
-
-internal fun JavaPlugin.registerVaultCurrency(
-    economyRepository: EconomyRepository,
-    economyService: EconomyService,
-) {
-    val currencyKey = economyRepository.getDefaultCurrencyKey()
-    try {
-        val currency = Currency(economyRepository, economyService, currencyKey)
-        Bukkit.getServicesManager().register(
-            Economy::class.java,
-            currency,
-            this,
-            ServicePriority.Normal,
-        )
-        Bukkit.getLogger().info("[Emerald] Registered Vault currency $currencyKey")
-    } catch (e: UnknownCurrencyException) {
-        Bukkit.getLogger().severe("[Emerald] Tried to register unknown ${e.currency} currency.")
     }
 }

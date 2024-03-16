@@ -48,25 +48,23 @@ internal class ValuableItem(
         value: Double,
         displayName: Component,
         lore: List<Component>
-    ): ItemStack {
-        return ItemStack(material).apply {
-            editMeta {
-                it.addEnchant(Enchantment.DURABILITY, 1, true)
-                it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
-                it.displayName(displayName)
-                it.lore(lore)
+    ): ItemStack = ItemStack(material).apply {
+        editMeta {
+            it.addEnchant(Enchantment.DURABILITY, 1, true)
+            it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
+            it.displayName(displayName)
+            it.lore(lore)
 
-                it.persistentDataContainer.set(
-                    currencyNamespace,
-                    PersistentDataType.STRING,
-                    price.currency
-                )
-                it.persistentDataContainer.set(
-                    valueNamespace,
-                    PersistentDataType.DOUBLE,
-                    value
-                )
-            }
+            it.persistentDataContainer.set(
+                currencyNamespace,
+                PersistentDataType.STRING,
+                price.currency
+            )
+            it.persistentDataContainer.set(
+                valueNamespace,
+                PersistentDataType.DOUBLE,
+                value
+            )
         }
     }
 
