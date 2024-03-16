@@ -1,3 +1,5 @@
+default_currency = "credits"
+
 [database]
 url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;"
 driver = "org.h2.Driver"
@@ -24,7 +26,8 @@ name_singular = "Éclat de Pickarite"
 name_plural = "Éclats de Pickarite"
 format = "###,##0.#"
 physical_currencies = [
-    {value = 1.0, material = "ECHO_SHARD"}
+    { value = 1.0, material = "ECHO_SHARD" },
+    { value = 64.0, material = "SCULK" }
 ]
 
 [currencies.keys]
@@ -33,5 +36,5 @@ name_singular = "Clé"
 name_plural = "Clés"
 format = "###,##0.#"
 physical_currencies = [
-    {value = 1.0, material = "TRIPWIRE_HOOK"}
+    { value = 1.0, material = "TRIPWIRE_HOOK" }
 ]

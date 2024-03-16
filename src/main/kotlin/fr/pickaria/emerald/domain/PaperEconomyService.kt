@@ -1,7 +1,6 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
@@ -11,7 +10,7 @@ import java.text.DecimalFormat
 
 internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     override fun format(price: Price): String {
-        val currencyConfig = economyRepository.getConfig(price.currency.serialName)
+        val currencyConfig = economyRepository.getConfig(price.currency)
 
         val decimalFormat = DecimalFormat(currencyConfig.format).also {
             it.roundingMode = RoundingMode.FLOOR
@@ -50,10 +49,10 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             throw InvalidAmountException()
         }
 
-        return Price(totalValue, Currencies.valueOf(currency.uppercase()))
+        return Price(totalValue, currency)
     }
 
-    override fun getPhysicalCurrency(price: Price): ItemStack {
+    override fun getValuableItemStack(price: Price): ItemStack {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
@@ -67,8 +66,17 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
             economyRepository = economyRepository,
             owner = player,
         )
+
+    override fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction {
+        val fromAccount = getAccount(from)
+        val toAccount = getAccount(to)
+
+        return Transaction(fromAccount, toAccount, amount)
+    }
+
+    override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()
 }
 
-class BalanceInsufficientException : Throwable()
 class InvalidAmountException : Throwable()
 class ItemIsNotACurrencyException : Throwable()
+class UnknownCurrencyException(val currency: String) : Throwable()

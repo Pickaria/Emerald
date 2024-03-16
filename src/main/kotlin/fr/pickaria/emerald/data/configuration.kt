@@ -6,13 +6,13 @@ import org.bukkit.Material
 
 
 @Serializable
-data class PhysicalCurrencyConfig(
+internal data class PhysicalCurrencyConfig(
     val value: Double,
     val material: Material,
 )
 
 @Serializable
-data class CurrencyConfig(
+internal data class CurrencyConfig(
     @SerialName("name_singular")
     val nameSingular: String,
 
@@ -26,16 +26,16 @@ data class CurrencyConfig(
 )
 
 @Serializable
-data class DatabaseConfig(
-    @SerialName("url")
+internal data class DatabaseConfig(
     val url: String,
-
-    @SerialName("driver")
     val driver: String,
 )
 
 @Serializable
-data class EconomyConfig(
+internal data class EconomyConfig(
+    @SerialName("default_currency")
+    val defaultCurrency: String,
+
     val database: DatabaseConfig,
-    val currencies: Map<String, CurrencyConfig>
+    val currencies: Map<String, CurrencyConfig>,
 )

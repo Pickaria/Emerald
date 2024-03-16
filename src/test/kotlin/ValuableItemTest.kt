@@ -1,8 +1,9 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.domain.*
-import io.mockk.*
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import io.mockk.coEvery
+import io.mockk.mockk
 import mocks.creditConfigMock
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Material
@@ -10,7 +11,10 @@ import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
 import org.bukkit.persistence.PersistentDataType
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class ValuableItemTest {
@@ -33,11 +37,23 @@ class ValuableItemTest {
     fun `should throw exception when amount of 0 is specified`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(0.0, Currencies.CREDITS)
+        val price = Price(0.0, "credits")
 
         // When / Then
         assertThrows<InvalidAmountException> {
-            economyService.getPhysicalCurrency(price)
+            economyService.getValuableItemStack(price)
+        }
+    }
+
+    @Test
+    fun `should throw exception when initializing a valuable item with unknown currency from a price`() {
+        // Given
+        coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+        val price = Price(1.0, "unknown")
+
+        // When / Then
+        assertThrows<UnknownCurrencyException> {
+            economyService.getValuableItemStack(price)
         }
     }
 
@@ -45,7 +61,7 @@ class ValuableItemTest {
     fun `physical currency should have the correct value`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(1.0, Currencies.CREDITS)
+        val price = Price(1.0, "credits")
 
         // minecraft:iron_nugget{PublicBukkitValues:{"pickaria:value":1.0d,"pickaria:currency":"credits"}}
         val expected = ItemStack(Material.IRON_NUGGET).apply {
@@ -64,7 +80,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(
@@ -76,10 +92,72 @@ class ValuableItemTest {
     }
 
     @Test
+    fun `should throw exception when trying to initialize a unknown currency from an item stack`() {
+        // Given
+        coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:value")!!,
+                    PersistentDataType.DOUBLE,
+                    64.0
+                )
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:currency")!!,
+                    PersistentDataType.STRING,
+                    "unknown"
+                )
+            }
+            amount = 2
+        }
+
+        // When / Then
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
+    }
+
+    @Test
+    fun `should throw exception when trying to initialize a valuable item from an item stack with value missing`() {
+        // Given
+        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:currency")!!,
+                    PersistentDataType.STRING,
+                    "credits"
+                )
+            }
+            amount = 2
+        }
+
+        // When / Then
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
+    }
+
+    @Test
+    fun `should throw exception when trying to initialize a valuable item from an item stack with currency missing`() {
+        // Given
+        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        val item = ItemStack(Material.GOLD_NUGGET).apply {
+            editMeta {
+                it.persistentDataContainer.set(
+                    NamespacedKey.fromString("pickaria:value")!!,
+                    PersistentDataType.DOUBLE,
+                    64.0
+                )
+            }
+            amount = 2
+        }
+
+        // When / Then
+        assertThrows<ItemIsNotACurrencyException> { economyService.getValueOfItem(item) }
+    }
+
+    @Test
     fun `physical currency should handle increasing item rarity`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(128.0, Currencies.CREDITS)
+        val price = Price(128.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
         val expected = ItemStack(Material.GOLD_NUGGET).apply {
@@ -99,7 +177,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(
@@ -114,7 +192,7 @@ class ValuableItemTest {
     fun `physical currency should multiple stacks in a bundle`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(96.0, Currencies.CREDITS)
+        val price = Price(96.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
         val expected = ItemStack(Material.BUNDLE).apply {
@@ -133,7 +211,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
         val bundleMeta = result.itemMeta as BundleMeta
 
         // Then
@@ -155,7 +233,7 @@ class ValuableItemTest {
     fun `physical currency should large amount of money in a bundle`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(9999.0, Currencies.CREDITS)
+        val price = Price(9999.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
         val expected = ItemStack(Material.BUNDLE).apply {
@@ -174,7 +252,7 @@ class ValuableItemTest {
         }
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
         val bundleMeta = result.itemMeta as BundleMeta
 
         // Then
@@ -200,10 +278,10 @@ class ValuableItemTest {
     fun `physical currency should be enchanted`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(1.0, Currencies.CREDITS)
+        val price = Price(1.0, "credits")
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals(1, result.enchantments.size)
@@ -213,10 +291,10 @@ class ValuableItemTest {
     fun `physical currency should have a name and lore`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(1.0, Currencies.CREDITS)
+        val price = Price(1.0, "credits")
 
         // When
-        val result = economyService.getPhysicalCurrency(price)
+        val result = economyService.getValuableItemStack(price)
 
         // Then
         assertEquals("Crédit", (result.itemMeta.displayName() as TextComponent).content())

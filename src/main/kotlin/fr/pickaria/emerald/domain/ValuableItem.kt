@@ -1,8 +1,8 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.emerald.data.PhysicalCurrencyConfig
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import fr.pickaria.shared.MiniMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -13,20 +13,19 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BundleMeta
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import kotlin.math.min
 
-val currencyNamespace = NamespacedKey("pickaria", "currency")
-val valueNamespace = NamespacedKey("pickaria", "value")
+internal val currencyNamespace = NamespacedKey("pickaria", "currency")
+internal val valueNamespace = NamespacedKey("pickaria", "value")
 
 internal class ValuableItem(
     economyRepository: EconomyRepository,
     private val economyService: EconomyService,
     private val price: Price
 ) {
-    private val config = economyRepository.getConfig(price.currency.serialName)
+    private val config = economyRepository.getConfig(price.currency)
 
     private fun overflowStacks(
         item: ItemStack,
@@ -44,25 +43,28 @@ internal class ValuableItem(
         return stacks
     }
 
-    private fun createItem(material: Material, value: Double, displayName: Component, lore: List<Component>): ItemStack {
-        return ItemStack(material).apply {
-            editMeta {
-                it.addEnchant(Enchantment.DURABILITY, 1, true)
-                it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
-                it.displayName(displayName)
-                it.lore(lore)
+    private fun createItem(
+        material: Material,
+        value: Double,
+        displayName: Component,
+        lore: List<Component>
+    ): ItemStack = ItemStack(material).apply {
+        editMeta {
+            it.addEnchant(Enchantment.DURABILITY, 1, true)
+            it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
+            it.displayName(displayName)
+            it.lore(lore)
 
-                it.persistentDataContainer.set(
-                    currencyNamespace,
-                    PersistentDataType.STRING,
-                    price.currency.serialName
-                )
-                it.persistentDataContainer.set(
-                    valueNamespace,
-                    PersistentDataType.DOUBLE,
-                    value
-                )
-            }
+            it.persistentDataContainer.set(
+                currencyNamespace,
+                PersistentDataType.STRING,
+                price.currency
+            )
+            it.persistentDataContainer.set(
+                valueNamespace,
+                PersistentDataType.DOUBLE,
+                value
+            )
         }
     }
 

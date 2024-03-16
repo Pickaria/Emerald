@@ -1,0 +1,13 @@
+name: Emerald
+version: "1.0"
+api-version: "1.20"
+main: fr.pickaria.emerald.Main
+author: Quozul
+description: Economy plugin
+
+dependencies:
+  server:
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true

@@ -22,19 +22,33 @@ class AccountTest {
         MockBukkit.unmock()
     }
 
-    @Test
-    fun `should call economy repository with appropriate user's data to get balance`() {
-        // Given
-        val player = server.addPlayer()
-        coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-        val expectedPrice = Price(5.6, Currencies.CREDITS)
-        val account = economyService.getAccount(player)
+    @Nested
+    inner class Balance {
+        @Test
+        fun `should call economy repository with appropriate user's data to get balance`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
+            val expectedPrice = Price(5.6, "credits")
+            val account = economyService.getAccount(player)
 
-        // When
-        val balance = account.getBalance(Currencies.CREDITS)
+            // When
+            val balance = account.getBalance("credits")
 
-        // Then
-        assertEquals(expectedPrice, balance)
+            // Then
+            assertEquals(expectedPrice, balance)
+        }
+
+        @Test
+        fun `should throw exception when trying to get balance of unknown currency`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery { repository.getBalance(player.uniqueId, "unknown") } throws UnknownCurrencyException("unknown")
+            val account = economyService.getAccount(player)
+
+            // When / Then
+            assertThrows<UnknownCurrencyException> { account.getBalance("unknown") }
+        }
     }
 
     @Nested
@@ -43,7 +57,7 @@ class AccountTest {
         fun `should call repository when amount is valid`() {
             // Given
             val player = server.addPlayer()
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 50.0
             coEvery { repository.withdrawPlayer(player.uniqueId, 32.8, "credits") } just Runs
             val account = economyService.getAccount(player)
@@ -61,7 +75,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -75,7 +89,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns -5.6
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -89,7 +103,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-            val withdrawingPrice = Price(-3.1, Currencies.CREDITS)
+            val withdrawingPrice = Price(-3.1, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -103,7 +117,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-            val withdrawingPrice = Price(0.0, Currencies.CREDITS)
+            val withdrawingPrice = Price(0.0, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -118,7 +132,7 @@ class AccountTest {
             val player = server.addPlayer()
             coEvery { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 32.8
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When
@@ -128,6 +142,16 @@ class AccountTest {
             server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
         }
 
+        @Test
+        fun `should throw exception when trying to withdraw unknown currency`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery { repository.getBalance(player.uniqueId, "unknown") } throws UnknownCurrencyException("unknown")
+            val account = economyService.getAccount(player)
+
+            // When / Then
+            assertThrows<UnknownCurrencyException> { account.withdraw(Price(5.6, "unknown")) }
+        }
     }
 
     @Nested
@@ -137,7 +161,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When
@@ -152,7 +176,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-            val withdrawingPrice = Price(-3.1, Currencies.CREDITS)
+            val withdrawingPrice = Price(-3.1, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -166,7 +190,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.6
-            val withdrawingPrice = Price(0.0, Currencies.CREDITS)
+            val withdrawingPrice = Price(0.0, "credits")
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -180,7 +204,7 @@ class AccountTest {
             // Given
             val player = server.addPlayer()
             coEvery { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
-            val withdrawingPrice = Price(32.8, Currencies.CREDITS)
+            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When
@@ -188,6 +212,23 @@ class AccountTest {
 
             // Then
             server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
+        }
+
+        @Test
+        fun `should throw exception when trying to deposit unknown currency`() {
+            // Given
+            val player = server.addPlayer()
+            coEvery {
+                repository.depositPlayer(
+                    eq(player.uniqueId),
+                    eq(5.6),
+                    eq("unknown")
+                )
+            } throws UnknownCurrencyException("unknown")
+            val account = economyService.getAccount(player)
+
+            // When / Then
+            assertThrows<UnknownCurrencyException> { account.deposit(Price(5.6, "unknown")) }
         }
     }
 }

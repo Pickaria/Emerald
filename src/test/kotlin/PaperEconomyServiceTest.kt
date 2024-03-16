@@ -1,18 +1,13 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import fr.pickaria.emerald.data.UnknownCurrencyException
 import fr.pickaria.emerald.domain.*
-import io.mockk.*
+import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import io.mockk.coEvery
+import io.mockk.mockk
 import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.BundleMeta
-import org.bukkit.persistence.PersistentDataType
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 
@@ -37,7 +32,7 @@ class PaperEconomyServiceTest {
     fun `should return formatted price according to currency's format`() {
         // Given
         coEvery { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(5.6, Currencies.CREDITS)
+        val price = Price(5.6, "credits")
         val expectedFormattedPrice = "5.60 Crédits"
 
         // When
@@ -110,7 +105,7 @@ class PaperEconomyServiceTest {
         fun `should get the correct expected price from a single item`() {
             // Given
             coEvery { repository.getConfig("credits") } returns creditConfigMock
-            val expectedPrice = Price(3.0, Currencies.CREDITS)
+            val expectedPrice = Price(3.0, "credits")
             val item = physicalCurrencyItemMock(count = 3, material = Material.IRON_NUGGET)
 
             // When
@@ -124,7 +119,7 @@ class PaperEconomyServiceTest {
         fun `should get the correct expected price from a bundle`() {
             // Given
             coEvery { repository.getConfig("credits") } returns creditConfigMock
-            val expectedPrice = Price(9999.0, Currencies.CREDITS)
+            val expectedPrice = Price(9999.0, "credits")
             val item = physicalCurrencyItemMock(count = 1, material = Material.BUNDLE, value = 9999.0)
 
             // When

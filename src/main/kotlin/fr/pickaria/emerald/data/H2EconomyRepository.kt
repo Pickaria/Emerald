@@ -1,5 +1,6 @@
 package fr.pickaria.emerald.data
 
+import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
@@ -11,6 +12,8 @@ internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyR
     private val database: Database = openDatabase(config.database.url, config.database.driver)
 
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
+        validateCurrencyName(currency)
+
         transaction(database) {
             try {
                 val account = Account.find {
@@ -33,6 +36,8 @@ internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyR
     }
 
     override fun getBalance(accountId: UUID, currency: String): Double {
+        validateCurrencyName(currency)
+
         return try {
             val account = transaction(database) {
                 Account.find {
@@ -46,8 +51,22 @@ internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyR
         }
     }
 
+    /**
+     * @throws UnknownCurrencyException
+     */
     override fun getConfig(currency: String): CurrencyConfig =
         config.currencies[currency] ?: throw UnknownCurrencyException(currency)
-}
 
-class UnknownCurrencyException(val currency: String) : Throwable()
+    override fun getDefaultCurrencyKey(): String = config.defaultCurrency
+
+    override fun getAvailableCurrencyNames(): Set<String> = config.currencies.keys
+
+    /**
+     * @throws UnknownCurrencyException
+     */
+    private fun validateCurrencyName(currency: String) {
+        if (!getAvailableCurrencyNames().contains(currency)) {
+            throw UnknownCurrencyException(currency)
+        }
+    }
+}
