@@ -287,7 +287,7 @@ class AccountTest {
         }
 
         @Test
-        fun `should rollback if player is missing second price after unexpected balance change`() {
+        fun `should rollback and then throws exception if player is missing second price after unexpected balance change`() {
             // Given
             val player = server.addPlayer()
             val withdrawingPrice1 = Price(32.8, "credits")
@@ -298,10 +298,11 @@ class AccountTest {
             every { repository.depositPlayer(player.uniqueId, 32.8, eq("credits")) } just Runs
             val account = economyService.getAccount(player)
 
-            // When
-            account.withdrawAll(listOf(withdrawingPrice1, withdrawingPrice2))
+            // When / Then
+            assertThrows<BalanceInsufficientException> {
+                account.withdrawAll(listOf(withdrawingPrice1, withdrawingPrice2))
+            }
 
-            // Then
             verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
             verify { repository.getBalance(eq(player.uniqueId), eq("shards")) }
             verify { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
@@ -309,7 +310,7 @@ class AccountTest {
         }
 
         @Test
-        fun `should rollback nothing if player is missing first price after unexpected balance change`() {
+        fun `should rollback nothing and throws exception if player is missing first price after unexpected balance change`() {
             // Given
             val player = server.addPlayer()
             val withdrawingPrice1 = Price(32.8, "credits")
@@ -318,10 +319,11 @@ class AccountTest {
             every { repository.getBalance(player.uniqueId, "shards") } returns 50.0
             val account = economyService.getAccount(player)
 
-            // When
-            account.withdrawAll(listOf(withdrawingPrice1, withdrawingPrice2))
+            // When / Then
+            assertThrows<BalanceInsufficientException> {
+                account.withdrawAll(listOf(withdrawingPrice1, withdrawingPrice2))
+            }
 
-            // Then
             verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
             verify { repository.getBalance(eq(player.uniqueId), eq("shards")) }
         }

@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.math.pow
 
 internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     override fun format(price: Price): String {
@@ -17,11 +18,19 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
         val decimalFormat = DecimalFormat(currencyConfig.format).also {
             it.roundingMode = RoundingMode.FLOOR
         }
-        val formattedPrice = decimalFormat.format(price.amount)
+
+        val isFractional = price.amount < 1.0 && price.amount > -1.0
+
+        val formattedPrice = if (isFractional) {
+            decimalFormat.minimumFractionDigits = 0
+            decimalFormat.format(price.amount * 10.0.pow(decimalFormat.maximumFractionDigits))
+        } else {
+            decimalFormat.format(price.amount)
+        }
 
         return if (price.amount == 1.0 || price.amount == 0.0) {
             "$formattedPrice ${currencyConfig.name.singular}"
-        } else if (price.amount < 1.0) {
+        } else if (isFractional) {
             "$formattedPrice ${currencyConfig.fractionalName.plural}"
         } else {
             "$formattedPrice ${currencyConfig.name.plural}"

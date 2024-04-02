@@ -52,6 +52,7 @@ class Account internal constructor(
 
     /**
      * @throws UnknownCurrencyException
+     * @throws BalanceInsufficientException
      * @throws InvalidAmountException
      */
     fun withdrawAll(prices: Iterable<Price>) {
@@ -70,6 +71,8 @@ class Account internal constructor(
             withdrew.reversed().forEach {
                 deposit(it)
             }
+
+            throw BalanceInsufficientException()
         }
     }
 
