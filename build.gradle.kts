@@ -35,6 +35,7 @@ dependencies {
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
 
     testImplementation(kotlin("test"))
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.78.0")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("co.aikar:acf-core:0.5.1-SNAPSHOT")

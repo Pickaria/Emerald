@@ -2,13 +2,20 @@ package mocks
 
 import fr.pickaria.emerald.data.CurrencyConfig
 import fr.pickaria.emerald.data.EconomyConfig
+import fr.pickaria.emerald.data.Name
 import fr.pickaria.emerald.data.PhysicalCurrencyConfig
 import fr.pickaria.shared.DatabaseConfig
 import org.bukkit.Material
 
 internal val creditConfigMock = CurrencyConfig(
-    nameSingular = "Crédit",
-    namePlural = "Crédits",
+    name = Name(
+        singular = "Crédit",
+        plural = "Crédits",
+    ),
+    fractionalName = Name(
+        singular = "Crodime",
+        plural = "Crodimes",
+    ),
     format = "###,##0.00",
     description = listOf("A test currency"),
     collectionSound = "block.amethyst_block.fall",
@@ -33,8 +40,14 @@ internal val economyConfigMock = EconomyConfig(
     currencies = mapOf(
         "credits" to creditConfigMock,
         "shards" to creditConfigMock.copy(
-            nameSingular = "Éclat",
-            namePlural = "Éclats",
+            name = Name(
+                singular = "Éclat",
+                plural = "Éclats",
+            ),
+            fractionalName = Name(
+                singular = "Éclat",
+                plural = "Éclats",
+            ),
             collectionSound = "block.amethyst_cluster.break",
         ),
     ),

@@ -6,8 +6,8 @@ driver = "org.h2.Driver"
 
 [currencies.credits]
 description = ["<gray>Pièce d'une valeur de <gold><value><gray>."]
-name_singular = "Crédit"
-name_plural = "Crédits"
+name = { singular = "Crédit", plural = "Crédits" }
+fractional_name = { singular = "Crodime", plural = "Crodimes" }
 format = "###,##0.00"
 collection_sound = "block.amethyst_block.fall"
 physical_currencies = [
@@ -23,8 +23,7 @@ physical_currencies = [
 
 [currencies.shards]
 description = ["<gray>Fragment ancestral issu de la", "<gray>création du monde de Pickaria."]
-name_singular = "Éclat de Pickarite"
-name_plural = "Éclats de Pickarite"
+name = { singular = "Éclat de Pickarite", plural = "Éclats de Pickarite" }
 format = "###,##0.#"
 collection_sound = "block.amethyst_cluster.break"
 physical_currencies = [
@@ -34,8 +33,8 @@ physical_currencies = [
 
 [currencies.keys]
 description = ["<gray>Objet permettant l'achat de récompenses."]
-name_singular = "Clé"
-name_plural = "Clés"
+name = { singular = "Clé", plural = "Clés" }
+fractional_name = { singular = "Fragment de clé", plural = "Fragments de clé" }
 format = "###,##0.#"
 collection_sound = "item.armor.equip_chain"
 physical_currencies = [

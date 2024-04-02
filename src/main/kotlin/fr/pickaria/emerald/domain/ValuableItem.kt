@@ -111,7 +111,7 @@ internal class ValuableItem(
 
     fun getItem(): ItemStack {
         val currencyDisplayName: Component by lazy {
-            Component.text(config.nameSingular.replaceFirstChar {
+            Component.text(config.name.singular.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase(
                     Locale.getDefault()
                 ) else it.toString()

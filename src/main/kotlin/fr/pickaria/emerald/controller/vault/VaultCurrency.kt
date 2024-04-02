@@ -27,9 +27,9 @@ internal class VaultCurrency(
 
     override fun hasBankSupport(): Boolean = false
 
-    override fun currencyNamePlural(): String = config.namePlural
+    override fun currencyNamePlural(): String = config.name.plural
 
-    override fun currencyNameSingular(): String = config.nameSingular
+    override fun currencyNameSingular(): String = config.name.singular
 
     // Logic methods
     override fun withdrawPlayer(player: OfflinePlayer, amount: Double): EconomyResponse {

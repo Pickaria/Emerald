@@ -19,10 +19,12 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
         }
         val formattedPrice = decimalFormat.format(price.amount)
 
-        return if (price.amount <= 1.0) {
-            "$formattedPrice ${currencyConfig.nameSingular}"
+        return if (price.amount == 1.0 || price.amount == 0.0) {
+            "$formattedPrice ${currencyConfig.name.singular}"
+        } else if (price.amount < 1.0) {
+            "$formattedPrice ${currencyConfig.fractionalName.plural}"
         } else {
-            "$formattedPrice ${currencyConfig.namePlural}"
+            "$formattedPrice ${currencyConfig.name.plural}"
         }
     }
 

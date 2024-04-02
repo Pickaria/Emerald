@@ -9,6 +9,8 @@ import mocks.physicalCurrencyItemMock
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import org.junit.jupiter.api.*
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.assertEquals
 
 
@@ -28,12 +30,15 @@ class PaperEconomyServiceTest {
         MockBukkit.unmock()
     }
 
-    @Test
-    fun `should return formatted price according to currency's format`() {
+    @ParameterizedTest(name = "should return '{1}' when value is '{0}'")
+    @CsvSource(value = ["5.6,5.60 Crédits", "0.0,0.00 Crédit", "1.00,1.00 Crédit", "0.20,0.20 Crodimes"])
+    fun `should return formatted price according to currency's format`(
+        value: Double,
+        expectedFormattedPrice: String
+    ) {
         // Given
         every { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(5.6, "credits")
-        val expectedFormattedPrice = "5.60 Crédits"
+        val price = Price(value, "credits")
 
         // When
         val formattedPrice = economyService.format(price)

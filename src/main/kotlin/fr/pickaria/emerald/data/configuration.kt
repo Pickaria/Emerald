@@ -13,12 +13,18 @@ internal data class PhysicalCurrencyConfig(
 )
 
 @Serializable
-internal data class CurrencyConfig(
-    @SerialName("name_singular")
-    val nameSingular: String,
+internal data class Name(
+    val singular: String,
+    val plural: String,
+)
 
-    @SerialName("name_plural")
-    val namePlural: String,
+@Serializable
+internal data class CurrencyConfig(
+    val name: Name,
+
+    @SerialName("fractional_name")
+    val fractionalName: Name = name,
+
     val format: String,
     val description: List<String>,
 
