@@ -2,7 +2,7 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.domain.*
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
@@ -31,7 +31,7 @@ class PaperEconomyServiceTest {
     @Test
     fun `should return formatted price according to currency's format`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(5.6, "credits")
         val expectedFormattedPrice = "5.60 Crédits"
 
@@ -47,7 +47,7 @@ class PaperEconomyServiceTest {
         @Test
         fun `should throw exception when currency has an invalid amount`() {
             // Given
-            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            every { repository.getConfig("credits") } returns creditConfigMock
             val item = physicalCurrencyItemMock(value = -5.0)
 
             // When / Then
@@ -92,7 +92,7 @@ class PaperEconomyServiceTest {
         @Test
         fun `should throw exception when item has an invalid currency`() {
             // Given
-            coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+            every { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
             val item = physicalCurrencyItemMock(currency = "unknown")
 
             // When / Then
@@ -104,7 +104,7 @@ class PaperEconomyServiceTest {
         @Test
         fun `should get the correct expected price from a single item`() {
             // Given
-            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            every { repository.getConfig("credits") } returns creditConfigMock
             val expectedPrice = Price(3.0, "credits")
             val item = physicalCurrencyItemMock(count = 3, material = Material.IRON_NUGGET)
 
@@ -118,7 +118,7 @@ class PaperEconomyServiceTest {
         @Test
         fun `should get the correct expected price from a bundle`() {
             // Given
-            coEvery { repository.getConfig("credits") } returns creditConfigMock
+            every { repository.getConfig("credits") } returns creditConfigMock
             val expectedPrice = Price(9999.0, "credits")
             val item = physicalCurrencyItemMock(count = 1, material = Material.BUNDLE, value = 9999.0)
 

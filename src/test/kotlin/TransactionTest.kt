@@ -32,11 +32,11 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { sender.owner } returns server.addPlayer()
-        coEvery { recipient.owner } returns server.addPlayer()
-        coEvery { sender.getBalance("credits") } returns Price(8.0, "credits")
-        coEvery { sender.withdraw(Price(5.6, "credits")) } just Runs
-        coEvery { recipient.deposit(Price(5.6, "credits")) } just Runs
+        every { sender.owner } returns server.addPlayer()
+        every { recipient.owner } returns server.addPlayer()
+        every { sender.getBalance("credits") } returns Price(8.0, "credits")
+        every { sender.withdraw(Price(5.6, "credits")) } just Runs
+        every { recipient.deposit(Price(5.6, "credits")) } just Runs
 
         // When
         transaction.perform()
@@ -52,10 +52,10 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(0.0, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { sender.owner } returns server.addPlayer()
-        coEvery { recipient.owner } returns server.addPlayer()
-        coEvery { sender.getBalance("credits") } returns Price(8.0, "credits")
-        coEvery { sender.withdraw(Price(0.0, "credits")) } throws InvalidAmountException()
+        every { sender.owner } returns server.addPlayer()
+        every { recipient.owner } returns server.addPlayer()
+        every { sender.getBalance("credits") } returns Price(8.0, "credits")
+        every { sender.withdraw(Price(0.0, "credits")) } throws InvalidAmountException()
 
         // When / Then
         assertThrows<InvalidAmountException> { transaction.perform() }
@@ -68,10 +68,10 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "unknown")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { sender.owner } returns server.addPlayer()
-        coEvery { recipient.owner } returns server.addPlayer()
-        coEvery { sender.getBalance("unknown") } returns Price(8.0, "credits")
-        coEvery { sender.withdraw(Price(5.6, "unknown")) } throws UnknownCurrencyException("unknown")
+        every { sender.owner } returns server.addPlayer()
+        every { recipient.owner } returns server.addPlayer()
+        every { sender.getBalance("unknown") } returns Price(8.0, "credits")
+        every { sender.withdraw(Price(5.6, "unknown")) } throws UnknownCurrencyException("unknown")
 
         // When / Then
         assertThrows<UnknownCurrencyException> { transaction.perform() }
@@ -84,10 +84,10 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        coEvery { sender.owner } returns server.addPlayer()
-        coEvery { recipient.owner } returns server.addPlayer()
-        coEvery { sender.getBalance("credits") } returns Price(3.0, "credits")
-        coEvery { sender.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
+        every { sender.owner } returns server.addPlayer()
+        every { recipient.owner } returns server.addPlayer()
+        every { sender.getBalance("credits") } returns Price(3.0, "credits")
+        every { sender.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
 
         // When / Then
         assertThrows<BalanceInsufficientException> { transaction.perform() }
@@ -99,7 +99,7 @@ class TransactionTest {
         val sender = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, sender, amount)
-        coEvery { sender.owner } returns server.addPlayer()
+        every { sender.owner } returns server.addPlayer()
 
         // When / Then
         assertThrows<SenderCannotBeRecipientException> { transaction.perform() }

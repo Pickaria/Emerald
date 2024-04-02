@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.pickaria"
-version = "0.1.0-beta.2-SNAPSHOT"
+version = "0.1.0-beta.3-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -24,7 +24,7 @@ val exposedVersion: String by project
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("fr.pickaria:bedrock:1.1.2")
+    implementation("fr.pickaria:bedrock:1.2.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
@@ -43,6 +43,8 @@ dependencies {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    withSourcesJar()
+    withJavadocJar()
 }
 
 kotlin {

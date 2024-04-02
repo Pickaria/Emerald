@@ -9,6 +9,7 @@ description = ["<gray>Pièce d'une valeur de <gold><value><gray>."]
 name_singular = "Crédit"
 name_plural = "Crédits"
 format = "###,##0.00"
+collection_sound = "block.amethyst_block.fall"
 physical_currencies = [
     { value = 0.01, material = "GLOWSTONE_DUST" },
     { value = 0.1, material = "GUNPOWDER" },
@@ -25,6 +26,7 @@ description = ["<gray>Fragment ancestral issu de la", "<gray>création du monde 
 name_singular = "Éclat de Pickarite"
 name_plural = "Éclats de Pickarite"
 format = "###,##0.#"
+collection_sound = "block.amethyst_cluster.break"
 physical_currencies = [
     { value = 1.0, material = "ECHO_SHARD" },
     { value = 64.0, material = "SCULK" }
@@ -35,6 +37,7 @@ description = ["<gray>Objet permettant l'achat de récompenses."]
 name_singular = "Clé"
 name_plural = "Clés"
 format = "###,##0.#"
+collection_sound = "item.armor.equip_chain"
 physical_currencies = [
     { value = 1.0, material = "TRIPWIRE_HOOK" }
 ]

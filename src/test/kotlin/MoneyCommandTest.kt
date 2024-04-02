@@ -6,7 +6,7 @@ import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
@@ -42,9 +42,9 @@ class MoneyCommandTest {
 
         val account = mockk<Account>()
         val price = Price(5.6, "credits")
-        coEvery { service.getAccount(player) } returns account
-        coEvery { account.getBalance("credits") } returns price
-        coEvery { service.format(price) } returns "5.6 crédits"
+        every { service.getAccount(player) } returns account
+        every { account.getBalance("credits") } returns price
+        every { service.format(price) } returns "5.6 crédits"
 
         // When
         player.performCommand("money")
@@ -61,7 +61,7 @@ class MoneyCommandTest {
         player.addAttachment(plugin).setPermission("pickaria.command.balance", true)
         player.recalculatePermissions()
 
-        coEvery { service.getAccount(player) } throws UnknownCurrencyException("unknown")
+        every { service.getAccount(player) } throws UnknownCurrencyException("unknown")
 
         // When
         player.performCommand("money unknown")

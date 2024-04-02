@@ -25,21 +25,52 @@ class Account internal constructor(
 
     /**
      * @throws UnknownCurrencyException
-     * @throws BalanceInsufficientException
      * @throws InvalidAmountException
      */
-    fun withdraw(price: Price) {
+    fun has(price: Price): Boolean {
         if (price.amount <= 0.0) {
             throw InvalidAmountException()
         }
 
         val balance = economyRepository.getBalance(owner.uniqueId, price.currency)
-        if (balance < price.amount) {
+        return balance >= price.amount
+    }
+
+    /**
+     * @throws UnknownCurrencyException
+     * @throws BalanceInsufficientException
+     * @throws InvalidAmountException
+     */
+    fun withdraw(price: Price) {
+        if (!has(price)) {
             throw BalanceInsufficientException()
         }
 
         economyRepository.withdrawPlayer(owner.uniqueId, price.amount, price.currency)
         AccountChangeEvent(this, price, AccountChangeType.WITHDRAW).callEvent()
+    }
+
+    /**
+     * @throws UnknownCurrencyException
+     * @throws InvalidAmountException
+     */
+    fun withdrawAll(prices: Iterable<Price>) {
+        if (!prices.all { has(it) }) {
+            throw BalanceInsufficientException()
+        }
+
+        val withdrew = mutableListOf<Price>()
+
+        try {
+            prices.forEach {
+                withdraw(it)
+                withdrew.add(it)
+            }
+        } catch (_: BalanceInsufficientException) {
+            withdrew.reversed().forEach {
+                deposit(it)
+            }
+        }
     }
 
     /**

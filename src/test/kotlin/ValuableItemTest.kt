@@ -2,7 +2,7 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.domain.*
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import mocks.creditConfigMock
 import net.kyori.adventure.text.TextComponent
@@ -36,7 +36,7 @@ class ValuableItemTest {
     @Test
     fun `should throw exception when amount of 0 is specified`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(0.0, "credits")
 
         // When / Then
@@ -48,7 +48,7 @@ class ValuableItemTest {
     @Test
     fun `should throw exception when initializing a valuable item with unknown currency from a price`() {
         // Given
-        coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+        every { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
         val price = Price(1.0, "unknown")
 
         // When / Then
@@ -60,7 +60,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should have the correct value`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(1.0, "credits")
 
         // minecraft:iron_nugget{PublicBukkitValues:{"pickaria:value":1.0d,"pickaria:currency":"credits"}}
@@ -94,7 +94,7 @@ class ValuableItemTest {
     @Test
     fun `should throw exception when trying to initialize a unknown currency from an item stack`() {
         // Given
-        coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+        every { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
         val item = ItemStack(Material.GOLD_NUGGET).apply {
             editMeta {
                 it.persistentDataContainer.set(
@@ -118,7 +118,7 @@ class ValuableItemTest {
     @Test
     fun `should throw exception when trying to initialize a valuable item from an item stack with value missing`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val item = ItemStack(Material.GOLD_NUGGET).apply {
             editMeta {
                 it.persistentDataContainer.set(
@@ -137,7 +137,7 @@ class ValuableItemTest {
     @Test
     fun `should throw exception when trying to initialize a valuable item from an item stack with currency missing`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val item = ItemStack(Material.GOLD_NUGGET).apply {
             editMeta {
                 it.persistentDataContainer.set(
@@ -156,7 +156,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should handle increasing item rarity`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(128.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
@@ -191,7 +191,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should multiple stacks in a bundle`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(96.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
@@ -232,7 +232,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should large amount of money in a bundle`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(9999.0, "credits")
 
         // minecraft:gold_nugget{PublicBukkitValues:{"pickaria:value":64.0d,"pickaria:currency":"credits"}}
@@ -277,7 +277,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should be enchanted`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(1.0, "credits")
 
         // When
@@ -290,7 +290,7 @@ class ValuableItemTest {
     @Test
     fun `physical currency should have a name and lore`() {
         // Given
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val price = Price(1.0, "credits")
 
         // When

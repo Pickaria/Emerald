@@ -10,4 +10,5 @@ internal interface EconomyRepository {
     fun getConfig(currency: String): CurrencyConfig
     fun getDefaultCurrencyKey(): String
     fun getAvailableCurrencyNames(): Set<String>
+    fun getCollectionSoundKey(currency: String): String
 }

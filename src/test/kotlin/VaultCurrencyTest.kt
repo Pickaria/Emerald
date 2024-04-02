@@ -25,9 +25,9 @@ class VaultCurrencyTest {
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
-        coEvery { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
-        coEvery { service.getAvailableCurrencyNames() } returns setOf("credits")
+        every { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("unknown") } throws UnknownCurrencyException("unknown")
+        every { service.getAvailableCurrencyNames() } returns setOf("credits")
     }
 
     @AfterEach
@@ -58,7 +58,7 @@ class VaultCurrencyTest {
     fun `should format price`() {
         // Given
         val vaultCurrency = VaultCurrency(repository, service, "credits")
-        coEvery { service.format(Price(5.6, "credits")) } returns "5.6 crédits"
+        every { service.format(Price(5.6, "credits")) } returns "5.6 crédits"
 
         // When
         val actual = vaultCurrency.format(5.6)
@@ -85,8 +85,8 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val balance = vaultCurrency.getBalance(player)
@@ -101,9 +101,9 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.deposit(Price(5.6, "credits")) } just Runs
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.deposit(Price(5.6, "credits")) } just Runs
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val economyResponse = vaultCurrency.depositPlayer(player, 5.6)
@@ -119,9 +119,9 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.withdraw(Price(5.6, "credits")) } just Runs
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.withdraw(Price(5.6, "credits")) } just Runs
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val economyResponse = vaultCurrency.withdrawPlayer(player, 5.6)
@@ -137,8 +137,8 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val balance = vaultCurrency.getBalance(player)
@@ -153,8 +153,8 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val economyResponse = vaultCurrency.has(player, 5.0)
@@ -169,8 +169,8 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
         val economyResponse = vaultCurrency.has(player, 42.0)
@@ -185,9 +185,9 @@ class VaultCurrencyTest {
         val player = server.addPlayer()
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        coEvery { service.getAccount(player) } returns mockAccount
-        coEvery { mockAccount.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
-        coEvery { mockAccount.getBalance("credits") } returns Price(0.0, "credits")
+        every { service.getAccount(player) } returns mockAccount
+        every { mockAccount.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
+        every { mockAccount.getBalance("credits") } returns Price(0.0, "credits")
 
         // When
         val economyResponse = vaultCurrency.withdrawPlayer(player, 5.6)

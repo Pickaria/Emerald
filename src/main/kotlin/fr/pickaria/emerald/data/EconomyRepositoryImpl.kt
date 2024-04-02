@@ -2,14 +2,22 @@ package fr.pickaria.emerald.data
 
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import fr.pickaria.shared.openDatabase
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 
-internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyRepository {
-    private val database: Database = openDatabase(config.database.url, config.database.driver)
+internal class EconomyRepositoryImpl(private val config: EconomyConfig) : EconomyRepository {
+    private val database: Database = openDatabase(config.database)
+
+    init {
+        transaction(database) {
+            SchemaUtils.create(Accounts)
+        }
+    }
 
     override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
         validateCurrencyName(currency)
@@ -60,6 +68,8 @@ internal class H2EconomyRepository(private val config: EconomyConfig) : EconomyR
     override fun getDefaultCurrencyKey(): String = config.defaultCurrency
 
     override fun getAvailableCurrencyNames(): Set<String> = config.currencies.keys
+
+    override fun getCollectionSoundKey(currency: String): String = getConfig(currency).collectionSound
 
     /**
      * @throws UnknownCurrencyException

@@ -2,6 +2,8 @@ package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
@@ -75,6 +77,11 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     }
 
     override fun getAvailableCurrencyNames(): Set<String> = economyRepository.getAvailableCurrencyNames()
+
+    override fun getCollectionSound(currency: String): Sound {
+        val soundKey = economyRepository.getCollectionSoundKey(currency)
+        return Sound.sound(Key.key(soundKey), Sound.Source.MASTER, 1f, 1f)
+    }
 }
 
 class InvalidAmountException : Throwable()

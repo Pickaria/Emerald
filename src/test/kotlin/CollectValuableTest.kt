@@ -4,7 +4,7 @@ import fr.pickaria.emerald.controller.CollectValuableListener
 import fr.pickaria.emerald.domain.PaperEconomyService
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.Runs
-import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import mocks.creditConfigMock
@@ -42,9 +42,9 @@ class CollectValuableTest {
     fun `should make deposit and removes the item when player left clicks on a valuable item`() {
         // Given
         val player = server.addPlayer()
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
-        coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
+        every { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getBalance(player.uniqueId, "credits") } returns 5.0
+        every { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 
@@ -63,9 +63,9 @@ class CollectValuableTest {
     fun `should make deposit and removes the item when player right clicks on a valuable item`() {
         // Given
         val player = server.addPlayer()
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
-        coEvery { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        coEvery { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
+        every { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getBalance(player.uniqueId, "credits") } returns 5.0
+        every { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 
@@ -84,7 +84,7 @@ class CollectValuableTest {
     fun `should do nothing when valuable item has an invalid value`() {
         // Given
         val player = server.addPlayer()
-        coEvery { repository.getConfig("credits") } returns creditConfigMock
+        every { repository.getConfig("credits") } returns creditConfigMock
         val valuableItem = physicalCurrencyItemMock(value = -10.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 

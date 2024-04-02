@@ -1,6 +1,7 @@
 package fr.pickaria.emerald
 
 import fr.pickaria.emerald.domain.*
+import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 
@@ -48,4 +49,9 @@ interface EconomyService {
      * Gets a list of all valid configured currency names.
      */
     fun getAvailableCurrencyNames(): Set<String>
+
+    /**
+     * @throws UnknownCurrencyException
+     */
+    fun getCollectionSound(currency: String): Sound
 }

@@ -1,5 +1,6 @@
 package fr.pickaria.emerald.data
 
+import fr.pickaria.shared.DatabaseConfig
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.bukkit.Material
@@ -23,12 +24,9 @@ internal data class CurrencyConfig(
 
     @SerialName("physical_currencies")
     val physicalCurrencies: List<PhysicalCurrencyConfig>,
-)
 
-@Serializable
-internal data class DatabaseConfig(
-    val url: String,
-    val driver: String,
+    @SerialName("collection_sound")
+    val collectionSound: String,
 )
 
 @Serializable
