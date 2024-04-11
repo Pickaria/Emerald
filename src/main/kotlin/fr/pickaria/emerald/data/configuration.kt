@@ -1,6 +1,6 @@
 package fr.pickaria.emerald.data
 
-import fr.pickaria.shared.DatabaseConfig
+import fr.pickaria.database.DatabaseConfig
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.bukkit.Material

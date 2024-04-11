@@ -1,0 +1,10 @@
+services:
+  db:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: "password"
+      MARIADB_DATABASE: "pickaria"
+      MARIADB_USER: "pterodactyl"
+      MARIADB_PASSWORD: "password"

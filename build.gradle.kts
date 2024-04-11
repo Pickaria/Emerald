@@ -12,6 +12,7 @@ group = "fr.pickaria"
 version = "0.1.0-beta.4-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven("https://maven.pickaria.fr/releases")
     maven("https://maven.pickaria.fr/snapshot")
@@ -24,14 +25,16 @@ val exposedVersion: String by project
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    implementation("fr.pickaria:bedrock:1.2.0")
+    implementation("fr.pickaria:bedrock:1.3.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
-    implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
+    implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("com.h2database:h2:2.2.224")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.3.1")
+    implementation("com.zaxxer:HikariCP:4.0.3")
+
     implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
 
     testImplementation(kotlin("test"))

@@ -1,8 +1,8 @@
 package fr.pickaria.emerald.data
 
+import fr.pickaria.database.openPool
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import fr.pickaria.shared.openDatabase
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.and
@@ -11,7 +11,7 @@ import java.util.*
 
 
 internal class EconomyRepositoryImpl(private val config: EconomyConfig) : EconomyRepository {
-    private val database: Database = openDatabase(config.database)
+    private val database: Database = openPool(config.database)
 
     init {
         transaction(database) {

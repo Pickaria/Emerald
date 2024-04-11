@@ -1,8 +1,14 @@
 default_currency = "credits"
 
 [database]
+# Example using H2 in-memory
 url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;"
 driver = "org.h2.Driver"
+
+# Example using MariaDB
+#url = "jdbc:mariadb://localhost:3306/emerald"
+#driver = "org.mariadb.jdbc.Driver"
+#credentials = { user = "foo", password = "bar" }
 
 [currencies.credits]
 description = ["<gray>Pièce d'une valeur de <gold><value><gray>."]
