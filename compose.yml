@@ -8,3 +8,4 @@ services:
       MARIADB_DATABASE: "pickaria"
       MARIADB_USER: "pterodactyl"
       MARIADB_PASSWORD: "password"
+    restart: always

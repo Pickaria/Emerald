@@ -1,10 +1,10 @@
 package mocks
 
+import fr.pickaria.database.DatabaseConfig
 import fr.pickaria.emerald.data.CurrencyConfig
 import fr.pickaria.emerald.data.EconomyConfig
 import fr.pickaria.emerald.data.Name
 import fr.pickaria.emerald.data.PhysicalCurrencyConfig
-import fr.pickaria.shared.DatabaseConfig
 import org.bukkit.Material
 
 internal val creditConfigMock = CurrencyConfig(

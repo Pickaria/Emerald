@@ -11,10 +11,8 @@ import java.util.*
 
 
 internal class EconomyRepositoryImpl(private val config: EconomyConfig) : EconomyRepository {
-    private val database: Database = openPool(config.database)
-
-    init {
-        transaction(database) {
+    private val database: Database = openPool(config.database).also {
+        transaction(it) {
             SchemaUtils.create(Accounts)
         }
     }
