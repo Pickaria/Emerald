@@ -38,7 +38,7 @@ class PayCommandTest {
         // Given
         val sender = server.addPlayer()
         val recipient = server.addPlayer()
-        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
@@ -61,7 +61,7 @@ class PayCommandTest {
         // Given
         val sender = server.addPlayer()
         val recipient = server.addPlayer()
-        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
@@ -81,7 +81,7 @@ class PayCommandTest {
     fun `should do nothing when player tries to send money to themselves`() {
         // Given
         val sender = server.addPlayer()
-        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
         sender.recalculatePermissions()
 
         val priceToTransfer = Price(5.0, "credits")
@@ -101,7 +101,7 @@ class PayCommandTest {
     fun `should do nothing when player tries to send an amount of 0`() {
         // Given
         val sender = server.addPlayer()
-        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
         sender.recalculatePermissions()
         val recipient = server.addPlayer()
 
@@ -116,7 +116,7 @@ class PayCommandTest {
     fun `should do nothing when player tries to send a negative amount`() {
         // Given
         val sender = server.addPlayer()
-        sender.addAttachment(plugin).setPermission("pickaria.command.pay", true)
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
         sender.recalculatePermissions()
         val recipient = server.addPlayer()
 

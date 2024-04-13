@@ -37,7 +37,7 @@ class MoneyCommandTest {
     fun `player should see their balance when performing money command`() {
         // Given
         val player = server.addPlayer()
-        player.addAttachment(plugin).setPermission("pickaria.command.balance", true)
+        player.addAttachment(plugin).setPermission("pickaria.balance", true)
         player.recalculatePermissions()
 
         val account = mockk<Account>()
@@ -58,7 +58,7 @@ class MoneyCommandTest {
     fun `error message should be sent if the player asks for an unknown currency`() {
         // Given
         val player = server.addPlayer()
-        player.addAttachment(plugin).setPermission("pickaria.command.balance", true)
+        player.addAttachment(plugin).setPermission("pickaria.balance", true)
         player.recalculatePermissions()
 
         every { service.getAccount(player) } throws UnknownCurrencyException("unknown")

@@ -13,9 +13,11 @@ import fr.pickaria.shared.MiniMessage
 import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
-@CommandPermission("pickaria.command.balance")
-internal class MoneyCommand(manager: BukkitCommandManager, private val economyService: EconomyService) :
-    BaseCommand() {
+@CommandPermission("pickaria.balance")
+internal class MoneyCommand(
+    manager: BukkitCommandManager,
+    private val economyService: EconomyService
+) : BaseCommand() {
     init {
         manager.commandCompletions.registerCompletion("currencies") {
             economyService.getAvailableCurrencyNames()

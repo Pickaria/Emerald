@@ -13,24 +13,30 @@ import fr.pickaria.shared.give
 import org.bukkit.entity.Player
 
 @CommandAlias("eco|economy")
-@CommandPermission("pickaria.admin.eco")
+@CommandPermission("pickaria.eco")
 internal class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
-    @Subcommand("physical give")
-    fun onPhysicalGive(player: Player, @Default("credits") currency: String, @Default("1") amount: Double) {
-        try {
-            val itemStack = economyService.getValuableItemStack(Price(amount, currency))
-            player.give(itemStack)
-        } catch (e: UnknownCurrencyException) {
-            throw InvalidCommandArgument(e.message)
+    @Subcommand("give")
+    @CommandPermission("pickaria.eco.give")
+    inner class Give {
+        @Subcommand("virtual")
+        @CommandPermission("pickaria.eco.give.virtual")
+        fun onVirtualGive(player: Player, @Default("1") amount: Double, @Default("credits") currency: String) {
+            try {
+                economyService.getAccount(player).deposit(Price(amount, currency))
+            } catch (e: UnknownCurrencyException) {
+                throw InvalidCommandArgument(e.message)
+            }
         }
-    }
 
-    @Subcommand("virtual give")
-    fun onVirtualGive(player: Player, @Default("credits") currency: String, @Default("1") amount: Double) {
-        try {
-            economyService.getAccount(player).deposit(Price(amount, currency))
-        } catch (e: UnknownCurrencyException) {
-            throw InvalidCommandArgument(e.message)
+        @Subcommand("physical")
+        @CommandPermission("pickaria.eco.give.physical")
+        fun onPhysicalGive(player: Player, @Default("1") amount: Double, @Default("credits") currency: String) {
+            try {
+                val itemStack = economyService.getValuableItemStack(Price(amount, currency))
+                player.give(itemStack)
+            } catch (e: UnknownCurrencyException) {
+                throw InvalidCommandArgument(e.message)
+            }
         }
     }
 }
