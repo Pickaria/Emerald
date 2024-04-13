@@ -25,7 +25,7 @@ val exposedVersion: String by project
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    api("fr.pickaria:bedrock:1.3.0")
+    api("fr.pickaria:bedrock:1.4.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)

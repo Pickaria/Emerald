@@ -58,7 +58,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
 
         val totalValue = item.amount * value
 
-        if (totalValue <= 0.0) {
+        if (totalValue < 0.0) {
             throw InvalidAmountException()
         }
 
@@ -66,7 +66,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
     }
 
     override fun getValuableItemStack(price: Price): ItemStack {
-        if (price.amount <= 0.0) {
+        if (price.amount < 0.0) {
             throw InvalidAmountException()
         }
 

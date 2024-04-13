@@ -17,7 +17,7 @@ import org.bukkit.entity.Player
 internal class EconomyCommand(private val economyService: EconomyService) : BaseCommand() {
     @Subcommand("give")
     @CommandPermission("pickaria.eco.give")
-    inner class Give {
+    inner class Give : BaseCommand() {
         @Subcommand("virtual")
         @CommandPermission("pickaria.eco.give.virtual")
         fun onVirtualGive(player: Player, @Default("1") amount: Double, @Default("credits") currency: String) {

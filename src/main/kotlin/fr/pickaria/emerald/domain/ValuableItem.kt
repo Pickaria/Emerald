@@ -101,11 +101,14 @@ internal class ValuableItem(
         }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
 
         return createItem(Material.BUNDLE, price.amount, currencyDisplayName, listOf(lore)).apply {
-            editMeta { meta ->
-                items.forEach {
-                    (meta as BundleMeta).addItem(it)
-                }
+            val bundleMeta = itemMeta as BundleMeta
+
+            bundleMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS)
+            items.forEach {
+                bundleMeta.addItem(it)
             }
+
+            itemMeta = bundleMeta
         }
     }
 
@@ -123,7 +126,7 @@ internal class ValuableItem(
         return if (items.size > 1) {
             bundle(items, currencyDisplayName)
         } else {
-            items.first()
+            items.firstOrNull() ?: bundle(emptyList(), currencyDisplayName)
         }
     }
 }
