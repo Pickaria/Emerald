@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.pickaria"
-version = "0.1.0-beta.5-SNAPSHOT"
+version = "0.2.0-beta.1-SNAPSHOT"
 
 repositories {
     mavenLocal()
