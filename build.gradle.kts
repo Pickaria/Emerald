@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.pickaria"
-version = "0.2.0-beta.1-SNAPSHOT"
+version = "0.2.0-beta.2-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -23,19 +23,17 @@ repositories {
 
 val exposedVersion: String by project
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    api("fr.pickaria:bedrock:1.4.0")
+    compileOnly("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-
-    implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
-    implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
-    implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
-    implementation("com.h2database:h2:2.2.224")
-    implementation("org.mariadb.jdbc:mariadb-java-client:3.3.1")
-    implementation("com.zaxxer:HikariCP:4.0.3")
-
-    implementation("net.peanuuutz.tomlkt:tomlkt:0.3.7")
+    compileOnly("com.h2database:h2:2.2.224")
+    compileOnly("com.zaxxer:HikariCP:4.0.3")
+    compileOnly("fr.pickaria:bedrock:1.4.0")
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("net.peanuuutz.tomlkt:tomlkt:0.3.7")
+    compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion)
+    compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion)
+    compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
+    compileOnly("org.mariadb.jdbc:mariadb-java-client:3.3.1")
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
@@ -66,14 +64,11 @@ tasks {
 
     jar {
         archiveFileName.set("${project.name}.jar")
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         destinationDirectory.set(file("run/plugins"))
 
         manifest {
             attributes["Main-Class"] = "fr.pickaria.emerald.MainKt"
         }
-
-        from(configurations.runtimeClasspath.get().map { zipTree(it) })
     }
 }
 

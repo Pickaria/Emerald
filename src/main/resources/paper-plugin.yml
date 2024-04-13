@@ -7,6 +7,10 @@ description: Economy plugin
 
 dependencies:
   server:
+    Bookshelf:
+      load: BEFORE
+      required: true
+      join-classpath: true
     Vault:
       load: BEFORE
       required: false
