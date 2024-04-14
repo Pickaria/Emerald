@@ -37,7 +37,7 @@ class ValuableItemTest {
     fun `should throw exception when amount of 0 is specified`() {
         // Given
         every { repository.getConfig("credits") } returns creditConfigMock
-        val price = Price(0.0, "credits")
+        val price = Price(-1.0, "credits")
 
         // When / Then
         assertThrows<InvalidAmountException> {

@@ -4,8 +4,8 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
     id("xyz.jpenilla.run-paper") version "2.2.3"
-    kotlin("jvm") version "1.9.22"
-    kotlin("plugin.serialization") version "1.9.22"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.serialization") version "1.9.23"
 }
 
 group = "fr.pickaria"
@@ -15,7 +15,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven("https://maven.pickaria.fr/releases")
-    maven("https://maven.pickaria.fr/snapshot")
+    maven("https://maven.pickaria.fr/snapshots")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
     maven("https://jitpack.io") // Vault
@@ -23,24 +23,17 @@ repositories {
 
 val exposedVersion: String by project
 dependencies {
-    compileOnly("co.aikar:acf-paper:0.5.1-SNAPSHOT")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
-    compileOnly("com.h2database:h2:2.2.224")
-    compileOnly("com.zaxxer:HikariCP:4.0.3")
-    compileOnly("fr.pickaria:bedrock:1.4.0")
     compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
-    compileOnly("net.peanuuutz.tomlkt:tomlkt:0.3.7")
-    compileOnly("org.jetbrains.exposed", "exposed-core", exposedVersion)
-    compileOnly("org.jetbrains.exposed", "exposed-dao", exposedVersion)
-    compileOnly("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
-    compileOnly("org.mariadb.jdbc:mariadb-java-client:3.3.1")
+
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    compileOnly("fr.pickaria:bookshelf:1.0-SNAPSHOT")
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
+    testImplementation("com.github.MilkBowl:VaultAPI:1.7.1")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.78.0")
+    testImplementation("fr.pickaria:bookshelf:1.0-SNAPSHOT")
     testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("co.aikar:acf-core:0.5.1-SNAPSHOT")
-    testImplementation("com.github.MilkBowl:VaultAPI:1.7")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
 }
 
 java {
@@ -64,11 +57,14 @@ tasks {
 
     jar {
         archiveFileName.set("${project.name}.jar")
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         destinationDirectory.set(file("run/plugins"))
 
         manifest {
             attributes["Main-Class"] = "fr.pickaria.emerald.MainKt"
         }
+
+        from(configurations.runtimeClasspath.get().map { zipTree(it) })
     }
 }
 

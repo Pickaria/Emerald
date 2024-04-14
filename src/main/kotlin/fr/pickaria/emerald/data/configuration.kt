@@ -6,18 +6,21 @@ import kotlinx.serialization.Serializable
 import org.bukkit.Material
 
 
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
 internal data class PhysicalCurrencyConfig(
     val value: Double,
     val material: Material,
 )
 
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
 internal data class Name(
     val singular: String,
     val plural: String,
 )
 
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
 internal data class CurrencyConfig(
     val name: Name,
@@ -35,6 +38,7 @@ internal data class CurrencyConfig(
     val collectionSound: String,
 )
 
+@Suppress("PROVIDED_RUNTIME_TOO_LOW")
 @Serializable
 internal data class EconomyConfig(
     @SerialName("default_currency")
