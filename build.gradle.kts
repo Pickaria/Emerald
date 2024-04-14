@@ -17,7 +17,6 @@ repositories {
     maven("https://maven.pickaria.fr/releases")
     maven("https://maven.pickaria.fr/snapshots")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
-    maven("https://repo.aikar.co/content/groups/aikar/") // ACF
     maven("https://jitpack.io") // Vault
 }
 
@@ -57,14 +56,11 @@ tasks {
 
     jar {
         archiveFileName.set("${project.name}.jar")
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
         destinationDirectory.set(file("run/plugins"))
 
         manifest {
             attributes["Main-Class"] = "fr.pickaria.emerald.MainKt"
         }
-
-        from(configurations.runtimeClasspath.get().map { zipTree(it) })
     }
 }
 
