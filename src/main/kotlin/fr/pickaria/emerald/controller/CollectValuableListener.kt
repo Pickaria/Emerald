@@ -6,26 +6,14 @@ import fr.pickaria.emerald.domain.ItemIsNotACurrencyException
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.inventory.ItemStack
 
 internal class CollectValuableListener(private val economyService: EconomyService) : Listener {
-    private fun depositItem(itemStack: ItemStack, player: Player): Boolean {
-        return try {
-            val price = economyService.getValueOfItem(itemStack)
-            economyService.getAccount(player).deposit(price)
-            itemStack.amount = 0
-            true
-        } catch (_: ItemIsNotACurrencyException) {
-            false
-        } catch (_: InvalidAmountException) {
-            false
-        }
-    }
-
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun onInventoryClick(event: InventoryClickEvent) {
         val whoClicked = event.whoClicked
 
@@ -43,11 +31,24 @@ internal class CollectValuableListener(private val economyService: EconomyServic
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     fun onPlayerDropItem(event: PlayerDropItemEvent) {
         if (depositItem(event.itemDrop.itemStack, event.player)) {
             event.itemDrop.remove()
             event.isCancelled = true
+        }
+    }
+
+    private fun depositItem(itemStack: ItemStack, player: Player): Boolean {
+        return try {
+            val price = economyService.getValueOfItem(itemStack)
+            economyService.getAccount(player).deposit(price)
+            itemStack.amount = 0
+            true
+        } catch (_: ItemIsNotACurrencyException) {
+            false
+        } catch (_: InvalidAmountException) {
+            false
         }
     }
 }
