@@ -9,13 +9,17 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
 import kotlin.math.pow
+
 
 internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
     override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency)
 
-        val decimalFormat = DecimalFormat(currencyConfig.format).also {
+        val symbols = DecimalFormatSymbols(Locale.FRENCH)
+        val decimalFormat = DecimalFormat(currencyConfig.format, symbols).also {
             it.roundingMode = RoundingMode.FLOOR
         }
 

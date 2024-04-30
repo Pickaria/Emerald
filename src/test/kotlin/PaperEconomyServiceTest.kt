@@ -31,7 +31,10 @@ class PaperEconomyServiceTest {
     }
 
     @ParameterizedTest(name = "should return {1} when value is {0}")
-    @CsvSource(value = ["5.6,5.60 Crédits", "0.0,0 Crédit", "1.00,1.00 Crédit", "0.20,20 Crodimes", "-0.20,-20 Crodimes", "-5.36,-5.36 Crédits"])
+    @CsvSource(
+        value = ["5.6;5,60 Crédits", "0.0;0 Crédit", "1.00;1,00 Crédit", "0.20;20 Crodimes", "-0.20;-20 Crodimes", "-5.36;-5,36 Crédits"],
+        delimiter = ';'
+    )
     fun `should return formatted price according to currency's format`(
         value: Double,
         expectedFormattedPrice: String

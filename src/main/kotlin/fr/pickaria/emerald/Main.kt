@@ -1,6 +1,6 @@
 package fr.pickaria.emerald
 
-import co.aikar.commands.BukkitCommandManager
+import fr.pickaria.acf.initCommandManager
 import fr.pickaria.emerald.controller.*
 import fr.pickaria.emerald.controller.vault.registerVaultCurrency
 import fr.pickaria.emerald.data.EconomyConfig
@@ -30,9 +30,9 @@ internal open class Main : JavaPlugin() {
         server.pluginManager.registerEvents(CollectValuableListener(economyService), this)
         server.pluginManager.registerEvents(NotifyListener(economyService), this)
 
-        val manager = BukkitCommandManager(this)
+        val manager = initCommandManager()
         manager.registerCommand(MoneyCommand(manager, economyService))
         manager.registerCommand(PayCommand(economyService, economyRepository.getDefaultCurrencyKey()))
-        manager.registerCommand(EconomyCommand(economyService))
+        manager.registerCommand(EconomyCommand(economyService, manager))
     }
 }

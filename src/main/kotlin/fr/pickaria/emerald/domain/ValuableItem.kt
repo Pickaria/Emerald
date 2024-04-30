@@ -50,8 +50,8 @@ internal class ValuableItem(
         lore: List<Component>
     ): ItemStack = ItemStack(material).apply {
         editMeta {
-            it.addEnchant(Enchantment.DURABILITY, 1, true)
-            it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ITEM_SPECIFICS)
+            it.addEnchant(Enchantment.UNBREAKING, 1, true)
+            it.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             it.displayName(displayName)
             it.lore(lore)
 
@@ -103,7 +103,7 @@ internal class ValuableItem(
         return createItem(Material.BUNDLE, price.amount, currencyDisplayName, listOf(lore)).apply {
             val bundleMeta = itemMeta as BundleMeta
 
-            bundleMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS)
+            bundleMeta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP)
             items.forEach {
                 bundleMeta.addItem(it)
             }

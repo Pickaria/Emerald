@@ -22,7 +22,7 @@ internal class PayCommand(
     private val defaultCurrency: String
 ) : BaseCommand() {
     @Default
-    @CommandCompletion("@players")
+    @CommandCompletion("@players @amounts")
     fun onDefault(player: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
         if (amount <= 0.01) {
             throw InvalidCommandArgument("Le montant doit être supérieur à 0.01.")

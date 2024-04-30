@@ -17,32 +17,35 @@ repositories {
     maven("https://maven.pickaria.fr/releases")
     maven("https://maven.pickaria.fr/snapshots")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // Adventure (snapshot)
     maven("https://jitpack.io") // Vault
+    maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 }
 
 val exposedVersion: String by project
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("fr.pickaria:bookshelf:1.0-SNAPSHOT")
 
     testImplementation(kotlin("test"))
     testImplementation("com.github.MilkBowl:VaultAPI:1.7.1")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.78.0")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.86.0")
     testImplementation("fr.pickaria:bookshelf:1.0-SNAPSHOT")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     withSourcesJar()
     withJavadocJar()
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
+    compilerOptions.javaParameters = true
 }
 
 tasks {
@@ -51,7 +54,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.20.4")
+        minecraftVersion("1.20.6")
     }
 
     jar {
