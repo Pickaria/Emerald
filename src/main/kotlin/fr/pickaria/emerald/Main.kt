@@ -20,7 +20,7 @@ internal open class Main : JavaPlugin() {
         val config = Toml.decodeFromNativeReader<EconomyConfig>(getStreamReader("config.toml"))
 
         val economyRepository: EconomyRepository = EconomyRepositoryImpl(config)
-        val economyService: EconomyService = PaperEconomyService(economyRepository)
+        val economyService: EconomyService = PaperEconomyService(economyRepository = economyRepository, plugin = this)
 
         withPlugin("Vault") {
             registerVaultCurrency(economyRepository, economyService)

@@ -7,6 +7,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
+import org.bukkit.plugin.java.JavaPlugin
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -14,7 +15,10 @@ import java.util.*
 import kotlin.math.pow
 
 
-internal class PaperEconomyService(private val economyRepository: EconomyRepository) : EconomyService {
+internal class PaperEconomyService(
+    private val economyRepository: EconomyRepository,
+    private val plugin: JavaPlugin,
+) : EconomyService {
     override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency)
 
@@ -82,6 +86,7 @@ internal class PaperEconomyService(private val economyRepository: EconomyReposit
         Account(
             economyRepository = economyRepository,
             owner = player,
+            plugin = plugin,
         )
 
     override fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction {

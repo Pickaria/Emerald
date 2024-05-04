@@ -13,7 +13,7 @@ class AccountChangeEvent(
     val account: Account,
     val price: Price,
     val changeType: AccountChangeType
-) : Event() {
+) : Event(true) {
     companion object {
         @JvmStatic
         private val HANDLER_LIST: HandlerList = HandlerList()

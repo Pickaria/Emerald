@@ -1,7 +1,10 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import org.bukkit.plugin.java.JavaPlugin
+
 
 /**
  * Represents a player's bank account.
@@ -13,7 +16,8 @@ import org.bukkit.OfflinePlayer
  */
 class Account internal constructor(
     private val economyRepository: EconomyRepository,
-    val owner: OfflinePlayer
+    val owner: OfflinePlayer,
+    private val plugin: JavaPlugin,
 ) {
     /**
      * @throws UnknownCurrencyException
@@ -47,7 +51,7 @@ class Account internal constructor(
         }
 
         economyRepository.withdrawPlayer(owner.uniqueId, price.amount, price.currency)
-        AccountChangeEvent(this, price, AccountChangeType.WITHDRAW).callEvent()
+        callAccountChangeEvent(price, AccountChangeType.WITHDRAW)
     }
 
     /**
@@ -86,7 +90,14 @@ class Account internal constructor(
         }
 
         economyRepository.depositPlayer(owner.uniqueId, price.amount, price.currency)
-        AccountChangeEvent(this, price, AccountChangeType.DEPOSIT).callEvent()
+        callAccountChangeEvent(price, AccountChangeType.DEPOSIT)
+    }
+
+    private fun callAccountChangeEvent(price: Price, eventType: AccountChangeType) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+            val event = AccountChangeEvent(this, price, eventType)
+            Bukkit.getPluginManager().callEvent(event)
+        })
     }
 }
 
