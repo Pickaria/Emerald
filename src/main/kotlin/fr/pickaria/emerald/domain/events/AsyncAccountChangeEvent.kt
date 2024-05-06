@@ -1,15 +1,12 @@
-package fr.pickaria.emerald.domain
+package fr.pickaria.emerald.domain.events
 
+import fr.pickaria.emerald.domain.Account
+import fr.pickaria.emerald.domain.Price
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
 
-enum class AccountChangeType {
-    WITHDRAW,
-    DEPOSIT,
-}
-
-class AccountChangeEvent(
+class AsyncAccountChangeEvent(
     val account: Account,
     val price: Price,
     val changeType: AccountChangeType

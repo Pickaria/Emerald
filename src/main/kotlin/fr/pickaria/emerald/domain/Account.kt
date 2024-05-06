@@ -1,5 +1,8 @@
 package fr.pickaria.emerald.domain
 
+import fr.pickaria.emerald.domain.events.AccountChangeEvent
+import fr.pickaria.emerald.domain.events.AccountChangeType
+import fr.pickaria.emerald.domain.events.AsyncAccountChangeEvent
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -95,9 +98,15 @@ class Account internal constructor(
 
     private fun callAccountChangeEvent(price: Price, eventType: AccountChangeType) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-            val event = AccountChangeEvent(this, price, eventType)
+            val event = AsyncAccountChangeEvent(this, price, eventType)
             Bukkit.getPluginManager().callEvent(event)
         })
+
+        try {
+            val event = AccountChangeEvent(this, price, eventType)
+            Bukkit.getPluginManager().callEvent(event)
+        } catch (_: IllegalStateException) {
+        }
     }
 }
 

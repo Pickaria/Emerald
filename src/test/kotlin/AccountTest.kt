@@ -1,6 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.domain.*
+import fr.pickaria.emerald.domain.events.AsyncAccountChangeEvent
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
 import org.junit.jupiter.api.*
@@ -231,7 +232,7 @@ class AccountTest {
             account.withdraw(withdrawingPrice)
 
             // Then
-            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
+            server.pluginManager.assertEventFired(AsyncAccountChangeEvent::class.java)
         }
 
         @Test
@@ -386,7 +387,7 @@ class AccountTest {
             account.deposit(withdrawingPrice)
 
             // Then
-            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
+            server.pluginManager.assertEventFired(AsyncAccountChangeEvent::class.java)
         }
 
         @Test
