@@ -67,7 +67,7 @@ internal class PaperEconomyService(
         val totalValue = item.amount * value
 
         if (totalValue < 0.0) {
-            throw InvalidAmountException()
+            throw InvalidAmountException(totalValue)
         }
 
         return Price(totalValue, currency)
@@ -75,7 +75,7 @@ internal class PaperEconomyService(
 
     override fun getValuableItemStack(price: Price): ItemStack {
         if (price.amount < 0.0) {
-            throw InvalidAmountException()
+            throw InvalidAmountException(price.amount)
         }
 
         return ValuableItem(economyRepository, this, price)
@@ -104,6 +104,6 @@ internal class PaperEconomyService(
     }
 }
 
-class InvalidAmountException : Throwable()
+class InvalidAmountException(val amount: Double) : Throwable()
 class ItemIsNotACurrencyException : Throwable()
 class UnknownCurrencyException(val currency: String) : Throwable()

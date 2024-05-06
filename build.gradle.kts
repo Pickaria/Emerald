@@ -3,7 +3,7 @@ plugins {
     id("maven-publish")
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
-    id("xyz.jpenilla.run-paper") version "2.2.3"
+    id("xyz.jpenilla.run-paper") version "2.3.0"
     kotlin("jvm") version "1.9.23"
     kotlin("plugin.serialization") version "1.9.23"
 }

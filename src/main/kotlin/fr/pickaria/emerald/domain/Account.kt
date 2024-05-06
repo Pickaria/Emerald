@@ -35,8 +35,9 @@ class Account internal constructor(
      * @throws InvalidAmountException
      */
     fun has(price: Price): Boolean {
-        if (price.amount <= 0.0) {
-            throw InvalidAmountException()
+        if (price.amount < 0.0) {
+            Bukkit.getLogger().severe("An account cannot have a negative amount of: ${price.amount} ${price.currency}")
+            throw InvalidAmountException(price.amount)
         }
 
         val balance = economyRepository.getBalance(owner.uniqueId, price.currency)
@@ -88,8 +89,8 @@ class Account internal constructor(
      * @throws InvalidAmountException
      */
     fun deposit(price: Price) {
-        if (price.amount <= 0.0) {
-            throw InvalidAmountException()
+        if (price.amount < 0.0) {
+            throw InvalidAmountException(price.amount)
         }
 
         economyRepository.depositPlayer(owner.uniqueId, price.amount, price.currency)
