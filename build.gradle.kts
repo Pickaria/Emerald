@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "fr.pickaria"
-version = "0.2.0-beta.2-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenLocal()
@@ -17,7 +17,6 @@ repositories {
     maven("https://maven.pickaria.fr/releases")
     maven("https://maven.pickaria.fr/snapshots")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
-    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // Adventure (snapshot)
     maven("https://jitpack.io") // Vault
     maven("https://repo.aikar.co/content/groups/aikar/") // ACF
 }
