@@ -11,7 +11,7 @@ import org.bukkit.event.Listener
 internal class NotifyListener(private val economyService: EconomyService) : Listener {
     @EventHandler
     fun onAccountChangeEvent(event: AsyncAccountChangeEvent) {
-        event.account.owner.player?.let {
+        event.getOnlinePlayer()?.let {
             val formattedPrice = economyService.format(event.price)
             it.playSound(economyService.getCollectionSound(event.price.currency))
 

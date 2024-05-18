@@ -2,6 +2,8 @@ package fr.pickaria.emerald.domain.events
 
 import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.Price
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 
@@ -24,4 +26,6 @@ class AccountChangeEvent(
     override fun getHandlers(): HandlerList {
         return HANDLER_LIST
     }
+
+    fun getOnlinePlayer(): Player? = Bukkit.getPlayer(account.ownerUniqueId)
 }

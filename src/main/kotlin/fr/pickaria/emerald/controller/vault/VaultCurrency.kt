@@ -6,7 +6,6 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import net.milkbowl.vault.economy.AbstractEconomy
 import net.milkbowl.vault.economy.EconomyResponse
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
 internal class VaultCurrency(
@@ -109,7 +108,8 @@ internal class VaultCurrency(
 
     // Deprecated methods
     @Deprecated("Deprecated in Java")
-    override fun hasAccount(playerName: String): Boolean = hasAccount(Bukkit.getOfflinePlayer(playerName))
+    override fun hasAccount(playerName: String): Boolean =
+        economyService.getAvailableCurrencyNames().contains(currencyName)
 
     @Deprecated("Deprecated in Java")
     override fun hasAccount(playerName: String?, worldName: String?): Boolean {
@@ -117,7 +117,8 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun getBalance(playerName: String): Double = getBalance(Bukkit.getOfflinePlayer(playerName))
+    override fun getBalance(playerName: String): Double =
+        economyService.getAccount(playerName).getBalance(currencyName).amount
 
     @Deprecated("Deprecated in Java")
     override fun getBalance(playerName: String?, world: String?): Double {
@@ -125,7 +126,7 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun has(playerName: String, amount: Double): Boolean = has(Bukkit.getOfflinePlayer(playerName), amount)
+    override fun has(playerName: String, amount: Double): Boolean = getBalance(playerName) >= amount
 
     @Deprecated("Deprecated in Java")
     override fun has(playerName: String?, worldName: String?, amount: Double): Boolean {
@@ -133,8 +134,26 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun withdrawPlayer(playerName: String, amount: Double): EconomyResponse =
-        withdrawPlayer(Bukkit.getOfflinePlayer(playerName), amount)
+    override fun withdrawPlayer(playerName: String, amount: Double): EconomyResponse {
+        return try {
+            val account = economyService.getAccount(playerName)
+            account.withdraw(Price(amount, currencyName))
+            EconomyResponse(
+                amount,
+                account.getBalance(currencyName).amount,
+                EconomyResponse.ResponseType.SUCCESS,
+                null
+            )
+        } catch (_: BalanceInsufficientException) {
+            val account = economyService.getAccount(playerName)
+            EconomyResponse(
+                amount,
+                account.getBalance(currencyName).amount,
+                EconomyResponse.ResponseType.FAILURE,
+                "BalanceInsufficientException"
+            )
+        }
+    }
 
     @Deprecated("Deprecated in Java")
     override fun withdrawPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
@@ -142,8 +161,16 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun depositPlayer(playerName: String, amount: Double): EconomyResponse =
-        depositPlayer(Bukkit.getOfflinePlayer(playerName), amount)
+    override fun depositPlayer(playerName: String, amount: Double): EconomyResponse {
+        val account = economyService.getAccount(playerName)
+        account.deposit(Price(amount, currencyName))
+        return EconomyResponse(
+            amount,
+            account.getBalance(currencyName).amount,
+            EconomyResponse.ResponseType.SUCCESS,
+            null
+        )
+    }
 
     @Deprecated("Deprecated in Java")
     override fun depositPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
@@ -152,7 +179,7 @@ internal class VaultCurrency(
 
     @Deprecated("Deprecated in Java")
     override fun createPlayerAccount(playerName: String): Boolean =
-        createPlayerAccount(Bukkit.getOfflinePlayer(playerName))
+        hasAccount(playerName)
 
     @Deprecated("Deprecated in Java")
     override fun createPlayerAccount(playerName: String?, worldName: String?): Boolean {

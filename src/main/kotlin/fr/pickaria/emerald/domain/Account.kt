@@ -5,8 +5,8 @@ import fr.pickaria.emerald.domain.events.AccountChangeType
 import fr.pickaria.emerald.domain.events.AsyncAccountChangeEvent
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 
 /**
@@ -19,14 +19,27 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 class Account internal constructor(
     private val economyRepository: EconomyRepository,
-    val owner: OfflinePlayer,
+    private val name: String,
+    val ownerUniqueId: UUID,
     private val plugin: JavaPlugin,
 ) {
+    companion object {
+        internal fun fromName(economyRepository: EconomyRepository, name: String, plugin: JavaPlugin): Account {
+            val uniqueId = Bukkit.getPlayerExact(name)?.uniqueId ?: economyRepository.getOwnerUniqueIdFromName(name)
+            return Account(
+                economyRepository = economyRepository,
+                ownerUniqueId = uniqueId,
+                name = name,
+                plugin = plugin,
+            )
+        }
+    }
+
     /**
      * @throws UnknownCurrencyException
      */
     fun getBalance(currency: String): Price {
-        val balance = economyRepository.getBalance(owner.uniqueId, currency)
+        val balance = economyRepository.getBalance(ownerUniqueId, currency)
         return Price(balance, currency)
     }
 
@@ -40,7 +53,7 @@ class Account internal constructor(
             throw InvalidAmountException(price.amount)
         }
 
-        val balance = economyRepository.getBalance(owner.uniqueId, price.currency)
+        val balance = economyRepository.getBalance(ownerUniqueId, price.currency)
         return balance >= price.amount
     }
 
@@ -54,7 +67,7 @@ class Account internal constructor(
             throw BalanceInsufficientException()
         }
 
-        economyRepository.withdrawPlayer(owner.uniqueId, price.amount, price.currency)
+        economyRepository.withdrawPlayer(name, ownerUniqueId, price.amount, price.currency)
         callAccountChangeEvent(price, AccountChangeType.WITHDRAW)
     }
 
@@ -93,7 +106,7 @@ class Account internal constructor(
             throw InvalidAmountException(price.amount)
         }
 
-        economyRepository.depositPlayer(owner.uniqueId, price.amount, price.currency)
+        economyRepository.depositPlayer(name, ownerUniqueId, price.amount, price.currency)
         callAccountChangeEvent(price, AccountChangeType.DEPOSIT)
     }
 

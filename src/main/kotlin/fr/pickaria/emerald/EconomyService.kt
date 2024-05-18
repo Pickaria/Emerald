@@ -3,6 +3,7 @@ package fr.pickaria.emerald
 import fr.pickaria.emerald.domain.*
 import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 /**
@@ -24,7 +25,10 @@ interface EconomyService {
     /**
      * Gets the player's bank account.
      */
+    @Deprecated("Use getAccount(Player) instead")
     fun getAccount(player: OfflinePlayer): Account
+    fun getAccount(player: Player): Account
+    fun getAccount(name: String): Account
 
     /**
      * Creates a new transaction from players.

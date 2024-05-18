@@ -13,11 +13,11 @@ import java.util.*
 internal class EconomyRepositoryImpl(private val config: EconomyConfig) : EconomyRepository {
     private val database: Database = openPool(config.database).also {
         transaction(it) {
-            SchemaUtils.create(Accounts)
+            SchemaUtils.create(Accounts, UnregisteredUsers)
         }
     }
 
-    override fun depositPlayer(accountId: UUID, amount: Double, currency: String) {
+    override fun depositPlayer(userName: String, accountId: UUID, amount: Double, currency: String) {
         validateCurrencyName(currency)
 
         transaction(database) {
@@ -33,12 +33,13 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
                     accountName = currency
                     balance = amount
                 }
+                createUserIfNotExists(userName, accountId)
             }
         }
     }
 
-    override fun withdrawPlayer(accountId: UUID, amount: Double, currency: String) {
-        this.depositPlayer(accountId, -amount, currency)
+    override fun withdrawPlayer(userName: String, accountId: UUID, amount: Double, currency: String) {
+        this.depositPlayer(userName, accountId, -amount, currency)
     }
 
     override fun getBalance(accountId: UUID, currency: String): Double {
@@ -68,6 +69,23 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
     override fun getAvailableCurrencyNames(): Set<String> = config.currencies.keys
 
     override fun getCollectionSoundKey(currency: String): String = getConfig(currency).collectionSound
+
+    override fun getOwnerUniqueIdFromName(name: String): UUID {
+        return transaction(database) {
+            val unregisteredUser = createUserIfNotExists(
+                name = name,
+                uuid = UUID.nameUUIDFromBytes(name.toByteArray())
+            )
+            unregisteredUser.uniqueId
+        }
+    }
+
+    private fun createUserIfNotExists(name: String, uuid: UUID): UnregisteredUser {
+        return UnregisteredUser.find { UnregisteredUsers.username eq name }.singleOrNull() ?: UnregisteredUser.new {
+            username = name
+            uniqueId = uuid
+        }
+    }
 
     /**
      * @throws UnknownCurrencyException

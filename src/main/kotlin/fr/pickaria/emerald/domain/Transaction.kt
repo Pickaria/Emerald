@@ -9,7 +9,7 @@ class Transaction(private val from: Account, private val to: Account, private va
      * @throws SenderCannotBeRecipientException
      */
     fun perform() {
-        if (from.owner.uniqueId == to.owner.uniqueId) {
+        if (from.ownerUniqueId == to.ownerUniqueId) {
             throw SenderCannotBeRecipientException()
         }
 

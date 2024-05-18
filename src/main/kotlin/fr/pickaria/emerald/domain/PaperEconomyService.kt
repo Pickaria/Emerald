@@ -5,6 +5,7 @@ import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.java.JavaPlugin
@@ -85,7 +86,23 @@ internal class PaperEconomyService(
     override fun getAccount(player: OfflinePlayer): Account =
         Account(
             economyRepository = economyRepository,
-            owner = player,
+            name = player.name!!,
+            ownerUniqueId = player.uniqueId,
+            plugin = plugin,
+        )
+
+    override fun getAccount(player: Player): Account =
+        Account(
+            economyRepository = economyRepository,
+            name = player.name,
+            ownerUniqueId = player.uniqueId,
+            plugin = plugin,
+        )
+
+    override fun getAccount(name: String): Account =
+        Account.fromName(
+            economyRepository = economyRepository,
+            name = name,
             plugin = plugin,
         )
 
