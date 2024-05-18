@@ -8,7 +8,10 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
+import fr.pickaria.shared.MiniMessage
 import fr.pickaria.shared.give
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 
 @CommandAlias("eco|economy")
 @CommandPermission("pickaria.eco")
@@ -46,6 +49,25 @@ internal class EconomyCommand(
             } catch (e: UnknownCurrencyException) {
                 throw InvalidCommandArgument(e.message)
             }
+        }
+    }
+
+    @Subcommand("balance")
+    @CommandPermission("pickaria.eco.balance")
+    @CommandCompletion("@players @currencies")
+    fun onBalance(sender: Player, name: String, @Default("credits") currency: String) {
+        val player = Bukkit.getOfflinePlayer(name)
+
+        try {
+            val balance = economyService.getAccount(player).getBalance(currency)
+            val formattedBalance = economyService.format(balance)
+            MiniMessage("<gray>Solde de <name> (<uuid>) : <gold><value>") {
+                "name" to name
+                "uuid" to player.uniqueId.toString()
+                "value" to formattedBalance
+            }.send(sender)
+        } catch (e: UnknownCurrencyException) {
+            throw InvalidCommandArgument("Le compte '${e.currency}' n'existe pas.")
         }
     }
 }
