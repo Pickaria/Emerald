@@ -5,6 +5,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 /**
  * The main service of the plugin.
@@ -27,6 +28,7 @@ interface EconomyService {
      */
     @Deprecated("Use getAccount(Player) instead")
     fun getAccount(player: OfflinePlayer): Account
+    fun getAccount(uniqueId: UUID): Account
     fun getAccount(player: Player): Account
     fun getAccount(name: String): Account
 

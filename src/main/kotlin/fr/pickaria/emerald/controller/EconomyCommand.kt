@@ -10,7 +10,6 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.shared.MiniMessage
 import fr.pickaria.shared.give
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 @CommandAlias("eco|economy")
@@ -56,14 +55,11 @@ internal class EconomyCommand(
     @CommandPermission("pickaria.eco.balance")
     @CommandCompletion("@players @currencies")
     fun onBalance(sender: Player, name: String, @Default("credits") currency: String) {
-        val player = Bukkit.getOfflinePlayer(name)
-
         try {
-            val balance = economyService.getAccount(player).getBalance(currency)
+            val balance = economyService.getAccount(name).getBalance(currency)
             val formattedBalance = economyService.format(balance)
-            MiniMessage("<gray>Solde de <name> (<uuid>) : <gold><value>") {
+            MiniMessage("<gray>Solde de <name> : <gold><value>") {
                 "name" to name
-                "uuid" to player.uniqueId.toString()
                 "value" to formattedBalance
             }.send(sender)
         } catch (e: UnknownCurrencyException) {

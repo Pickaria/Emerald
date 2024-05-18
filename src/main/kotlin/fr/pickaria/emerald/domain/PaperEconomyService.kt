@@ -4,6 +4,7 @@ import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -90,6 +91,16 @@ internal class PaperEconomyService(
             ownerUniqueId = player.uniqueId,
             plugin = plugin,
         )
+
+    override fun getAccount(uniqueId: UUID): Account {
+        val player = Bukkit.getOfflinePlayer(uniqueId)
+        return Account(
+            economyRepository = economyRepository,
+            name = player.name!!,
+            ownerUniqueId = player.uniqueId,
+            plugin = plugin,
+        )
+    }
 
     override fun getAccount(player: Player): Account =
         Account(
