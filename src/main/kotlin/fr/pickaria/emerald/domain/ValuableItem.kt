@@ -96,7 +96,7 @@ internal class ValuableItem(
         items: List<ItemStack>,
         currencyDisplayName: Component
     ): ItemStack {
-        val lore = MiniMessage("<gray>Sacoche d''une valeur de <gold><value></gold>.") {
+        val lore = MiniMessage("<gray>Sacoche d'une valeur de <gold><value></gold>.") {
             "value" to economyService.format(price)
         }.toComponent().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE)
 
