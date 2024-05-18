@@ -21,6 +21,12 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
         validateCurrencyName(currency)
 
         transaction(database) {
+            createUserIfNotExists(userName, accountId).also {
+                if (it.uniqueId != accountId) {
+                    it.uniqueId = accountId
+                }
+            }
+
             try {
                 val account = Account.find {
                     (Accounts.playerUuid eq accountId) and (Accounts.accountName eq currency)
@@ -33,7 +39,6 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
                     accountName = currency
                     balance = amount
                 }
-                createUserIfNotExists(userName, accountId)
             }
         }
     }
