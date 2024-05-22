@@ -1,5 +1,5 @@
-name: Emerald
-version: "1.0"
+name: "${name}"
+version: "${version}"
 api-version: "1.20"
 main: fr.pickaria.emerald.Main
 author: Quozul
@@ -7,7 +7,7 @@ description: Economy plugin
 
 dependencies:
   server:
-    Bookshelf:
+    bookshelf:
       load: BEFORE
       required: true
       join-classpath: true

@@ -4,12 +4,12 @@ plugins {
     id("org.jetbrains.dokka") version "1.9.20"
     id("org.jetbrains.kotlinx.kover") version "0.7.6"
     id("xyz.jpenilla.run-paper") version "2.3.0"
-    kotlin("jvm") version "1.9.23"
-    kotlin("plugin.serialization") version "1.9.23"
+    kotlin("jvm") version "2.0.0"
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 group = "fr.pickaria"
-version = "1.0.1"
+version = "1.1.0-SNAPSHOT"
 
 repositories {
     mavenLocal()
@@ -57,11 +57,19 @@ tasks {
     }
 
     jar {
-        archiveFileName.set("${project.name}.jar")
+        archiveFileName.set("${project.name}-${project.version}.jar")
         destinationDirectory.set(file("run/plugins"))
+    }
 
-        manifest {
-            attributes["Main-Class"] = "fr.pickaria.emerald.MainKt"
+    processResources {
+        val props = mapOf(
+            "version" to project.version,
+            "name" to project.name,
+        )
+        inputs.properties(props)
+        filteringCharset = "UTF-8"
+        filesMatching("paper-plugin.yml") {
+            expand(props)
         }
     }
 }
