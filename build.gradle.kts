@@ -26,7 +26,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("fr.pickaria:bookshelf:1.0-SNAPSHOT")
+    compileOnly("fr.pickaria:bookshelf:1.1-SNAPSHOT")
 
     testImplementation(kotlin("test"))
     testImplementation("com.github.MilkBowl:VaultAPI:1.7.1")

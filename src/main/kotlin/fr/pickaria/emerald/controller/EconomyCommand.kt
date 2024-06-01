@@ -5,17 +5,19 @@ import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.*
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import fr.pickaria.bookshelf.messager.Messager
+import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
-import fr.pickaria.shared.MiniMessage
 import fr.pickaria.shared.give
-import org.bukkit.entity.Player
+import org.bukkit.command.CommandSender
 
 @CommandAlias("eco|economy")
 @CommandPermission("pickaria.eco")
 internal class EconomyCommand(
     private val economyService: EconomyService,
+    private val messager: Messager,
     manager: PaperCommandManager
 ) : BaseCommand() {
     init {
@@ -54,16 +56,13 @@ internal class EconomyCommand(
     @Subcommand("balance")
     @CommandPermission("pickaria.eco.balance")
     @CommandCompletion("@players @currencies")
-    fun onBalance(sender: Player, name: String, @Default("credits") currency: String) {
+    fun onBalance(sender: CommandSender, name: String, @Default("credits") currency: String) {
         try {
             val balance = economyService.getAccount(name).getBalance(currency)
             val formattedBalance = economyService.format(balance)
-            MiniMessage("<gray>Solde de <name> : <gold><value>") {
-                "name" to name
-                "value" to formattedBalance
-            }.send(sender)
+            messager.info(sender, "balance.of.player", Text(name), Text(formattedBalance))
         } catch (e: UnknownCurrencyException) {
-            throw InvalidCommandArgument("Le compte '${e.currency}' n'existe pas.")
+            messager.error(sender, "unknown.currency", Text(e.currency))
         }
     }
 }

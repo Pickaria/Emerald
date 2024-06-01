@@ -1,17 +1,17 @@
 package fr.pickaria.emerald.controller
 
 import co.aikar.commands.BaseCommand
-import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.bukkit.contexts.OnlinePlayer
+import fr.pickaria.bookshelf.messager.Messager
+import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
-import fr.pickaria.shared.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -19,37 +19,33 @@ import org.bukkit.entity.Player
 @CommandPermission("pickaria.pay")
 internal class PayCommand(
     private val economyService: EconomyService,
-    private val defaultCurrency: String
+    private val defaultCurrency: String,
+    private val messager: Messager,
 ) : BaseCommand() {
     @Default
     @CommandCompletion("@players @amounts")
-    fun onDefault(player: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
+    fun onDefault(commandSender: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
         if (amount <= 0.01) {
-            throw InvalidCommandArgument("Le montant doit être supérieur à 0.01.")
+            messager.error(commandSender, "pay.balance.insufficient")
+            return
         }
 
         val price = Price(amount, defaultCurrency)
-        val sender = player as Player
+        val sender = commandSender as Player
         val recipient = onlinePlayer.player as Player
 
         try {
             economyService.createTransaction(sender, recipient, price).perform()
         } catch (_: BalanceInsufficientException) {
-            throw InvalidCommandArgument("Tu n'as pas assez d'argent.")
+            messager.error(commandSender, "pay.invalid.amount")
+            return
         } catch (_: SenderCannotBeRecipientException) {
-            throw InvalidCommandArgument("Tu ne peux pas envoyer de l'argent à toi-même.")
+            messager.error(commandSender, "pay.cannot.self")
+            return
         }
 
         val formattedPrice = economyService.format(price)
-
-        MiniMessage("<gold><recipient><gray> a bien reçu <gold><amount><gray>.") {
-            "recipient" to recipient.displayName()
-            "amount" to formattedPrice
-        }.send(sender)
-
-        MiniMessage("<gold><sender><gray> vous a envoyé <gold><amount><gray>.") {
-            "sender" to sender.displayName()
-            "amount" to formattedPrice
-        }.send(recipient)
+        messager.info(sender, "pay.sent", Text(recipient.name()), Text(formattedPrice))
+        messager.info(recipient, "pay.received", Text(sender.name()), Text(formattedPrice))
     }
 }

@@ -1,6 +1,8 @@
 package fr.pickaria.emerald
 
 import fr.pickaria.acf.initCommandManager
+import fr.pickaria.bookshelf.i18n.loadBundle
+import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.controller.*
 import fr.pickaria.emerald.controller.vault.registerVaultCurrency
 import fr.pickaria.emerald.data.EconomyConfig
@@ -13,11 +15,18 @@ import net.peanuuutz.tomlkt.Toml
 import net.peanuuutz.tomlkt.decodeFromNativeReader
 import org.bukkit.plugin.ServicePriority
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 
 internal open class Main : JavaPlugin() {
     override fun onEnable() {
         val config = Toml.decodeFromNativeReader<EconomyConfig>(getStreamReader("config.toml"))
+        loadBundle(
+            "pickaria:translations_emerald",
+            Locale.FRENCH,
+            ResourceBundle.getBundle("emerald.Bundle", Locale.FRENCH),
+        )
+        val messager = Messager()
 
         val economyRepository: EconomyRepository = EconomyRepositoryImpl(config)
         val economyService: EconomyService = PaperEconomyService(economyRepository = economyRepository, plugin = this)
@@ -31,8 +40,14 @@ internal open class Main : JavaPlugin() {
         server.pluginManager.registerEvents(NotifyListener(economyService), this)
 
         val manager = initCommandManager()
-        manager.registerCommand(MoneyCommand(manager, economyService))
-        manager.registerCommand(PayCommand(economyService, economyRepository.getDefaultCurrencyKey()))
-        manager.registerCommand(EconomyCommand(economyService, manager))
+        manager.registerCommand(MoneyCommand(manager = manager, economyService = economyService, messager = messager))
+        manager.registerCommand(
+            PayCommand(
+                economyService = economyService,
+                defaultCurrency = economyRepository.getDefaultCurrencyKey(),
+                messager = messager
+            )
+        )
+        manager.registerCommand(EconomyCommand(economyService = economyService, manager = manager, messager = messager))
     }
 }
