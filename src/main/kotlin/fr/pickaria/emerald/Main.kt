@@ -23,8 +23,9 @@ internal open class Main : JavaPlugin() {
         val config = Toml.decodeFromNativeReader<EconomyConfig>(getStreamReader("config.toml"))
         loadBundle(
             "pickaria:translations_emerald",
-            Locale.FRENCH,
+            Locale.ENGLISH,
             ResourceBundle.getBundle("emerald.Bundle", Locale.FRENCH),
+            ResourceBundle.getBundle("emerald.Bundle", Locale.ENGLISH),
         )
         val messager = Messager()
 

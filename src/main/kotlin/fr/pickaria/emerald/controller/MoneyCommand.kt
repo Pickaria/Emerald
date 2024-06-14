@@ -11,6 +11,7 @@ import fr.pickaria.bookshelf.messager.components.SuggestCommand
 import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.UnknownCurrencyException
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 @CommandAlias("money|bal|balance")
@@ -36,7 +37,7 @@ internal class MoneyCommand(
                 sender,
                 "balance",
                 Text(formattedBalance),
-                SuggestCommand("/pay ", "Envoyer de l'argent à un joueur"),
+                SuggestCommand("/pay ", Component.translatable("send.money.to.player")),
             )
         } catch (e: UnknownCurrencyException) {
             messager.error(sender, "unknown.currency", Text(e.currency))
