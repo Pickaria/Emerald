@@ -34,7 +34,17 @@ internal class EconomyCommand(
         @CommandCompletion("@players @amounts @currencies")
         fun onVirtualGive(target: OnlinePlayer, @Default("1") amount: Double, @Default("credits") currency: String) {
             try {
-                economyService.getAccount(target.getPlayer()).deposit(Price(amount, currency))
+                if (amount == 0.0) {
+                    throw InvalidCommandArgument("Amount must not be zero")
+                }
+
+                val account = economyService.getAccount(target.getPlayer())
+                val price = Price(amount, currency)
+                if (amount > 0.0) {
+                    account.deposit(price)
+                } else {
+                    account.withdraw(price)
+                }
             } catch (e: UnknownCurrencyException) {
                 throw InvalidCommandArgument(e.message)
             }

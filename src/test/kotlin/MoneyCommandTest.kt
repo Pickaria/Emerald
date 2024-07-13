@@ -1,6 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import co.aikar.commands.BukkitCommandManager
+import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.MoneyCommand
 import fr.pickaria.emerald.domain.Account
@@ -25,7 +26,8 @@ class MoneyCommandTest {
         plugin = MockBukkit.createMockPlugin()
 
         val manager = BukkitCommandManager(plugin)
-        manager.registerCommand(MoneyCommand(manager, service))
+        val messager = Messager()
+        manager.registerCommand(MoneyCommand(manager, service, messager))
     }
 
     @AfterEach
@@ -51,7 +53,7 @@ class MoneyCommandTest {
 
         // Then
         val message = player.nextMessage()
-        assertContains(message!!, "5.6 crédits")
+        assertContains(message!!, "balance")
     }
 
     @Test
@@ -68,6 +70,6 @@ class MoneyCommandTest {
 
         // Then
         val message = player.nextMessage()
-        assertContains(message!!, "Le compte 'unknown' n'existe pas.")
+        assertContains(message!!, "unknown.currency")
     }
 }

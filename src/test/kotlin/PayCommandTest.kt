@@ -1,6 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import co.aikar.commands.BukkitCommandManager
+import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.PayCommand
 import fr.pickaria.emerald.domain.BalanceInsufficientException
@@ -8,10 +9,13 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
 import fr.pickaria.emerald.domain.Transaction
 import io.mockk.*
+import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 import kotlin.test.assertContains
 
 class PayCommandTest {
@@ -25,7 +29,8 @@ class PayCommandTest {
         plugin = MockBukkit.createMockPlugin()
 
         val manager = BukkitCommandManager(plugin)
-        manager.registerCommand(PayCommand(service, "credits"))
+        val messager = Messager()
+        manager.registerCommand(PayCommand(service, "credits", messager))
     }
 
     @AfterEach
@@ -52,8 +57,8 @@ class PayCommandTest {
 
         // Then
         coVerify { transaction.perform() }
-        assertContains(sender.nextMessage()!!, "5.0 crédits")
-        assertContains(recipient.nextMessage()!!, "5.0 crédits")
+        assertContains(sender.nextMessage()!!, "pay.sent")
+        assertContains(recipient.nextMessage()!!, "pay.received")
     }
 
     @Test
@@ -74,7 +79,7 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} 5.0")
 
         // Then
-        assertContains(sender.nextMessage()!!, "Tu n'as pas assez d'argent.")
+        assertContains(sender.nextMessage()!!, "pay.balance.insufficient")
     }
 
     @Test
@@ -94,7 +99,7 @@ class PayCommandTest {
         sender.performCommand("pay ${sender.name} 5.0")
 
         // Then
-        assertContains(sender.nextMessage()!!, "Tu ne peux pas envoyer de l'argent à toi-même.")
+        assertContains(sender.nextMessage()!!, "pay.cannot.self")
     }
 
     @Test
@@ -109,7 +114,10 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} 0.0")
 
         // Then
-        verify { service.getAccount(any()) wasNot Called }
+        verify { service.getAccount(any<OfflinePlayer>()) wasNot Called }
+        verify { service.getAccount(any<UUID>()) wasNot Called }
+        verify { service.getAccount(any<Player>()) wasNot Called }
+        verify { service.getAccount(any<String>()) wasNot Called }
     }
 
     @Test
@@ -124,6 +132,9 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} -50.0")
 
         // Then
-        verify { service.getAccount(any()) wasNot Called }
+        verify { service.getAccount(any<OfflinePlayer>()) wasNot Called }
+        verify { service.getAccount(any<UUID>()) wasNot Called }
+        verify { service.getAccount(any<Player>()) wasNot Called }
+        verify { service.getAccount(any<String>()) wasNot Called }
     }
 }

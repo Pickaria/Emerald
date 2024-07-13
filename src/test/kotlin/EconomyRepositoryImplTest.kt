@@ -28,7 +28,7 @@ class EconomyRepositoryImplTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 5.6, "credits")
+        economyRepository.depositPlayer(player.name, player.uniqueId, 5.6, "credits")
 
         // Then
         val balance = economyRepository.getBalance(player.uniqueId, "credits")
@@ -41,8 +41,8 @@ class EconomyRepositoryImplTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 50.0, "credits")
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "credits")
+        economyRepository.depositPlayer(player.name, player.uniqueId, 50.0, "credits")
+        economyRepository.withdrawPlayer(player.name, player.uniqueId, 5.0, "credits")
 
         // Then
         val balance = economyRepository.getBalance(player.uniqueId, "credits")
@@ -55,7 +55,7 @@ class EconomyRepositoryImplTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "credits")
+        economyRepository.withdrawPlayer(player.name, player.uniqueId, 5.0, "credits")
 
         // Then
         val balance = economyRepository.getBalance(player.uniqueId, "credits")
@@ -68,9 +68,9 @@ class EconomyRepositoryImplTest {
         val player = server.addPlayer()
 
         // When
-        economyRepository.depositPlayer(player.uniqueId, 50.0, "credits")
-        economyRepository.depositPlayer(player.uniqueId, 45.0, "shards")
-        economyRepository.withdrawPlayer(player.uniqueId, 5.0, "shards")
+        economyRepository.depositPlayer(player.name, player.uniqueId, 50.0, "credits")
+        economyRepository.depositPlayer(player.name, player.uniqueId, 45.0, "shards")
+        economyRepository.withdrawPlayer(player.name, player.uniqueId, 5.0, "shards")
 
         // Then
         val creditsBalance = economyRepository.getBalance(player.uniqueId, "credits")

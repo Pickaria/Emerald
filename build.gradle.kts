@@ -30,8 +30,8 @@ dependencies {
 
     testImplementation(kotlin("test"))
     testImplementation("com.github.MilkBowl:VaultAPI:1.7.1")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.86.0")
-    testImplementation("fr.pickaria:bookshelf:1.0-SNAPSHOT")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.20:3.93.2")
+    testImplementation("fr.pickaria:bookshelf:1.1-SNAPSHOT")
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.2")
 }

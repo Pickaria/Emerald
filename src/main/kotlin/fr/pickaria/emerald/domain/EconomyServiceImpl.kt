@@ -17,7 +17,7 @@ import java.util.*
 import kotlin.math.pow
 
 
-internal class PaperEconomyService(
+internal class EconomyServiceImpl(
     private val economyRepository: EconomyRepository,
     private val plugin: JavaPlugin,
 ) : EconomyService {

@@ -26,7 +26,7 @@ internal class PayCommand(
     @CommandCompletion("@players @amounts")
     fun onDefault(commandSender: CommandSender, onlinePlayer: OnlinePlayer, amount: Double) {
         if (amount <= 0.01) {
-            messager.error(commandSender, "pay.balance.insufficient")
+            messager.error(commandSender, "pay.invalid.amount")
             return
         }
 
@@ -37,7 +37,7 @@ internal class PayCommand(
         try {
             economyService.createTransaction(sender, recipient, price).perform()
         } catch (_: BalanceInsufficientException) {
-            messager.error(commandSender, "pay.invalid.amount")
+            messager.error(commandSender, "pay.balance.insufficient")
             return
         } catch (_: SenderCannotBeRecipientException) {
             messager.error(commandSender, "pay.cannot.self")

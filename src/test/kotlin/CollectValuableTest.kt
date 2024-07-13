@@ -1,7 +1,7 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.controller.CollectValuableListener
-import fr.pickaria.emerald.domain.PaperEconomyService
+import fr.pickaria.emerald.domain.EconomyServiceImpl
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.Runs
 import io.mockk.every
@@ -22,14 +22,14 @@ import kotlin.test.assertTrue
 class CollectValuableTest {
     private val repository = mockk<EconomyRepository>()
     private lateinit var server: ServerMock
-    private lateinit var service: PaperEconomyService
+    private lateinit var service: EconomyServiceImpl
     private lateinit var plugin: JavaPlugin
 
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
         plugin = MockBukkit.createMockPlugin()
-        service = PaperEconomyService(repository)
+        service = EconomyServiceImpl(repository, plugin)
         server.pluginManager.registerEvents(CollectValuableListener(service), plugin)
     }
 
@@ -44,7 +44,7 @@ class CollectValuableTest {
         val player = server.addPlayer()
         every { repository.getConfig("credits") } returns creditConfigMock
         every { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        every { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
+        every { repository.depositPlayer(player.name, player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 
@@ -65,7 +65,7 @@ class CollectValuableTest {
         val player = server.addPlayer()
         every { repository.getConfig("credits") } returns creditConfigMock
         every { repository.getBalance(player.uniqueId, "credits") } returns 5.0
-        every { repository.depositPlayer(player.uniqueId, 5.0, "credits") } just Runs
+        every { repository.depositPlayer(player.name, player.uniqueId, 5.0, "credits") } just Runs
         val valuableItem = physicalCurrencyItemMock(value = 1.0, count = 5, currency = "credits")
         player.inventory.setItem(0, valuableItem)
 

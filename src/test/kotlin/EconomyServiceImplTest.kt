@@ -8,21 +8,24 @@ import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.assertEquals
 
 
-class PaperEconomyServiceTest {
+class EconomyServiceImplTest {
     private val repository = mockk<EconomyRepository>()
     private lateinit var server: ServerMock
-    private lateinit var economyService: PaperEconomyService
+    private lateinit var economyService: EconomyServiceImpl
+    private lateinit var plugin: JavaPlugin
 
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
-        economyService = PaperEconomyService(repository)
+        plugin = MockBukkit.createMockPlugin()
+        economyService = EconomyServiceImpl(repository, plugin)
     }
 
     @AfterEach

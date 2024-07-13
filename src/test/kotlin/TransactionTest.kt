@@ -4,6 +4,7 @@ import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.*
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
+import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -13,11 +14,13 @@ class TransactionTest {
     private val repository = mockk<EconomyRepository>()
     private lateinit var service: EconomyService
     private lateinit var server: ServerMock
+    private lateinit var plugin: JavaPlugin
 
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
-        service = PaperEconomyService(repository)
+        plugin = MockBukkit.createMockPlugin()
+        service = EconomyServiceImpl(repository, plugin)
     }
 
     @AfterEach
@@ -32,8 +35,8 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        every { sender.owner } returns server.addPlayer()
-        every { recipient.owner } returns server.addPlayer()
+        every { sender.ownerUniqueId } returns server.addPlayer().uniqueId
+        every { recipient.ownerUniqueId } returns server.addPlayer().uniqueId
         every { sender.getBalance("credits") } returns Price(8.0, "credits")
         every { sender.withdraw(Price(5.6, "credits")) } just Runs
         every { recipient.deposit(Price(5.6, "credits")) } just Runs
@@ -52,10 +55,10 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(0.0, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        every { sender.owner } returns server.addPlayer()
-        every { recipient.owner } returns server.addPlayer()
+        every { sender.ownerUniqueId } returns server.addPlayer().uniqueId
+        every { recipient.ownerUniqueId } returns server.addPlayer().uniqueId
         every { sender.getBalance("credits") } returns Price(8.0, "credits")
-        every { sender.withdraw(Price(0.0, "credits")) } throws InvalidAmountException()
+        every { sender.withdraw(Price(0.0, "credits")) } throws InvalidAmountException(0.0)
 
         // When / Then
         assertThrows<InvalidAmountException> { transaction.perform() }
@@ -68,8 +71,8 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "unknown")
         val transaction = Transaction(sender, recipient, amount)
-        every { sender.owner } returns server.addPlayer()
-        every { recipient.owner } returns server.addPlayer()
+        every { sender.ownerUniqueId } returns server.addPlayer().uniqueId
+        every { recipient.ownerUniqueId } returns server.addPlayer().uniqueId
         every { sender.getBalance("unknown") } returns Price(8.0, "credits")
         every { sender.withdraw(Price(5.6, "unknown")) } throws UnknownCurrencyException("unknown")
 
@@ -84,8 +87,8 @@ class TransactionTest {
         val recipient = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, recipient, amount)
-        every { sender.owner } returns server.addPlayer()
-        every { recipient.owner } returns server.addPlayer()
+        every { sender.ownerUniqueId } returns server.addPlayer().uniqueId
+        every { recipient.ownerUniqueId } returns server.addPlayer().uniqueId
         every { sender.getBalance("credits") } returns Price(3.0, "credits")
         every { sender.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
 
@@ -99,7 +102,7 @@ class TransactionTest {
         val sender = mockk<Account>()
         val amount = Price(5.6, "credits")
         val transaction = Transaction(sender, sender, amount)
-        every { sender.owner } returns server.addPlayer()
+        every { sender.ownerUniqueId } returns server.addPlayer().uniqueId
 
         // When / Then
         assertThrows<SenderCannotBeRecipientException> { transaction.perform() }

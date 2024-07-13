@@ -113,12 +113,12 @@ class Account internal constructor(
     private fun callAccountChangeEvent(price: Price, eventType: AccountChangeType) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             val event = AsyncAccountChangeEvent(this, price, eventType)
-            Bukkit.getPluginManager().callEvent(event)
+            plugin.server.pluginManager.callEvent(event)
         })
 
         try {
             val event = AccountChangeEvent(this, price, eventType)
-            Bukkit.getPluginManager().callEvent(event)
+            plugin.server.pluginManager.callEvent(event)
         } catch (_: IllegalStateException) {
         }
     }

@@ -1,9 +1,11 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.domain.*
+import fr.pickaria.emerald.domain.events.AccountChangeEvent
 import fr.pickaria.emerald.domain.events.AsyncAccountChangeEvent
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
+import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -12,12 +14,14 @@ import kotlin.test.assertTrue
 class AccountTest {
     private val repository = mockk<EconomyRepository>()
     private lateinit var server: ServerMock
-    private lateinit var economyService: PaperEconomyService
+    private lateinit var economyService: EconomyServiceImpl
+    private lateinit var plugin: JavaPlugin
 
     @BeforeEach
     fun setUp() {
         server = MockBukkit.mock()
-        economyService = PaperEconomyService(repository)
+        plugin = MockBukkit.createMockPlugin()
+        economyService = EconomyServiceImpl(repository, plugin)
     }
 
     @AfterEach
@@ -119,17 +123,19 @@ class AccountTest {
         }
 
         @Test
-        fun `should throw exception when amount of 0 is specified`() {
+        fun `should return true when amount of 0 is specified`() {
             // Given
             val player = server.addPlayer()
             every { repository.getBalance(player.uniqueId, "credits") } returns 5.6
             val withdrawingPrice = Price(0.0, "credits")
             val account = economyService.getAccount(player)
+            val expectedResult = true
 
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                account.has(withdrawingPrice)
-            }
+            // When
+            val result = account.has(withdrawingPrice)
+
+            // Then
+            assertEquals(expectedResult, result)
         }
 
         @Test
@@ -152,7 +158,7 @@ class AccountTest {
             val player = server.addPlayer()
             val withdrawingPrice = Price(32.8, "credits")
             every { repository.getBalance(player.uniqueId, "credits") } returns 50.0
-            every { repository.withdrawPlayer(player.uniqueId, 32.8, "credits") } just Runs
+            every { repository.withdrawPlayer(player.name, player.uniqueId, 32.8, "credits") } just Runs
             val account = economyService.getAccount(player)
 
             // When
@@ -160,7 +166,7 @@ class AccountTest {
 
             // Then
             verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
-            verify { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
+            verify { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) }
         }
 
         @Test
@@ -206,32 +212,37 @@ class AccountTest {
         }
 
         @Test
-        fun `should throw exception when amount of 0 is specified`() {
+        fun `should call repository when amount of 0 is specified`() {
             // Given
             val player = server.addPlayer()
             every { repository.getBalance(player.uniqueId, "credits") } returns 5.6
+            every { repository.withdrawPlayer(player.name, player.uniqueId, 0.0, "credits") } just Runs
             val withdrawingPrice = Price(0.0, "credits")
-            val account = economyService.getAccount(player)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                account.withdraw(withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `account change event is called when a withdrawal is made`() {
-            // Given
-            val player = server.addPlayer()
-            every { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
-            every { repository.getBalance(player.uniqueId, "credits") } returns 32.8
-            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When
             account.withdraw(withdrawingPrice)
 
             // Then
+            verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
+            verify { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(0.0), eq("credits")) }
+        }
+
+        @Test
+        fun `account change event is called when a withdrawal is made`() {
+            // Given
+            val player = server.addPlayer()
+            every { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
+            every { repository.getBalance(player.uniqueId, "credits") } returns 32.8
+            val withdrawingPrice = Price(32.8, "credits")
+            val account = economyService.getAccount(player)
+
+            // When
+            account.withdraw(withdrawingPrice)
+            server.scheduler.waitAsyncTasksFinished()
+
+            // Then
+            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
             server.pluginManager.assertEventFired(AsyncAccountChangeEvent::class.java)
         }
 
@@ -256,7 +267,7 @@ class AccountTest {
             val withdrawingPrice1 = Price(32.8, "credits")
             val withdrawingPrice2 = Price(3.0, "shards")
             every { repository.getBalance(player.uniqueId, any()) } returns 50.0
-            every { repository.withdrawPlayer(player.uniqueId, any(), any()) } just Runs
+            every { repository.withdrawPlayer(player.name, player.uniqueId, any(), any()) } just Runs
             val account = economyService.getAccount(player)
 
             // When
@@ -265,8 +276,8 @@ class AccountTest {
             // Then
             verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
             verify { repository.getBalance(eq(player.uniqueId), eq("shards")) }
-            verify { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
-            verify { repository.withdrawPlayer(eq(player.uniqueId), eq(3.0), eq("shards")) }
+            verify { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) }
+            verify { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(3.0), eq("shards")) }
         }
 
         @Test
@@ -277,8 +288,8 @@ class AccountTest {
             val withdrawingPrice2 = Price(3.0, "shards")
             every { repository.getBalance(player.uniqueId, "credits") } returns 50.0
             every { repository.getBalance(player.uniqueId, "shards") } returns 1.0
-            every { repository.withdrawPlayer(player.uniqueId, 32.8, eq("credits")) } just Runs
-            every { repository.depositPlayer(player.uniqueId, 32.8, eq("credits")) } just Runs
+            every { repository.withdrawPlayer(player.name, player.uniqueId, 32.8, eq("credits")) } just Runs
+            every { repository.depositPlayer(player.name, player.uniqueId, 32.8, eq("credits")) } just Runs
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -295,8 +306,8 @@ class AccountTest {
             val withdrawingPrice2 = Price(3.0, "shards")
             every { repository.getBalance(player.uniqueId, "credits") } returns 50.0
             every { repository.getBalance(player.uniqueId, "shards") } returns 50.0 andThen 1.0
-            every { repository.withdrawPlayer(player.uniqueId, 32.8, eq("credits")) } just Runs
-            every { repository.depositPlayer(player.uniqueId, 32.8, eq("credits")) } just Runs
+            every { repository.withdrawPlayer(player.name, player.uniqueId, 32.8, eq("credits")) } just Runs
+            every { repository.depositPlayer(player.name, player.uniqueId, 32.8, eq("credits")) } just Runs
             val account = economyService.getAccount(player)
 
             // When / Then
@@ -306,8 +317,8 @@ class AccountTest {
 
             verify { repository.getBalance(eq(player.uniqueId), eq("credits")) }
             verify { repository.getBalance(eq(player.uniqueId), eq("shards")) }
-            verify { repository.withdrawPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
-            verify { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
+            verify { repository.withdrawPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) }
+            verify { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) }
         }
 
         @Test
@@ -336,7 +347,7 @@ class AccountTest {
         fun `should call repository when amount is valid`() {
             // Given
             val player = server.addPlayer()
-            every { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
+            every { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
             val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
@@ -344,7 +355,7 @@ class AccountTest {
             account.deposit(withdrawingPrice)
 
             // Then
-            verify { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) }
+            verify { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) }
         }
 
         @Test
@@ -362,31 +373,34 @@ class AccountTest {
         }
 
         @Test
-        fun `should throw exception when amount of 0 is specified`() {
+        fun `should call repository when amount of 0 is specified`() {
             // Given
             val player = server.addPlayer()
-            every { repository.getBalance(player.uniqueId, "credits") } returns 5.6
+            every { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(0.0), eq("credits")) } just Runs
             val withdrawingPrice = Price(0.0, "credits")
-            val account = economyService.getAccount(player)
-
-            // When / Then
-            assertThrows<InvalidAmountException> {
-                account.deposit(withdrawingPrice)
-            }
-        }
-
-        @Test
-        fun `account change event is called when a deposit is made`() {
-            // Given
-            val player = server.addPlayer()
-            every { repository.depositPlayer(eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
-            val withdrawingPrice = Price(32.8, "credits")
             val account = economyService.getAccount(player)
 
             // When
             account.deposit(withdrawingPrice)
 
             // Then
+            verify { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(0.0), eq("credits")) }
+        }
+
+        @Test
+        fun `account change event is called when a deposit is made`() {
+            // Given
+            val player = server.addPlayer()
+            every { repository.depositPlayer(eq(player.name), eq(player.uniqueId), eq(32.8), eq("credits")) } just Runs
+            val withdrawingPrice = Price(32.8, "credits")
+            val account = economyService.getAccount(player)
+
+            // When
+            account.deposit(withdrawingPrice)
+            server.scheduler.waitAsyncTasksFinished()
+
+            // Then
+            server.pluginManager.assertEventFired(AccountChangeEvent::class.java)
             server.pluginManager.assertEventFired(AsyncAccountChangeEvent::class.java)
         }
 
@@ -396,6 +410,7 @@ class AccountTest {
             val player = server.addPlayer()
             every {
                 repository.depositPlayer(
+                    eq(player.name),
                     eq(player.uniqueId),
                     eq(5.6),
                     eq("unknown")

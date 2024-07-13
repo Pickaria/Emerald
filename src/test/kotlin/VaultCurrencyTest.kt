@@ -9,6 +9,7 @@ import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
 import mocks.creditConfigMock
+import org.bukkit.OfflinePlayer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -82,7 +83,7 @@ class VaultCurrencyTest {
     @Test
     fun `should call service when getting balance`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -98,7 +99,7 @@ class VaultCurrencyTest {
     @Test
     fun `should call service when depositing`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -116,7 +117,7 @@ class VaultCurrencyTest {
     @Test
     fun `should call service when withdrawing`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -134,7 +135,7 @@ class VaultCurrencyTest {
     @Test
     fun `should get balance of player`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -150,7 +151,7 @@ class VaultCurrencyTest {
     @Test
     fun `player should have enough money`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -166,7 +167,7 @@ class VaultCurrencyTest {
     @Test
     fun `player should not have enough money`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
@@ -182,7 +183,7 @@ class VaultCurrencyTest {
     @Test
     fun `transaction should not be successful if player does not have enough money when withdrawing`() {
         // Given
-        val player = server.addPlayer()
+        val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
         every { service.getAccount(player) } returns mockAccount
