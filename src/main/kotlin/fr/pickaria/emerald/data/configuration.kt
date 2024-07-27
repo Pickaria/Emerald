@@ -24,11 +24,6 @@ internal data class Name(
 @Serializable
 internal data class CurrencyConfig(
     val name: Name,
-
-    @SerialName("fractional_name")
-    val fractionalName: Name = name,
-
-    val format: String,
     val description: List<String>,
 
     @SerialName("physical_currencies")

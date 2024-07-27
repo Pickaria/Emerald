@@ -12,11 +12,6 @@ internal val creditConfigMock = CurrencyConfig(
         singular = "Crédit",
         plural = "Crédits",
     ),
-    fractionalName = Name(
-        singular = "Crodime",
-        plural = "Crodimes",
-    ),
-    format = "###,##0.00",
     description = listOf("A test currency"),
     collectionSound = "block.amethyst_block.fall",
     physicalCurrencies = listOf(
@@ -41,10 +36,6 @@ internal val economyConfigMock = EconomyConfig(
         "credits" to creditConfigMock,
         "shards" to creditConfigMock.copy(
             name = Name(
-                singular = "Éclat",
-                plural = "Éclats",
-            ),
-            fractionalName = Name(
                 singular = "Éclat",
                 plural = "Éclats",
             ),

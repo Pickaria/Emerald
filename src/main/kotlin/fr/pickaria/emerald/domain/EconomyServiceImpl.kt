@@ -14,34 +14,22 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
-import kotlin.math.pow
 
 
 internal class EconomyServiceImpl(
     private val economyRepository: EconomyRepository,
     private val plugin: JavaPlugin,
 ) : EconomyService {
+    private val decimalFormat = DecimalFormat("###,##0.00", DecimalFormatSymbols(Locale.FRENCH)).also {
+        it.roundingMode = RoundingMode.FLOOR
+    }
+
     override fun format(price: Price): String {
         val currencyConfig = economyRepository.getConfig(price.currency)
-
-        val symbols = DecimalFormatSymbols(Locale.FRENCH)
-        val decimalFormat = DecimalFormat(currencyConfig.format, symbols).also {
-            it.roundingMode = RoundingMode.FLOOR
-        }
-
-        val isFractional = price.amount < 1.0 && price.amount > -1.0
-
-        val formattedPrice = if (isFractional) {
-            decimalFormat.minimumFractionDigits = 0
-            decimalFormat.format(price.amount * 10.0.pow(decimalFormat.maximumFractionDigits))
-        } else {
-            decimalFormat.format(price.amount)
-        }
+        val formattedPrice = decimalFormat.format(price.amount)
 
         return if (price.amount == 1.0 || price.amount == 0.0) {
             "$formattedPrice ${currencyConfig.name.singular}"
-        } else if (isFractional) {
-            "$formattedPrice ${currencyConfig.fractionalName.plural}"
         } else {
             "$formattedPrice ${currencyConfig.name.plural}"
         }
