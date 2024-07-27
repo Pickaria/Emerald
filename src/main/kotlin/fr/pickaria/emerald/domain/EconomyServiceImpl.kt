@@ -117,7 +117,7 @@ internal class EconomyServiceImpl(
             plugin = plugin,
         )
 
-    override fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction {
+    override fun createTransaction(from: UUID, to: UUID, amount: Price): Transaction {
         val fromAccount = getAccount(from)
         val toAccount = getAccount(to)
 

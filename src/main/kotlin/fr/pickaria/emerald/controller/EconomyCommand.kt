@@ -11,6 +11,7 @@ import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.shared.give
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 
 @CommandAlias("eco|economy")
@@ -32,13 +33,13 @@ internal class EconomyCommand(
         @Subcommand("virtual")
         @CommandPermission("pickaria.eco.give.virtual")
         @CommandCompletion("@players @amounts @currencies")
-        fun onVirtualGive(target: OnlinePlayer, @Default("1") amount: Double, @Default("credits") currency: String) {
+        fun onVirtualGive(target: OfflinePlayer, @Default("1") amount: Double, @Default("credits") currency: String) {
             try {
                 if (amount == 0.0) {
                     throw InvalidCommandArgument("Amount must not be zero")
                 }
 
-                val account = economyService.getAccount(target.getPlayer())
+                val account = economyService.getAccount(target.uniqueId)
                 val price = Price(amount, currency)
                 if (amount > 0.0) {
                     account.deposit(price)

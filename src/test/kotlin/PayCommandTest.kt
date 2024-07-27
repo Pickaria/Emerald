@@ -49,7 +49,7 @@ class PayCommandTest {
         val priceToTransfer = Price(5.0, "credits")
         val transaction = mockk<Transaction>()
         every { transaction.perform() } just Runs
-        every { service.createTransaction(sender, recipient, priceToTransfer) } returns transaction
+        every { service.createTransaction(sender.uniqueId, recipient.uniqueId, priceToTransfer) } returns transaction
         every { service.format(priceToTransfer) } returns "5.0 crédits"
 
         // When
@@ -73,7 +73,7 @@ class PayCommandTest {
         val transaction = mockk<Transaction>()
         every { transaction.perform() } throws BalanceInsufficientException()
 
-        every { service.createTransaction(sender, recipient, priceToTransfer) } returns transaction
+        every { service.createTransaction(sender.uniqueId, recipient.uniqueId, priceToTransfer) } returns transaction
 
         // When
         sender.performCommand("pay ${recipient.name} 5.0")
@@ -93,7 +93,7 @@ class PayCommandTest {
         val transaction = mockk<Transaction>()
         every { transaction.perform() } throws SenderCannotBeRecipientException()
 
-        every { service.createTransaction(sender, sender, priceToTransfer) } returns transaction
+        every { service.createTransaction(sender.uniqueId, sender.uniqueId, priceToTransfer) } returns transaction
 
         // When
         sender.performCommand("pay ${sender.name} 5.0")

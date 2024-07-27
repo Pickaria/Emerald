@@ -35,7 +35,7 @@ internal class PayCommand(
         val recipient = onlinePlayer.player as Player
 
         try {
-            economyService.createTransaction(sender, recipient, price).perform()
+            economyService.createTransaction(sender.uniqueId, recipient.uniqueId, price).perform()
         } catch (_: BalanceInsufficientException) {
             messager.error(commandSender, "pay.balance.insufficient")
             return

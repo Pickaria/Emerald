@@ -35,7 +35,7 @@ interface EconomyService {
     /**
      * Creates a new transaction from players.
      */
-    fun createTransaction(from: OfflinePlayer, to: OfflinePlayer, amount: Price): Transaction
+    fun createTransaction(from: UUID, to: UUID, amount: Price): Transaction
 
     /**
      * Gets the Price value of a valuable item.
