@@ -62,6 +62,29 @@ class PayCommandTest {
     }
 
     @Test
+    fun `decimals should be rounded to 2 when performing pay command`() {
+        // Given
+        val sender = server.addPlayer()
+        val recipient = server.addPlayer()
+        sender.addAttachment(plugin).setPermission("pickaria.pay", true)
+        sender.recalculatePermissions()
+
+        val priceToTransfer = Price(3.14, "credits")
+        val transaction = mockk<Transaction>()
+        every { transaction.perform() } just Runs
+        every { service.createTransaction(sender.uniqueId, recipient.uniqueId, priceToTransfer) } returns transaction
+        every { service.format(priceToTransfer) } returns "3.14 crédits"
+
+        // When
+        sender.performCommand("pay ${recipient.name} 3.14159")
+
+        // Then
+        coVerify { transaction.perform() }
+        assertContains(sender.nextMessage()!!, "pay.sent")
+        assertContains(recipient.nextMessage()!!, "pay.received")
+    }
+
+    @Test
     fun `transfer should not happen if sender does not have enough money`() {
         // Given
         val sender = server.addPlayer()

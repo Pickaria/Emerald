@@ -30,7 +30,7 @@ internal class PayCommand(
             return
         }
 
-        val price = Price(amount, defaultCurrency)
+        val price = Price.roundedToTwoDecimals(amount, defaultCurrency)
         val sender = commandSender as Player
         val recipient = onlinePlayer.player as Player
 

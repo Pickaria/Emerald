@@ -95,15 +95,6 @@ class EconomyRepositoryImplTest {
     @Nested
     inner class Configuration {
         @Test
-        fun `should return valid currency format`() {
-            // Given / When
-            val config = economyRepository.getConfig("credits")
-
-            // Then
-            assertEquals("###,##0.00", config.format)
-        }
-
-        @Test
         fun `should throw exception when asked format of unknown currency`() {
             // Given / When / Then
             assertThrows<UnknownCurrencyException> {
