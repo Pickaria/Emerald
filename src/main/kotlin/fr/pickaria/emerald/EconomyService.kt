@@ -26,7 +26,7 @@ interface EconomyService {
     /**
      * Gets the player's bank account.
      */
-    @Deprecated("Use getAccount(Player) instead")
+    @Deprecated("Use getAccount(Player) instead", replaceWith = ReplaceWith("getAccount(Player)"))
     fun getAccount(player: OfflinePlayer): Account
     fun getAccount(uniqueId: UUID): Account
     fun getAccount(player: Player): Account

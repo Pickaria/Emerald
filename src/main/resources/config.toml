@@ -14,6 +14,7 @@ driver = "org.h2.Driver"
 description = ["<gray>Pièce d'une valeur de <gold><value><gray>."]
 name = { singular = "Crédit", plural = "Crédits" }
 collection_sound = "block.amethyst_block.fall"
+start_amount = 1000
 physical_currencies = [
     { value = 0.01, material = "GLOWSTONE_DUST" },
     { value = 0.1, material = "GUNPOWDER" },
@@ -29,6 +30,7 @@ physical_currencies = [
 description = ["<gray>Fragment ancestral issu de la", "<gray>création du monde de Pickaria."]
 name = { singular = "Éclat de Pickarite", plural = "Éclats de Pickarite" }
 collection_sound = "block.amethyst_cluster.break"
+start_amount = 0
 physical_currencies = [
     { value = 1.0, material = "ECHO_SHARD" },
     { value = 64.0, material = "SCULK" }
@@ -38,6 +40,7 @@ physical_currencies = [
 description = ["<gray>Objet permettant l'achat de récompenses."]
 name = { singular = "Clé", plural = "Clés" }
 collection_sound = "item.armor.equip_chain"
+start_amount = 0
 physical_currencies = [
     { value = 1.0, material = "TRIPWIRE_HOOK" }
 ]

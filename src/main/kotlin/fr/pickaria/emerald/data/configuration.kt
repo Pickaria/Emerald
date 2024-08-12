@@ -31,6 +31,9 @@ internal data class CurrencyConfig(
 
     @SerialName("collection_sound")
     val collectionSound: String,
+
+    @SerialName("start_amount")
+    val startAmount: Double,
 )
 
 @Suppress("PROVIDED_RUNTIME_TOO_LOW")

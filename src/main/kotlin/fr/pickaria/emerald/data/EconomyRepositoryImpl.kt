@@ -37,7 +37,7 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
                 Account.new {
                     playerUuid = accountId
                     accountName = currency
-                    balance = amount
+                    balance = getStartAmountForCurrency(currency) + amount
                 }
             }
         }
@@ -59,7 +59,7 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
 
             account.balance
         } catch (_: NoSuchElementException) {
-            0.0 // Empty
+            getStartAmountForCurrency(currency) // Empty
         }
     }
 
@@ -100,4 +100,6 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
             throw UnknownCurrencyException(currency)
         }
     }
+
+    private fun getStartAmountForCurrency(currency: String): Double = getConfig(currency).startAmount
 }
