@@ -98,12 +98,15 @@ internal class EconomyServiceImpl(
             plugin = plugin,
         )
 
-    override fun getAccount(name: String): Account =
-        Account.fromName(
+    override fun getAccount(name: String): Account {
+        val uniqueId = Bukkit.getPlayerExact(name)?.uniqueId ?: economyRepository.getOwnerUniqueIdFromName(name)
+        return Account(
             economyRepository = economyRepository,
+            ownerUniqueId = uniqueId,
             name = name,
             plugin = plugin,
         )
+    }
 
     override fun createTransaction(from: UUID, to: UUID, amount: Price): Transaction {
         val fromAccount = getAccount(from)
@@ -117,6 +120,26 @@ internal class EconomyServiceImpl(
     override fun getCollectionSound(currency: String): Sound {
         val soundKey = economyRepository.getCollectionSoundKey(currency)
         return Sound.sound(Key.key(soundKey), Sound.Source.MASTER, 1f, 1f)
+    }
+
+    override fun getDefaultCurrency(): String = economyRepository.getDefaultCurrencyKey()
+
+    override fun getBalanceTop(page: Int, currency: String): List<BalanceTopAccount> {
+        val limit = 6
+        val offset = page * limit
+        return economyRepository.getBalanceTop(
+            limit = limit,
+            offset = offset.toLong(),
+            currency = currency,
+        )
+            .mapIndexed { index, it ->
+                val price = Price(it.second, currency)
+                BalanceTopAccount(
+                    playerName = it.first,
+                    balance = price,
+                    position = index + offset + 1,
+                )
+            }
     }
 }
 

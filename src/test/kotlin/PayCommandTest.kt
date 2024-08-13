@@ -1,6 +1,5 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import co.aikar.commands.BukkitCommandManager
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.PayCommand
@@ -9,6 +8,7 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
 import fr.pickaria.emerald.domain.Transaction
 import io.mockk.*
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -28,9 +28,11 @@ class PayCommandTest {
         server = MockBukkit.mock()
         plugin = MockBukkit.createMockPlugin()
 
-        val manager = BukkitCommandManager(plugin)
         val messager = Messager()
-        manager.registerCommand(PayCommand(service, "credits", messager))
+        plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS) {
+            val commands = it.registrar()
+            PayCommand(economyService = service, messager = messager).register(commands)
+        }
     }
 
     @AfterEach

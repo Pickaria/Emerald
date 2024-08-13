@@ -12,4 +12,5 @@ internal interface EconomyRepository {
     fun getAvailableCurrencyNames(): Set<String>
     fun getCollectionSoundKey(currency: String): String
     fun getOwnerUniqueIdFromName(name: String): UUID
+    fun getBalanceTop(limit: Int, offset: Long, currency: String): List<Pair<String, Double>>
 }

@@ -3,14 +3,14 @@ package fr.pickaria.emerald.data
 import fr.pickaria.database.openPool
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 
-internal class EconomyRepositoryImpl(private val config: EconomyConfig) : EconomyRepository {
+internal class EconomyRepositoryImpl(
+    private val config: EconomyConfig,
+) : EconomyRepository {
     private val database: Database = openPool(config.database).also {
         transaction(it) {
             SchemaUtils.create(Accounts, UnregisteredUsers)
@@ -82,6 +82,23 @@ internal class EconomyRepositoryImpl(private val config: EconomyConfig) : Econom
                 uuid = UUID.nameUUIDFromBytes(name.toByteArray())
             )
             unregisteredUser.uniqueId
+        }
+    }
+
+    override fun getBalanceTop(limit: Int, offset: Long, currency: String): List<Pair<String, Double>> {
+        return transaction(database) {
+            UnregisteredUsers
+                .join(
+                    Accounts,
+                    joinType = JoinType.LEFT,
+                    additionalConstraint = { UnregisteredUsers.uniqueId eq Accounts.playerUuid }
+                )
+                .select(Accounts.balance, UnregisteredUsers.username).orderBy(Accounts.balance, SortOrder.DESC)
+                .where { Accounts.accountName eq currency }
+                .limit(limit, offset = offset)
+                .map {
+                    Pair(it[UnregisteredUsers.username], it[Accounts.balance])
+                }
         }
     }
 

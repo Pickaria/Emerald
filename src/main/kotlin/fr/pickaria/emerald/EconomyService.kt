@@ -56,8 +56,11 @@ interface EconomyService {
      */
     fun getAvailableCurrencyNames(): Set<String>
 
+    fun getDefaultCurrency(): String
+
     /**
      * @throws UnknownCurrencyException
      */
     fun getCollectionSound(currency: String): Sound
+    fun getBalanceTop(page: Int, currency: String): List<BalanceTopAccount>
 }

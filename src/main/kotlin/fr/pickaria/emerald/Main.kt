@@ -50,15 +50,17 @@ internal open class Main : JavaPlugin() {
             val commands = it.registrar()
             PayCommand(
                 economyService = economyService,
-                defaultCurrency = economyRepository.getDefaultCurrencyKey(),
                 messager = messager
             ).register(commands)
             MoneyCommand(
                 economyService = economyService,
-                defaultCurrency = economyRepository.getDefaultCurrencyKey(),
                 messager = messager
             ).register(commands)
             EconomyCommand(
+                economyService = economyService,
+                messager = messager
+            ).register(commands)
+            BalanceTopCommand(
                 economyService = economyService,
                 messager = messager
             ).register(commands)

@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 internal class MoneyCommand(
     private val economyService: EconomyService,
     private val messager: Messager,
-    private val defaultCurrency: String,
 ) {
     fun register(commands: Commands) {
         commands.register(
@@ -54,7 +53,7 @@ internal class MoneyCommand(
             val currency = try {
                 context.getArgument("currency", String::class.java)
             } catch (e: IllegalArgumentException) {
-                defaultCurrency
+                economyService.getDefaultCurrency()
             }
 
             try {

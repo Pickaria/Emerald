@@ -23,18 +23,6 @@ class Account internal constructor(
     val ownerUniqueId: UUID,
     private val plugin: JavaPlugin,
 ) {
-    companion object {
-        internal fun fromName(economyRepository: EconomyRepository, name: String, plugin: JavaPlugin): Account {
-            val uniqueId = Bukkit.getPlayerExact(name)?.uniqueId ?: economyRepository.getOwnerUniqueIdFromName(name)
-            return Account(
-                economyRepository = economyRepository,
-                ownerUniqueId = uniqueId,
-                name = name,
-                plugin = plugin,
-            )
-        }
-    }
-
     /**
      * @throws UnknownCurrencyException
      */

@@ -1,6 +1,5 @@
 import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
-import co.aikar.commands.BukkitCommandManager
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.controller.MoneyCommand
@@ -9,6 +8,7 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import io.mockk.every
 import io.mockk.mockk
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -25,9 +25,11 @@ class MoneyCommandTest {
         server = MockBukkit.mock()
         plugin = MockBukkit.createMockPlugin()
 
-        val manager = BukkitCommandManager(plugin)
         val messager = Messager()
-        manager.registerCommand(MoneyCommand(manager, service, messager))
+        plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS) {
+            val commands = it.registrar()
+            MoneyCommand(economyService = service, messager = messager).register(commands)
+        }
     }
 
     @AfterEach

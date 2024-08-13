@@ -18,7 +18,6 @@ import org.bukkit.entity.Player
 
 internal class PayCommand(
     private val economyService: EconomyService,
-    private val defaultCurrency: String,
     private val messager: Messager,
 ) {
     fun register(commands: Commands) {
@@ -67,7 +66,7 @@ internal class PayCommand(
                 return
             }
 
-            val price = Price.roundedToTwoDecimals(amount, defaultCurrency)
+            val price = Price.roundedToTwoDecimals(amount, economyService.getDefaultCurrency())
             if (price.amount <= 0.01) {
                 messager.error(sender, "pay.invalid.amount")
                 return
