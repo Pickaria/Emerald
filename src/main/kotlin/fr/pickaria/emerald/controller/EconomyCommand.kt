@@ -11,6 +11,7 @@ import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import fr.pickaria.shared.give
@@ -99,16 +100,21 @@ internal class EconomyCommand(
     }
 
     private fun doVirtualGiveExecute(context: CommandContext<CommandSourceStack>) {
-        val target = getTarget(context) ?: return
-        val amount = context.getArgument("amount", Double::class.java)
-        val currency = context.getArgument("currency", String::class.java)
-
         try {
-            if (amount == 0.0) {
-                throw IllegalArgumentException("Amount must not be zero")
+            val amount = context.getArgument("amount", Double::class.java)
+
+            if (amount <= 0.01) {
+                messager.error(context.source.sender, "pay.invalid.amount")
+                return
             }
 
-            val account = economyService.getAccount(target.uniqueId)
+            val currency = context.getArgument("currency", String::class.java)
+            val account = getAccount(context)
+            if (account == null) {
+                messager.error(context.source.sender, "account.not.found")
+                return
+            }
+
             val price = Price(amount, currency)
             if (amount > 0.0) {
                 account.deposit(price)
@@ -116,7 +122,7 @@ internal class EconomyCommand(
                 account.withdraw(price)
             }
         } catch (e: UnknownCurrencyException) {
-            messager.error(context.source.sender, e.message ?: "Unknown error")
+            messager.error(context.source.sender, "unknown.currency", Text(e.currency))
         }
     }
 
@@ -129,18 +135,27 @@ internal class EconomyCommand(
             val itemStack = economyService.getValuableItemStack(Price(amount, currency))
             target.give(itemStack)
         } catch (e: UnknownCurrencyException) {
-            messager.error(context.source.sender, e.message ?: "Unknown error")
+            messager.error(context.source.sender, "unknown.currency", Text(e.currency))
         }
     }
 
     private fun doBalanceExecute(context: CommandContext<CommandSourceStack>) {
-        val target = getTarget(context) ?: return
-        val currency = context.getArgument("currency", String::class.java)
-
         try {
-            val balance = economyService.getAccount(target.uniqueId).getBalance(currency)
+            val account = getAccount(context)
+            if (account == null) {
+                messager.error(context.source.sender, "account.not.found")
+                return
+            }
+
+            val currency = context.getArgument("currency", String::class.java)
+            val balance = account.getBalance(currency)
             val formattedBalance = economyService.format(balance)
-            messager.info(context.source.sender, "balance.of.player", Text(target.name), Text(formattedBalance))
+            messager.info(
+                context.source.sender,
+                "balance.of.player",
+                Text(account.getName()),
+                Text(formattedBalance)
+            )
         } catch (e: UnknownCurrencyException) {
             messager.error(context.source.sender, "unknown.currency", Text(e.currency))
         }
@@ -153,5 +168,10 @@ internal class EconomyCommand(
             messager.error(context.source.sender, "player.not.found", Text(playerName))
         }
         return player
+    }
+
+    private fun getAccount(context: CommandContext<CommandSourceStack>): Account? {
+        val targetName = context.getArgument("target", String::class.java)
+        return economyService.tryGetAccount(targetName)
     }
 }

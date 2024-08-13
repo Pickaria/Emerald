@@ -139,10 +139,10 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} 0.0")
 
         // Then
-        verify { service.getAccount(any<OfflinePlayer>()) wasNot Called }
+        verify { service.getUnsafeAccount(any<OfflinePlayer>()) wasNot Called }
         verify { service.getAccount(any<UUID>()) wasNot Called }
         verify { service.getAccount(any<Player>()) wasNot Called }
-        verify { service.getAccount(any<String>()) wasNot Called }
+        verify { service.getUnsafeAccount(any<String>()) wasNot Called }
     }
 
     @Test
@@ -157,9 +157,9 @@ class PayCommandTest {
         sender.performCommand("pay ${recipient.name} -50.0")
 
         // Then
-        verify { service.getAccount(any<OfflinePlayer>()) wasNot Called }
+        verify { service.getUnsafeAccount(any<OfflinePlayer>()) wasNot Called }
         verify { service.getAccount(any<UUID>()) wasNot Called }
         verify { service.getAccount(any<Player>()) wasNot Called }
-        verify { service.getAccount(any<String>()) wasNot Called }
+        verify { service.getUnsafeAccount(any<String>()) wasNot Called }
     }
 }

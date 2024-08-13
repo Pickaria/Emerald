@@ -98,6 +98,9 @@ class Account internal constructor(
         callAccountChangeEvent(price, AccountChangeType.DEPOSIT)
     }
 
+    internal fun getName(): String =
+        economyRepository.getOwnerNameFromUniqueId(ownerUniqueId) ?: ownerUniqueId.toString()
+
     private fun callAccountChangeEvent(price: Price, eventType: AccountChangeType) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
             val event = AsyncAccountChangeEvent(this, price, eventType)

@@ -21,6 +21,7 @@ internal class EconomyRepositoryImpl(
         validateCurrencyName(currency)
 
         transaction(database) {
+            // Fix the uniqueId if it does not match the id of the account
             createUserIfNotExists(userName, accountId).also {
                 if (it.uniqueId != accountId) {
                     it.uniqueId = accountId
@@ -75,13 +76,26 @@ internal class EconomyRepositoryImpl(
 
     override fun getCollectionSoundKey(currency: String): String = getConfig(currency).collectionSound
 
-    override fun getOwnerUniqueIdFromName(name: String): UUID {
+    override fun getOrCreateOwnerUniqueIdFromName(name: String): UUID {
         return transaction(database) {
+            // FIXME: Maybe we don't have to check for the existence of the record before creating it?
             val unregisteredUser = createUserIfNotExists(
                 name = name,
                 uuid = UUID.nameUUIDFromBytes(name.toByteArray())
             )
             unregisteredUser.uniqueId
+        }
+    }
+
+    override fun getOwnerUniqueIdFromName(name: String): UUID? {
+        return transaction(database) {
+            findUser(name)?.uniqueId
+        }
+    }
+
+    override fun getOwnerNameFromUniqueId(ownerUniqueId: UUID): String? {
+        return transaction(database) {
+            UnregisteredUser.find { UnregisteredUsers.uniqueId eq ownerUniqueId }.singleOrNull()?.username
         }
     }
 
@@ -102,8 +116,11 @@ internal class EconomyRepositoryImpl(
         }
     }
 
+    private fun findUser(name: String): UnregisteredUser? =
+        UnregisteredUser.find { UnregisteredUsers.username eq name }.singleOrNull()
+
     private fun createUserIfNotExists(name: String, uuid: UUID): UnregisteredUser {
-        return UnregisteredUser.find { UnregisteredUsers.username eq name }.singleOrNull() ?: UnregisteredUser.new {
+        return findUser(name) ?: UnregisteredUser.new {
             username = name
             uniqueId = uuid
         }

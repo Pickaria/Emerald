@@ -86,7 +86,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
@@ -102,7 +102,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.deposit(Price(5.6, "credits")) } just Runs
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
@@ -120,7 +120,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.withdraw(Price(5.6, "credits")) } just Runs
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
@@ -138,7 +138,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
@@ -154,7 +154,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
@@ -170,7 +170,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.getBalance("credits") } returns Price(5.6, "credits")
 
         // When
@@ -186,7 +186,7 @@ class VaultCurrencyTest {
         val player = server.addPlayer() as OfflinePlayer
         val vaultCurrency = VaultCurrency(repository, service, "credits")
         val mockAccount = mockk<Account>()
-        every { service.getAccount(player) } returns mockAccount
+        every { service.getUnsafeAccount(player) } returns mockAccount
         every { mockAccount.withdraw(Price(5.6, "credits")) } throws BalanceInsufficientException()
         every { mockAccount.getBalance("credits") } returns Price(0.0, "credits")
 

@@ -1,6 +1,7 @@
 package fr.pickaria.emerald.domain
 
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.Unsafe
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -72,40 +73,40 @@ internal class EconomyServiceImpl(
             .getItem()
     }
 
-    override fun getAccount(player: OfflinePlayer): Account =
-        Account(
-            economyRepository = economyRepository,
-            name = player.name!!,
-            ownerUniqueId = player.uniqueId,
-            plugin = plugin,
-        )
-
+    // Despite the opt-in, getting an OfflinePlayer from a uniqueId is safe
+    @OptIn(Unsafe::class)
     override fun getAccount(uniqueId: UUID): Account {
         val player = Bukkit.getOfflinePlayer(uniqueId)
+        return getAccount(player)
+    }
+
+    override fun getAccount(player: Player): Account = getAccount(player.name, player.uniqueId)
+
+    override fun tryGetAccount(name: String): Account? {
+        val uniqueId = tryGetUniqueId(name)
+        return uniqueId?.let { getAccount(name, uniqueId) }
+    }
+
+    @Unsafe
+    override fun getAccount(player: OfflinePlayer): Account = getAccount(player.name!!, player.uniqueId)
+
+    @Unsafe
+    override fun getAccount(name: String): Account {
+        val uniqueId = tryGetUniqueId(name) ?: economyRepository.getOrCreateOwnerUniqueIdFromName(name)
+        return getAccount(name, uniqueId)
+    }
+
+    private fun getAccount(name: String, uniqueId: UUID): Account {
         return Account(
             economyRepository = economyRepository,
-            name = player.name!!,
-            ownerUniqueId = player.uniqueId,
+            name = name,
+            ownerUniqueId = uniqueId,
             plugin = plugin,
         )
     }
 
-    override fun getAccount(player: Player): Account =
-        Account(
-            economyRepository = economyRepository,
-            name = player.name,
-            ownerUniqueId = player.uniqueId,
-            plugin = plugin,
-        )
-
-    override fun getAccount(name: String): Account {
-        val uniqueId = Bukkit.getPlayerExact(name)?.uniqueId ?: economyRepository.getOwnerUniqueIdFromName(name)
-        return Account(
-            economyRepository = economyRepository,
-            ownerUniqueId = uniqueId,
-            name = name,
-            plugin = plugin,
-        )
+    private fun tryGetUniqueId(name: String): UUID? {
+        return Bukkit.getPlayerExact(name)?.uniqueId ?: economyRepository.getOwnerUniqueIdFromName(name)
     }
 
     override fun createTransaction(from: UUID, to: UUID, amount: Price): Transaction {

@@ -1,6 +1,7 @@
 package fr.pickaria.emerald.controller.vault
 
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.emerald.Unsafe
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
@@ -8,6 +9,7 @@ import net.milkbowl.vault.economy.AbstractEconomy
 import net.milkbowl.vault.economy.EconomyResponse
 import org.bukkit.OfflinePlayer
 
+@OptIn(Unsafe::class)
 internal class VaultCurrency(
     economyRepository: EconomyRepository,
     private val economyService: EconomyService,
