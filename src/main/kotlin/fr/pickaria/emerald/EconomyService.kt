@@ -96,6 +96,12 @@ interface EconomyService {
      */
     fun getCollectionSound(currency: String): Sound
     fun getBalanceTop(page: Int, currency: String): List<BalanceTopAccount>
+
+    /**
+     * @throws UnknownCurrencyException
+     * @throws InvalidAmountException
+     */
+    fun initializeAccount(player: Player)
 }
 
 @RequiresOptIn(message = "This API is unsafe to use. Read the documentation before using it.")

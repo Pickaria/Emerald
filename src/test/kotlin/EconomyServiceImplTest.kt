@@ -2,17 +2,18 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import be.seeseemelk.mockbukkit.ServerMock
 import fr.pickaria.emerald.domain.*
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
-import io.mockk.every
-import io.mockk.mockk
+import io.mockk.*
 import mocks.creditConfigMock
 import mocks.physicalCurrencyItemMock
 import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import kotlin.test.assertEquals
+import java.util.*
 
 
 class EconomyServiceImplTest {
@@ -146,6 +147,41 @@ class EconomyServiceImplTest {
 
             // Then
             assertEquals(expectedPrice, result)
+        }
+    }
+
+    @Nested
+    inner class InitializeAccount {
+        @Test
+        fun `should create a new account for player that has never played before`() {
+            // Given
+            val player = mockk<Player>()
+            every { player.name } returns "Bob"
+            every { player.uniqueId } returns UUID.randomUUID()
+            every { player.hasPlayedBefore() } returns false
+            every { repository.getDefaultCurrencyKey() } returns "credits"
+            every { repository.getStartAmountForCurrency("credits") } returns 500.0
+            every { repository.depositPlayer("Bob", player.uniqueId, 500.0, "credits") } just Runs
+
+            // When
+            economyService.initializeAccount(player)
+
+            // Then
+            verify { repository.depositPlayer("Bob", player.uniqueId, 500.0, "credits") }
+        }
+
+        @Test
+        fun `should NOT create a new account for player that has played before`() {
+            // Given
+            val player = mockk<Player>()
+            every { player.hasPlayedBefore() } returns true
+            every { repository.depositPlayer(any(), any(), any(), any()) } just Runs
+
+            // When
+            economyService.initializeAccount(player)
+
+            // Then
+            verify(exactly = 0) { repository.depositPlayer(any(), any(), any(), any()) }
         }
     }
 }

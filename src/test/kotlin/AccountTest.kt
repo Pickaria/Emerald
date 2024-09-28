@@ -7,9 +7,7 @@ import fr.pickaria.emerald.domain.repositories.EconomyRepository
 import io.mockk.*
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.*
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.Assertions.*
 
 class AccountTest {
     private val repository = mockk<EconomyRepository>()

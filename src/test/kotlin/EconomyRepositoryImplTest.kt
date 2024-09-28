@@ -4,7 +4,7 @@ import fr.pickaria.emerald.data.EconomyRepositoryImpl
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import mocks.economyConfigMock
 import org.junit.jupiter.api.*
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 
 
 class EconomyRepositoryImplTest {

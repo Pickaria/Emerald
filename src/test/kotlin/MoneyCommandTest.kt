@@ -11,9 +11,9 @@ import io.mockk.mockk
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertContains
 
 class MoneyCommandTest {
     private val service = mockk<EconomyService>()
@@ -55,7 +55,7 @@ class MoneyCommandTest {
 
         // Then
         val message = player.nextMessage()
-        assertContains(message!!, "balance")
+        assertTrue(message!!.contains("balance"))
     }
 
     @Test
@@ -72,6 +72,6 @@ class MoneyCommandTest {
 
         // Then
         val message = player.nextMessage()
-        assertContains(message!!, "unknown.currency")
+        assertTrue(message!!.contains("unknown.currency"))
     }
 }

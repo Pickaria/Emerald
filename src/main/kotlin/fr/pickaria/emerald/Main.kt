@@ -44,6 +44,7 @@ internal open class Main : JavaPlugin() {
         /* Events */
         server.pluginManager.registerEvents(CollectValuableListener(economyService), this)
         server.pluginManager.registerEvents(NotifyListener(economyService), this)
+        server.pluginManager.registerEvents(CreateAccountListener(economyService), this)
 
         /* Commands */
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS) {

@@ -73,6 +73,15 @@ internal class EconomyServiceImpl(
             .getItem()
     }
 
+    override fun initializeAccount(player: Player) {
+        if (!player.hasPlayedBefore()) {
+            val currencyName = economyRepository.getDefaultCurrencyKey()
+            val startAmount = economyRepository.getStartAmountForCurrency(currencyName)
+            val account = getAccount(player)
+            account.deposit(Price(startAmount, currencyName))
+        }
+    }
+
     // Despite the opt-in, getting an OfflinePlayer from a uniqueId is safe
     @OptIn(Unsafe::class)
     override fun getAccount(uniqueId: UUID): Account {

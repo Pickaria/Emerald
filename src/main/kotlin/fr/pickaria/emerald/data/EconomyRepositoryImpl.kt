@@ -38,7 +38,7 @@ internal class EconomyRepositoryImpl(
                 Account.new {
                     playerUuid = accountId
                     accountName = currency
-                    balance = getStartAmountForCurrency(currency) + amount
+                    balance = amount
                 }
             }
         }
@@ -60,7 +60,7 @@ internal class EconomyRepositoryImpl(
 
             account.balance
         } catch (_: NoSuchElementException) {
-            getStartAmountForCurrency(currency) // Empty
+            0.0 // The account does not exists
         }
     }
 
@@ -116,6 +116,11 @@ internal class EconomyRepositoryImpl(
         }
     }
 
+    /**
+     * @throws UnknownCurrencyException
+     */
+    override fun getStartAmountForCurrency(currency: String): Double = getConfig(currency).startAmount
+
     private fun findUser(name: String): UnregisteredUser? =
         UnregisteredUser.find { UnregisteredUsers.username eq name }.singleOrNull()
 
@@ -135,5 +140,4 @@ internal class EconomyRepositoryImpl(
         }
     }
 
-    private fun getStartAmountForCurrency(currency: String): Double = getConfig(currency).startAmount
 }

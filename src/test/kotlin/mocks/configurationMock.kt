@@ -24,7 +24,7 @@ internal val creditConfigMock = CurrencyConfig(
             material = Material.GOLD_NUGGET,
         ),
     ),
-    startAmount = 1_000.0,
+    startAmount = 500.0,
 )
 
 internal val databaseConfigMock = DatabaseConfig(
