@@ -75,10 +75,14 @@ internal class EconomyServiceImpl(
 
     override fun initializeAccount(player: Player) {
         if (!player.hasPlayedBefore()) {
-            val currencyName = economyRepository.getDefaultCurrencyKey()
-            val startAmount = economyRepository.getStartAmountForCurrency(currencyName)
-            val account = getAccount(player)
-            account.deposit(Price(startAmount, currencyName))
+            economyRepository.getAvailableCurrencyNames().forEach {
+                val startAmount = economyRepository.getStartAmountForCurrency(it)
+                if (startAmount > 0) {
+                    val account = getAccount(player)
+                    account.deposit(Price(startAmount, it))
+                }
+                // Ignore the exceptions, it should never throw
+            }
         }
     }
 

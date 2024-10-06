@@ -8,6 +8,10 @@ import org.bukkit.event.player.PlayerJoinEvent
 internal class CreateAccountListener(private val economyService: EconomyService) : Listener {
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        economyService.initializeAccount(event.player)
+        try {
+            economyService.initializeAccount(event.player)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
