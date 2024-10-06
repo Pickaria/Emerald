@@ -26,7 +26,7 @@ dependencies {
     compileOnly("fr.pickaria:bookshelf:1.1-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.21:3.129.0")
+    testImplementation("com.github.seeseemelk:MockBukkit-v1.21:3.130.0")
     testImplementation("com.github.MilkBowl:VaultAPI:1.7.1")
     testImplementation("fr.pickaria:bookshelf:1.1-SNAPSHOT")
     testImplementation("io.mockk:mockk:1.13.8")
