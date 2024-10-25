@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.DoubleArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
+import fr.pickaria.bookshelf.commands.context.getPlayer
+import fr.pickaria.bookshelf.commands.context.withPlayer
 import fr.pickaria.bookshelf.commands.suggestion.OnlinePlayerSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.Text
@@ -14,7 +16,6 @@ import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import org.bukkit.entity.Player
 
 internal class PayCommand(
     private val economyService: EconomyService,
@@ -44,49 +45,35 @@ internal class PayCommand(
     }
 
     private fun doExecute(context: CommandContext<CommandSourceStack>) {
-        val sender = context.source.sender
-        if (sender is Player) {
-            val recipient: Player = try {
-                val playerName = context.getArgument("player", String::class.java)
-                val player = context.source.sender.server.getPlayerExact(playerName)
-                if (player == null) {
-                    messager.error(sender, "player.not.found", Text(playerName))
-                    return
-                }
-                player
-            } catch (_: IllegalArgumentException) {
-                messager.error(sender, "invalid.player.name")
-                return
-            }
+        context.withPlayer(messager) { sender ->
+            val recipient = context.getPlayer(messager, "player") ?: return@withPlayer
 
             val amount: Double = try {
                 context.getArgument("amount", Double::class.java)
             } catch (_: IllegalArgumentException) {
                 messager.error(sender, "pay.invalid.amount")
-                return
+                return@withPlayer
             }
 
             val price = Price.roundedToTwoDecimals(amount, economyService.getDefaultCurrency())
             if (price.amount <= 0.01) {
                 messager.error(sender, "pay.invalid.amount")
-                return
+                return@withPlayer
             }
 
             try {
                 economyService.createTransaction(sender.uniqueId, recipient.uniqueId, price).perform()
             } catch (_: BalanceInsufficientException) {
                 messager.error(sender, "pay.balance.insufficient")
-                return
+                return@withPlayer
             } catch (_: SenderCannotBeRecipientException) {
                 messager.error(sender, "pay.cannot.self")
-                return
+                return@withPlayer
             }
 
             val formattedPrice = economyService.format(price)
             messager.info(sender, "pay.sent", Text(recipient.name()), Text(formattedPrice))
             messager.info(recipient, "pay.received", Text(sender.name()), Text(formattedPrice))
-        } else {
-            messager.error(sender, "must.be.player.to.run.command")
         }
     }
 }

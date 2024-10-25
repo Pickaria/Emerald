@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
+import fr.pickaria.bookshelf.commands.context.withPlayer
 import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.SuggestCommand
@@ -13,7 +14,6 @@ import fr.pickaria.emerald.domain.UnknownCurrencyException
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
 
 internal class MoneyCommand(
     private val economyService: EconomyService,
@@ -48,8 +48,7 @@ internal class MoneyCommand(
     }
 
     private fun doExecute(context: CommandContext<CommandSourceStack>) {
-        val sender = context.source.sender
-        if (sender is Player) {
+        context.withPlayer(messager) { sender ->
             val currency = try {
                 context.getArgument("currency", String::class.java)
             } catch (e: IllegalArgumentException) {
@@ -68,8 +67,6 @@ internal class MoneyCommand(
             } catch (e: UnknownCurrencyException) {
                 messager.error(sender, "unknown.currency", Text(e.currency))
             }
-        } else {
-            messager.error(sender, "must.be.player.to.run.command")
         }
     }
 }

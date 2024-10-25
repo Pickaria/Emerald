@@ -100,18 +100,19 @@ internal class EconomyCommand(
     }
 
     private fun doVirtualGiveExecute(context: CommandContext<CommandSourceStack>) {
+        val sender = context.source.sender
         try {
             val amount = context.getArgument("amount", Double::class.java)
 
             if (amount <= 0.01) {
-                messager.error(context.source.sender, "pay.invalid.amount")
+                messager.error(sender, "pay.invalid.amount")
                 return
             }
 
             val currency = context.getArgument("currency", String::class.java)
             val account = getAccount(context)
             if (account == null) {
-                messager.error(context.source.sender, "account.not.found")
+                messager.error(sender, "account.not.found")
                 return
             }
 
@@ -122,7 +123,7 @@ internal class EconomyCommand(
                 account.withdraw(price)
             }
         } catch (e: UnknownCurrencyException) {
-            messager.error(context.source.sender, "unknown.currency", Text(e.currency))
+            messager.error(sender, "unknown.currency", Text(e.currency))
         }
     }
 
@@ -140,10 +141,11 @@ internal class EconomyCommand(
     }
 
     private fun doBalanceExecute(context: CommandContext<CommandSourceStack>) {
+        val sender = context.source.sender
         try {
             val account = getAccount(context)
             if (account == null) {
-                messager.error(context.source.sender, "account.not.found")
+                messager.error(sender, "account.not.found")
                 return
             }
 
@@ -151,21 +153,22 @@ internal class EconomyCommand(
             val balance = account.getBalance(currency)
             val formattedBalance = economyService.format(balance)
             messager.info(
-                context.source.sender,
+                sender,
                 "balance.of.player",
                 Text(account.getName()),
                 Text(formattedBalance)
             )
         } catch (e: UnknownCurrencyException) {
-            messager.error(context.source.sender, "unknown.currency", Text(e.currency))
+            messager.error(sender, "unknown.currency", Text(e.currency))
         }
     }
 
     private fun getTarget(context: CommandContext<CommandSourceStack>): Player? {
+        val sender = context.source.sender
         val playerName = context.getArgument("target", String::class.java)
-        val player = context.source.sender.server.getPlayerExact(playerName)
+        val player = sender.server.getPlayerExact(playerName)
         if (player == null) {
-            messager.error(context.source.sender, "player.not.found", Text(playerName))
+            messager.error(sender, "player.not.found", Text(playerName))
         }
         return player
     }
