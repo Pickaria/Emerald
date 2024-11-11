@@ -10,6 +10,7 @@ import fr.pickaria.bookshelf.commands.suggestion.OnlinePlayerSuggestionProvider
 import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.Price
@@ -29,7 +30,7 @@ internal class EconomyCommand(
 
     private fun createBrigadierCommand(): LiteralCommandNode<CommandSourceStack> {
         return Commands.literal("eco")
-            .requires { it.sender.hasPermission("pickaria.eco") }
+            .requires { it.sender.hasPermission(EconomyPermissions.ecoCommand) }
             .then(createGiveCommand())
             .then(createBalanceCommand())
             .build()
@@ -37,14 +38,14 @@ internal class EconomyCommand(
 
     private fun createGiveCommand(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("give")
-            .requires { it.sender.hasPermission("pickaria.eco.give") }
+            .requires { it.sender.hasPermission(EconomyPermissions.ecoGiveCommand) }
             .then(createVirtualGiveCommand())
             .then(createPhysicalGiveCommand())
     }
 
     private fun createVirtualGiveCommand(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("virtual")
-            .requires { it.sender.hasPermission("pickaria.eco.give.virtual") }
+            .requires { it.sender.hasPermission(EconomyPermissions.ecoGiveVirtualCommand) }
             .then(
                 Commands.argument("target", StringArgumentType.string())
                     .suggests(OnlinePlayerSuggestionProvider())
@@ -64,7 +65,7 @@ internal class EconomyCommand(
 
     private fun createPhysicalGiveCommand(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("physical")
-            .requires { it.sender.hasPermission("pickaria.eco.give.physical") }
+            .requires { it.sender.hasPermission(EconomyPermissions.ecoGivePhysicalCommand) }
             .then(
                 Commands.argument("target", StringArgumentType.string())
                     .suggests(OnlinePlayerSuggestionProvider())
@@ -84,7 +85,7 @@ internal class EconomyCommand(
 
     private fun createBalanceCommand(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal("balance")
-            .requires { it.sender.hasPermission("pickaria.eco.balance") }
+            .requires { it.sender.hasPermission(EconomyPermissions.ecoBalanceCommand) }
             .then(
                 Commands.argument("target", StringArgumentType.string())
                     .suggests(OnlinePlayerSuggestionProvider())

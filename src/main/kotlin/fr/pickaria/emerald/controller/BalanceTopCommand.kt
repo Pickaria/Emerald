@@ -8,6 +8,7 @@ import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.Compound
 import fr.pickaria.bookshelf.messager.components.Listing
 import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
@@ -23,7 +24,7 @@ internal class BalanceTopCommand(
     private fun createBrigadierCommand(): LiteralCommandNode<CommandSourceStack> {
         return Commands.literal("balancetop")
             .requires {
-                it.sender.hasPermission("pickaria.balancetop")
+                it.sender.hasPermission(EconomyPermissions.balanceTopCommand)
             }
             .then(
                 Commands.argument("page", IntegerArgumentType.integer(1))

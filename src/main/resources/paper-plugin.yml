@@ -1,9 +1,9 @@
-name: "${name}"
-version: "${version}"
-api-version: "1.21.1"
-main: fr.pickaria.emerald.Main
+api-version: "${apiVersion}"
 author: Quozul
 description: Economy plugin
+main: fr.pickaria.emerald.Main
+name: "${name}"
+version: "${version}"
 
 dependencies:
   server:

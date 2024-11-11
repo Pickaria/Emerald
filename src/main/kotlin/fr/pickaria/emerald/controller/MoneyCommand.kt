@@ -9,6 +9,7 @@ import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.SuggestCommand
 import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.UnknownCurrencyException
 import io.papermc.paper.command.brigadier.CommandSourceStack
@@ -30,7 +31,7 @@ internal class MoneyCommand(
     private fun createBrigadierCommand(): LiteralCommandNode<CommandSourceStack> {
         return Commands.literal("money")
             .requires {
-                it.sender.hasPermission("pickaria.balance")
+                it.sender.hasPermission(EconomyPermissions.balanceCommand)
             }
             .executes {
                 doExecute(it)

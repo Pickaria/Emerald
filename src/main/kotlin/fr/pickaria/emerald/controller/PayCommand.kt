@@ -10,6 +10,7 @@ import fr.pickaria.bookshelf.commands.context.withPlayer
 import fr.pickaria.bookshelf.commands.suggestion.OnlinePlayerSuggestionProvider
 import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
@@ -28,7 +29,7 @@ internal class PayCommand(
     private fun createBrigadierCommand(): LiteralCommandNode<CommandSourceStack> {
         return Commands.literal("pay")
             .requires {
-                it.sender.hasPermission("pickaria.pay")
+                it.sender.hasPermission(EconomyPermissions.payCommand)
             }
             .then(
                 Commands.argument("player", StringArgumentType.string())

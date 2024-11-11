@@ -8,6 +8,7 @@ plugins {
 
 group = "fr.pickaria"
 version = "1.1.0-SNAPSHOT"
+val minecraftVersion: String by project
 
 repositories {
     mavenLocal()
@@ -18,9 +19,8 @@ repositories {
     maven("https://jitpack.io") // Vault
 }
 
-val exposedVersion: String by project
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$minecraftVersion-R0.1-SNAPSHOT")
 
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("fr.pickaria:bookshelf:1.1-SNAPSHOT")
@@ -50,7 +50,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21.1")
+        minecraftVersion(minecraftVersion)
     }
 
     jar {
@@ -62,6 +62,7 @@ tasks {
         val props = mapOf(
             "version" to project.version,
             "name" to project.name,
+            "apiVersion" to minecraftVersion,
         )
         inputs.properties(props)
         filteringCharset = "UTF-8"
