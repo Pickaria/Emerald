@@ -114,26 +114,11 @@ internal class VaultCurrency(
         economyService.getAvailableCurrencyNames().contains(currencyName)
 
     @Deprecated("Deprecated in Java")
-    override fun hasAccount(playerName: String?, worldName: String?): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Deprecated in Java")
     override fun getBalance(playerName: String): Double =
         economyService.getAccount(playerName).getBalance(currencyName).amount
 
     @Deprecated("Deprecated in Java")
-    override fun getBalance(playerName: String?, world: String?): Double {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Deprecated in Java")
     override fun has(playerName: String, amount: Double): Boolean = getBalance(playerName) >= amount
-
-    @Deprecated("Deprecated in Java")
-    override fun has(playerName: String?, worldName: String?, amount: Double): Boolean {
-        TODO("Not yet implemented")
-    }
 
     @Deprecated("Deprecated in Java")
     override fun withdrawPlayer(playerName: String, amount: Double): EconomyResponse {
@@ -158,11 +143,6 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun withdrawPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Deprecated in Java")
     override fun depositPlayer(playerName: String, amount: Double): EconomyResponse {
         val account = economyService.getAccount(playerName)
         account.deposit(Price(amount, currencyName))
@@ -175,16 +155,38 @@ internal class VaultCurrency(
     }
 
     @Deprecated("Deprecated in Java")
-    override fun depositPlayer(playerName: String?, worldName: String?, amount: Double): EconomyResponse {
-        TODO("Not yet implemented")
-    }
-
-    @Deprecated("Deprecated in Java")
     override fun createPlayerAccount(playerName: String): Boolean =
         hasAccount(playerName)
 
+    // Using worlds
+
     @Deprecated("Deprecated in Java")
-    override fun createPlayerAccount(playerName: String?, worldName: String?): Boolean {
-        TODO("Not yet implemented")
+    override fun hasAccount(playerName: String, worldName: String): Boolean {
+        return hasAccount(playerName)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun getBalance(playerName: String, world: String): Double {
+        return getBalance(playerName)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun has(playerName: String, worldName: String, amount: Double): Boolean {
+        return has(playerName, amount)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun withdrawPlayer(playerName: String, worldName: String, amount: Double): EconomyResponse {
+        return withdrawPlayer(playerName, amount)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun depositPlayer(playerName: String, worldName: String, amount: Double): EconomyResponse {
+        return depositPlayer(playerName, amount)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun createPlayerAccount(playerName: String, worldName: String): Boolean {
+        return createPlayerAccount(playerName)
     }
 }
