@@ -10,6 +10,7 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerDropItemEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
 internal class CollectValuableListener(private val economyService: EconomyService) : Listener {
@@ -36,6 +37,18 @@ internal class CollectValuableListener(private val economyService: EconomyServic
         if (depositItem(event.itemDrop.itemStack, event.player)) {
             event.itemDrop.remove()
             event.isCancelled = true
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        event.item?.let {
+            if (depositItem(it, event.player)) {
+                event.isCancelled = true
+                event.setUseInteractedBlock(Event.Result.DENY)
+                event.setUseItemInHand(Event.Result.DENY)
+                it.amount -= 1
+            }
         }
     }
 
