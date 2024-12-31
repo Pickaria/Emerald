@@ -2,15 +2,12 @@ api-version: "${apiVersion}"
 author: Quozul
 description: Economy plugin
 main: fr.pickaria.emerald.Main
+loader: fr.pickaria.emerald.Loader
 name: "${name}"
 version: "${version}"
 
 dependencies:
   server:
-    bookshelf:
-      load: BEFORE
-      required: true
-      join-classpath: true
     Vault:
       load: BEFORE
       required: false

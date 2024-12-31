@@ -8,15 +8,16 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import fr.pickaria.bookshelf.commands.context.getPlayer
 import fr.pickaria.bookshelf.commands.context.withPlayer
 import fr.pickaria.bookshelf.commands.suggestion.OnlinePlayerSuggestionProvider
-import fr.pickaria.bookshelf.messager.Messager
-import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.BalanceInsufficientException
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.SenderCannotBeRecipientException
+import fr.pickaria.messager.Messager
+import fr.pickaria.messager.components.Text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.text.Component
 
 internal class PayCommand(
     private val economyService: EconomyService,
@@ -73,8 +74,8 @@ internal class PayCommand(
             }
 
             val formattedPrice = economyService.format(price)
-            messager.info(sender, "pay.sent", Text(recipient.name()), Text(formattedPrice))
-            messager.info(recipient, "pay.received", Text(sender.name()), Text(formattedPrice))
+            messager.info(sender, "pay.sent", Text(recipient.name()), Text(Component.text(formattedPrice)))
+            messager.info(recipient, "pay.received", Text(sender.name()), Text(Component.text(formattedPrice)))
         }
     }
 }

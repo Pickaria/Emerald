@@ -6,12 +6,12 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import fr.pickaria.bookshelf.commands.context.withPlayer
 import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
-import fr.pickaria.bookshelf.messager.Messager
-import fr.pickaria.bookshelf.messager.components.SuggestCommand
-import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.bookshelf.messager.SuggestCommand
 import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.UnknownCurrencyException
+import fr.pickaria.messager.Messager
+import fr.pickaria.messager.components.Text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import net.kyori.adventure.text.Component
@@ -62,11 +62,11 @@ internal class MoneyCommand(
                 messager.info(
                     sender,
                     "balance",
-                    Text(formattedBalance),
+                    Text(Component.text(formattedBalance)),
                     SuggestCommand("/pay ", Component.translatable("send.money.to.player")),
                 )
             } catch (e: UnknownCurrencyException) {
-                messager.error(sender, "unknown.currency", Text(e.currency))
+                messager.error(sender, "unknown.currency", Text(Component.text(e.currency)))
             }
         }
     }

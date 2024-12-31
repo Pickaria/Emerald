@@ -1,13 +1,13 @@
 package fr.pickaria.emerald
 
 import fr.pickaria.bookshelf.i18n.loadBundle
-import fr.pickaria.bookshelf.messager.Messager
 import fr.pickaria.emerald.controller.*
 import fr.pickaria.emerald.controller.vault.registerVaultCurrency
 import fr.pickaria.emerald.data.EconomyConfig
 import fr.pickaria.emerald.data.EconomyRepositoryImpl
 import fr.pickaria.emerald.domain.EconomyServiceImpl
 import fr.pickaria.emerald.domain.repositories.EconomyRepository
+import fr.pickaria.messager.Messager
 import fr.pickaria.shared.getStreamReader
 import fr.pickaria.shared.withPlugin
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents

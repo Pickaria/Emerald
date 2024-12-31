@@ -4,14 +4,15 @@ import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.IntegerArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
-import fr.pickaria.bookshelf.messager.Messager
-import fr.pickaria.bookshelf.messager.components.Compound
-import fr.pickaria.bookshelf.messager.components.Listing
-import fr.pickaria.bookshelf.messager.components.Text
+import fr.pickaria.bookshelf.messager.Compound
+import fr.pickaria.bookshelf.messager.Listing
 import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
+import fr.pickaria.messager.Messager
+import fr.pickaria.messager.components.Text
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.text.Component
 
 internal class BalanceTopCommand(
     private val economyService: EconomyService,
@@ -52,8 +53,8 @@ internal class BalanceTopCommand(
         val list = topBalances
             .map {
                 Compound(
-                    Text("${it.position}. ${it.playerName}, ", changeColor = false),
-                    Text(economyService.format(it.balance))
+                    Text(Component.text("${it.position}. ${it.playerName}, "), false),
+                    Text(Component.text(economyService.format(it.balance)))
                 )
             }
         messager.info(sender, "balance.top", Listing(list))

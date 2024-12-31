@@ -8,16 +8,17 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import fr.pickaria.bookshelf.commands.suggestion.OnlinePlayerSuggestionProvider
 import fr.pickaria.bookshelf.commands.suggestion.StringSuggestionProvider
-import fr.pickaria.bookshelf.messager.Messager
-import fr.pickaria.bookshelf.messager.components.Text
 import fr.pickaria.emerald.EconomyPermissions
 import fr.pickaria.emerald.EconomyService
 import fr.pickaria.emerald.domain.Account
 import fr.pickaria.emerald.domain.Price
 import fr.pickaria.emerald.domain.UnknownCurrencyException
+import fr.pickaria.messager.Messager
+import fr.pickaria.messager.components.Text
 import fr.pickaria.shared.give
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 internal class EconomyCommand(
@@ -124,7 +125,7 @@ internal class EconomyCommand(
                 account.withdraw(price)
             }
         } catch (e: UnknownCurrencyException) {
-            messager.error(sender, "unknown.currency", Text(e.currency))
+            messager.error(sender, "unknown.currency", Text(Component.text(e.currency)))
         }
     }
 
@@ -137,7 +138,7 @@ internal class EconomyCommand(
             val itemStack = economyService.getValuableItemStack(Price(amount, currency))
             target.give(itemStack)
         } catch (e: UnknownCurrencyException) {
-            messager.error(context.source.sender, "unknown.currency", Text(e.currency))
+            messager.error(context.source.sender, "unknown.currency", Text(Component.text(e.currency)))
         }
     }
 
@@ -156,11 +157,11 @@ internal class EconomyCommand(
             messager.info(
                 sender,
                 "balance.of.player",
-                Text(account.getName()),
-                Text(formattedBalance)
+                Text(Component.text(account.getName())),
+                Text(Component.text(formattedBalance))
             )
         } catch (e: UnknownCurrencyException) {
-            messager.error(sender, "unknown.currency", Text(e.currency))
+            messager.error(sender, "unknown.currency", Text(Component.text(e.currency)))
         }
     }
 
@@ -169,7 +170,7 @@ internal class EconomyCommand(
         val playerName = context.getArgument("target", String::class.java)
         val player = sender.server.getPlayerExact(playerName)
         if (player == null) {
-            messager.error(sender, "player.not.found", Text(playerName))
+            messager.error(sender, "player.not.found", Text(Component.text(playerName)))
         }
         return player
     }

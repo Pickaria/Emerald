@@ -8,22 +8,21 @@ plugins {
 
 group = "fr.pickaria"
 version = "1.1.0-SNAPSHOT"
-val minecraftVersion: String by project
 
 repositories {
     mavenLocal()
-    mavenCentral()
     maven("https://maven.pickaria.fr/releases")
     maven("https://maven.pickaria.fr/snapshots")
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
+    mavenCentral()
     maven("https://jitpack.io") // Vault
 }
 
+val minecraftVersion: String by project
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$minecraftVersion-R0.1-SNAPSHOT")
-
+    compileOnly("fr.pickaria:bookshelf-lib:1.1-SNAPSHOT")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("fr.pickaria:bookshelf:1.1-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
     testImplementation("com.github.seeseemelk:MockBukkit-v1.21:3.130.0")
